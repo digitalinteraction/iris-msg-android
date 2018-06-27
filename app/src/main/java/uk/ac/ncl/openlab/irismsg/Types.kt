@@ -1,4 +1,4 @@
-package uk.ac.ncl.openlab.irismsg.irismsg
+package uk.ac.ncl.openlab.irismsg
 
 enum class MemberRole {
     SUBSCRIBER,

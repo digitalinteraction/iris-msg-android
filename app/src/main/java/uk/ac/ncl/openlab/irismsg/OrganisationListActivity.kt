@@ -1,11 +1,11 @@
-package uk.ac.ncl.openlab.irismsg.irismsg
+package uk.ac.ncl.openlab.irismsg
 
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import uk.ac.ncl.openlab.irismsg.irismsg.dummy.DummyContent
+import uk.ac.ncl.openlab.irismsg.dummy.DummyContent
 
 class OrganisationListActivity : AppCompatActivity(), OrganisationFragment.OnListFragmentInteractionListener {
     

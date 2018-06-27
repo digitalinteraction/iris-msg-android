@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "uk.ac.ncl.openlab.irismsg.irismsg"
+        applicationId "uk.ac.ncl.openlab.irismsg"
         minSdkVersion 16
         targetSdkVersion 28
         versionCode 1

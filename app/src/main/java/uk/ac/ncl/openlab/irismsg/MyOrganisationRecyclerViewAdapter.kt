@@ -1,4 +1,4 @@
-package uk.ac.ncl.openlab.irismsg.irismsg
+package uk.ac.ncl.openlab.irismsg
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 
 
-import uk.ac.ncl.openlab.irismsg.irismsg.OrganisationFragment.OnListFragmentInteractionListener
-import uk.ac.ncl.openlab.irismsg.irismsg.dummy.DummyContent.DummyItem
+import uk.ac.ncl.openlab.irismsg.OrganisationFragment.OnListFragmentInteractionListener
+import uk.ac.ncl.openlab.irismsg.dummy.DummyContent.DummyItem
 
 import kotlinx.android.synthetic.main.fragment_organisation.view.*
 

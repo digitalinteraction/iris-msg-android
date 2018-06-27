@@ -1,4 +1,4 @@
-package uk.ac.ncl.openlab.irismsg.irismsg
+package uk.ac.ncl.openlab.irismsg
 
 import android.content.Context
 import android.os.Bundle

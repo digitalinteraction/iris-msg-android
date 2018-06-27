@@ -1,4 +1,4 @@
-package uk.ac.ncl.openlab.irismsg.irismsg.dummy
+package uk.ac.ncl.openlab.irismsg.dummy
 
 import java.util.ArrayList
 import java.util.HashMap
