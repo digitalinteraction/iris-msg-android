@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Iris Msg</string>
+    <string name="tab_coordinator">Organisations</string>
+    <string name="tab_donor">Donations</string>
+</resources>
