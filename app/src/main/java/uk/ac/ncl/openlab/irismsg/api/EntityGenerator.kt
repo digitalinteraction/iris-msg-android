@@ -4,7 +4,7 @@ import uk.ac.ncl.openlab.irismsg.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.*
 import java.util.*
 
-enum class GenDateType {
+enum class DateGen {
     NOW,
     PAST,
     FUTURE,
@@ -12,76 +12,92 @@ enum class GenDateType {
     DISTANT_PAST
 }
 
-enum class GenUserType {
+enum class UserGen {
     CURRENT, VERIFIED, UNVERIFIED
 }
 
 class EntityGenerator {
     
     companion object {
-        var nextEntityId = 1
         val currentUserId = "current-user-id"
     }
+    
+    var nextEntityId = 1
     
     fun makeId () : String {
         return (nextEntityId++).toString()
     }
     
-    fun makeDate (type: GenDateType) : Date {
+    fun makeDate (type: DateGen) : Date {
         val cal = Calendar.getInstance()
     
         when (type) {
-            GenDateType.FUTURE -> cal.set(Calendar.DAY_OF_YEAR, 7)
-            GenDateType.PAST -> cal.set(Calendar.DAY_OF_YEAR, -7)
-            GenDateType.DISTANT_FUTURE-> cal.set(Calendar.DAY_OF_YEAR, 100)
-            GenDateType.DISTANT_PAST-> cal.set(Calendar.DAY_OF_YEAR, -100)
+            DateGen.FUTURE -> cal.set(Calendar.DAY_OF_YEAR, 7)
+            DateGen.PAST -> cal.set(Calendar.DAY_OF_YEAR, -7)
+            DateGen.DISTANT_FUTURE-> cal.set(Calendar.DAY_OF_YEAR, 100)
+            DateGen.DISTANT_PAST-> cal.set(Calendar.DAY_OF_YEAR, -100)
         }
         
         return cal.time
     }
     
-    fun makeUser (type: GenUserType) : UserEntity {
+    fun makeUser (type: UserGen) : UserEntity {
         return UserEntity(
-                if (type === GenUserType.CURRENT) EntityGenerator.currentUserId else makeId(),
-                makeDate(GenDateType.PAST),
-                makeDate(GenDateType.PAST),
-                "gb",
-                "07880123456",
-                if (type !== GenUserType.UNVERIFIED) makeDate(GenDateType.NOW) else null,
-                if (type !== GenUserType.UNVERIFIED) "abcdef-123456" else null
+            if (type === UserGen.CURRENT) currentUserId else makeId(),
+            makeDate(DateGen.PAST),
+            makeDate(DateGen.PAST),
+            "gb",
+            "07880123456",
+            if (type !== UserGen.UNVERIFIED) makeDate(DateGen.NOW) else null,
+            if (type !== UserGen.UNVERIFIED) "abcdef-123456" else null
         )
     }
     
     fun makeUserAuth () : UserAuthEntity {
-        return UserAuthEntity(makeUser(), "some-really-long-jsonwebtoken")
-    }
-    
-    fun makeOrganisation () : OrganisationEntity {
-        val nameLetter = 65 + ((EntityGenerator.nextEntityId) % 24)
-        return OrganisationEntity(
-                makeId(),
-                makeDate(GenDateType.PAST),
-                makeDate(GenDateType.PAST),
-                "Organisation $nameLetter",
-                "Maecenas faucibus mollis interdum. Etiam porta sem malesuada magna mollis euismod.",
-                listOf(
-                        makeMember(MemberRole.COORDINATOR, GenUserType.CURRENT),
-                        makeMember(MemberRole.DONOR, GenUserType.CURRENT),
-                        makeMember(MemberRole.SUBSCRIBER, GenUserType.VERIFIED),
-                        makeMember(MemberRole.SUBSCRIBER, GenUserType.VERIFIED)
-                )
+        return UserAuthEntity(
+            makeUser(UserGen.CURRENT),
+            "some-really-long-jsonwebtoken"
         )
     }
     
-    fun makeMember (role: MemberRole, type: GenUserType) : MemberEntity {
+    fun makeOrganisation () : OrganisationEntity {
+        val nameLetter = (65 + ((nextEntityId - 1) % 24)).toChar()
+        return OrganisationEntity(
+            makeId(),
+            makeDate(DateGen.PAST),
+            makeDate(DateGen.PAST),
+            "Organisation $nameLetter",
+            "Maecenas faucibus mollis interdum. Etiam porta sem malesuada magna mollis euismod.",
+            listOf(
+                makeMember(MemberRole.COORDINATOR, UserGen.CURRENT),
+                makeMember(MemberRole.DONOR, UserGen.CURRENT),
+                makeMember(MemberRole.SUBSCRIBER, UserGen.VERIFIED),
+                makeMember(MemberRole.SUBSCRIBER, UserGen.VERIFIED)
+            )
+        )
+    }
+    
+    fun makeMember (role: MemberRole, type: UserGen) : MemberEntity {
         return MemberEntity(
-                makeId(),
-                makeDate(GenDateType.PAST),
-                makeDate(GenDateType.PAST),
-                role,
-                if (type === GenUserType.CURRENT) EntityGenerator.currentUserId else makeId(),
-                if (type !== GenUserType.UNVERIFIED) makeDate(GenDateType.PAST) else null,
-                null
+            makeId(),
+            makeDate(DateGen.PAST),
+            makeDate(DateGen.PAST),
+            role,
+            if (type === UserGen.CURRENT) EntityGenerator.currentUserId else makeId(),
+            if (type !== UserGen.UNVERIFIED) makeDate(DateGen.PAST) else null,
+            null
+        )
+    }
+    
+    fun makeMessage (organisationId: String) : MessageEntity {
+        return MessageEntity(
+            id = makeId(),
+            createdAt = makeDate(DateGen.PAST),
+            updatedAt = makeDate(DateGen.PAST),
+            content = "Hello, World!",
+            organisationId = organisationId,
+            authorId = currentUserId,
+            attempts = listOf()
         )
     }
 }
