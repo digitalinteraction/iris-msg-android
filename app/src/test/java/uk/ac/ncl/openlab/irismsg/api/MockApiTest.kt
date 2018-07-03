@@ -47,4 +47,46 @@ class MockApiTest {
         val res = api.updateFcm("new-fcm-token").execute().body()
         assertTrue(res?.success ?: false)
     }
+    
+    
+    @Test fun listOrganisations_isSuccessful () {
+        val res = api.listOrganisations().execute().body()
+        assertTrue(res?.success ?: false)
+    }
+    @Test fun listOrganisations_isList () {
+        val res = api.listOrganisations().execute().body()
+        assertEquals(5, res?.data?.size ?: 0)
+    }
+    
+    
+    @Test fun showOrganisation_isSuccessful () {
+        val res = api.showOrganisation("1").execute().body()
+        assertTrue(res?.success ?: false)
+    }
+    @Test fun showOrganisation_hasData () {
+        val res = api.showOrganisation("1").execute().body()
+        assertNotNull(res?.data ?: null)
+    }
+    
+    
+    @Test fun createOrganisation_isSuccessful () {
+        val res = api.createOrganisation("Test name", "Test info").execute().body()
+        assertTrue(res?.success ?: false)
+    }
+    @Test fun createOrganisation_hasData () {
+        val res = api.createOrganisation("Test name", "Test info").execute().body()
+        assertNotNull(res?.data ?: null)
+    }
+    @Test fun createOrganisation_setsFields () {
+        val res = api.createOrganisation("Test name", "Test info").execute().body()
+        assertNotNull(res?.data ?: null)
+        assertEquals(res?.data?.name, "Test name")
+        assertEquals(res?.data?.info, "Test info")
+    }
+    
+    
+    @Test fun destroyOrganisation_isSuccessful () {
+        val res = api.destroyOrganisation("1").execute().body()
+        assertTrue(res?.success ?: false)
+    }
 }

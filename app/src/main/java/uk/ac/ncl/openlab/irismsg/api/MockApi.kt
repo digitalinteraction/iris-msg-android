@@ -29,16 +29,27 @@ class MockApi : ApiInterface {
     
     
     override fun listOrganisations(): ApiCall<List<OrganisationEntity>> {
-        TODO("not implemented")
+        return Calls.response(ApiResponse.success(listOf(
+            generator.makeOrganisation(),
+            generator.makeOrganisation(),
+            generator.makeOrganisation(),
+            generator.makeOrganisation(),
+            generator.makeOrganisation()
+        )))
     }
     override fun showOrganisation(id: String): ApiCall<OrganisationEntity> {
-        TODO("not implemented")
+        return Calls.response(ApiResponse.success(
+            generator.makeOrganisation()
+        ))
     }
     override fun createOrganisation(name: String, info: String): ApiCall<OrganisationEntity> {
-        TODO("not implemented")
+        val org = generator.makeOrganisation()
+        org.name = name
+        org.info = info
+        return Calls.response(ApiResponse.success(org))
     }
     override fun destroyOrganisation(id: String): ApiCall<Nothing> {
-        TODO("not implemented")
+        return Calls.response(ApiResponse.success())
     }
     
     
@@ -52,6 +63,8 @@ class MockApi : ApiInterface {
     override fun acceptMember(memberId: String): ApiCall<UserAuthEntity> {
         TODO("not implemented")
     }
+    
+    
     override fun createMessage(body: String, organisationId: String): ApiCall<MessageEntity> {
         TODO("not implemented")
     }
