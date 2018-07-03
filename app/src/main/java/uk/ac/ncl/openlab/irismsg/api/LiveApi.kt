@@ -7,7 +7,7 @@ class LiveApi : ApiInterface {
         TODO("not implemented")
     }
     
-    override fun requestLogin(phoneNumber: String, countryCode: String): ApiCall<Void> {
+    override fun requestLogin(phoneNumber: String, countryCode: String): ApiCall<Nothing> {
         TODO("not implemented")
     }
     
@@ -15,7 +15,7 @@ class LiveApi : ApiInterface {
         TODO("not implemented")
     }
     
-    override fun updateFcm(fcmToken: String): ApiCall<Void> {
+    override fun updateFcm(fcmToken: String): ApiCall<Nothing> {
         TODO("not implemented")
     }
     
@@ -31,7 +31,7 @@ class LiveApi : ApiInterface {
         TODO("not implemented")
     }
     
-    override fun destroyOrganisation(id: String): ApiCall<Void> {
+    override fun destroyOrganisation(id: String): ApiCall<Nothing> {
         TODO("not implemented")
     }
     
@@ -39,7 +39,7 @@ class LiveApi : ApiInterface {
         TODO("not implemented")
     }
     
-    override fun destroyMember(memberId: String, organisationId: String): ApiCall<Void> {
+    override fun destroyMember(memberId: String, organisationId: String): ApiCall<Nothing> {
         TODO("not implemented")
     }
     
@@ -55,7 +55,7 @@ class LiveApi : ApiInterface {
         TODO("not implemented")
     }
     
-    override fun updateMessageAttempts(updates: List<MessageAttemptUpdate>): ApiCall<Void> {
+    override fun updateMessageAttempts(updates: List<MessageAttemptUpdate>): ApiCall<Nothing> {
         TODO("not implemented")
     }
     

@@ -5,11 +5,11 @@ enum class ApiMode {
     MOCK
 }
 
-val currentApiMode = ApiMode.MOCK
-
 class ApiService {
     
     companion object {
+        val currentApiMode = ApiMode.MOCK
+        
         fun apiMode(): ApiMode {
             return currentApiMode // TODO: Properly parameterise ...
         }
