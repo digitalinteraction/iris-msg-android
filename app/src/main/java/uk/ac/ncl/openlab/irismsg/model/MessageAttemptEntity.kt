@@ -10,6 +10,6 @@ data class MessageAttemptEntity(
         @Json(name = "updatedAt") override val updatedAt: Date,
         @Json(name = "donor") val donorId: String?,
         @Json(name = "recipient") val recipientId: String,
-        @Json(name = "state") val state: MessageAttemptState,
-        @Json(name = "previous") val previousId: String?
+        @Json(name = "state") val state: MessageAttemptState = MessageAttemptState.PENDING,
+        @Json(name = "previous") val previousId: String? = null
 ) : ApiEntity

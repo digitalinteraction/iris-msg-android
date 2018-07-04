@@ -4,6 +4,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.Assert.*
 import uk.ac.ncl.openlab.irismsg.MemberRole
+import uk.ac.ncl.openlab.irismsg.MessageAttemptState
 import uk.ac.ncl.openlab.irismsg.model.ApiEntity
 
 class EntityGeneratorTest {
@@ -14,7 +15,7 @@ class EntityGeneratorTest {
         generator = EntityGenerator()
     }
     
-    fun <T : ApiEntity> testEntity (entity: T) {
+    private fun <T : ApiEntity> assertEntity (entity: T) {
         assertNotNull(entity.id)
         assertNotNull(entity.createdAt)
         assertNotNull(entity.updatedAt)
@@ -31,7 +32,7 @@ class EntityGeneratorTest {
     
     
     @Test fun makeUser_isAnEntity() {
-        testEntity(generator.makeUser(UserGen.CURRENT))
+        assertEntity(generator.makeUser(UserGen.CURRENT))
     }
     @Test fun makeUser_createsACurrentUser () {
         val user = generator.makeUser(UserGen.CURRENT)
@@ -58,7 +59,7 @@ class EntityGeneratorTest {
     
     
     @Test fun makeOrganisation_isAnEntity () {
-        testEntity(generator.makeOrganisation())
+        assertEntity(generator.makeOrganisation())
     }
     @Test fun makeOrganisation_hasInfo () {
         val org = generator.makeOrganisation()
@@ -86,7 +87,7 @@ class EntityGeneratorTest {
     
     
     @Test fun makeMember_isAnEntity () {
-        testEntity(generator.makeMember(MemberRole.SUBSCRIBER, UserGen.CURRENT))
+        assertEntity(generator.makeMember(MemberRole.SUBSCRIBER, UserGen.CURRENT))
     }
     @Test fun makeMember_setsRole () {
         val member = generator.makeMember(MemberRole.SUBSCRIBER, UserGen.CURRENT)
@@ -107,12 +108,22 @@ class EntityGeneratorTest {
     
     @Test fun makeMessage_isAnEntity () {
         val message = generator.makeMessage("1")
-        testEntity(message)
+        assertEntity(message)
     }
-    @Test fun makeMessage_isInfo () {
+    @Test fun makeMessage_hasInfo () {
         val message = generator.makeMessage("1")
         assertEquals("Hello, World!", message.content)
         assertEquals("1", message.organisationId)
         assertEquals(EntityGenerator.currentUserId, message.authorId)
+    }
+    
+    
+    @Test fun makePendingMessage_isAnEntity () {
+        val message = generator.makePendingMessage("1", "Hey!")
+        assertEntity(message)
+    }
+    @Test fun makePendingMessage_hasAttempts () {
+        val message = generator.makePendingMessage("1", "Hey!")
+        assertEquals(5, message.attempts.size)
     }
 }

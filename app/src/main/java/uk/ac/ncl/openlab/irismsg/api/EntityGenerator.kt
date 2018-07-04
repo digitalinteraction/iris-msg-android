@@ -1,6 +1,7 @@
 package uk.ac.ncl.openlab.irismsg.api
 
 import uk.ac.ncl.openlab.irismsg.MemberRole
+import uk.ac.ncl.openlab.irismsg.MessageAttemptState
 import uk.ac.ncl.openlab.irismsg.model.*
 import java.util.*
 
@@ -79,13 +80,13 @@ class EntityGenerator {
     
     fun makeMember (role: MemberRole, type: UserGen) : MemberEntity {
         return MemberEntity(
-            makeId(),
-            makeDate(DateGen.PAST),
-            makeDate(DateGen.PAST),
-            role,
-            if (type === UserGen.CURRENT) EntityGenerator.currentUserId else makeId(),
-            if (type !== UserGen.UNVERIFIED) makeDate(DateGen.PAST) else null,
-            null
+            id = makeId(),
+            createdAt = makeDate(DateGen.PAST),
+            updatedAt = makeDate(DateGen.PAST),
+            role = role,
+            userId = if (type === UserGen.CURRENT) EntityGenerator.currentUserId else makeId(),
+            confirmedOn = if (type !== UserGen.UNVERIFIED) makeDate(DateGen.PAST) else null,
+            deletedOn = null
         )
     }
     
@@ -98,6 +99,34 @@ class EntityGenerator {
             organisationId = organisationId,
             authorId = currentUserId,
             attempts = listOf()
+        )
+    }
+    
+    fun makePendingMessage (organisationId: String, content: String) : PendingMessageEntity {
+        return PendingMessageEntity(
+            id = makeId(),
+            createdAt = makeDate(DateGen.PAST),
+            updatedAt = makeDate(DateGen.PAST),
+            content = "Hello, World!",
+            organisationId = organisationId,
+            authorId = currentUserId,
+            attempts = listOf(
+                makePendingMessageAttempt(),
+                makePendingMessageAttempt(),
+                makePendingMessageAttempt(),
+                makePendingMessageAttempt(),
+                makePendingMessageAttempt()
+            )
+        )
+    }
+    
+    fun makePendingMessageAttempt () : PendingMessageAttemptEntity {
+        return PendingMessageAttemptEntity(
+            id = makeId(),
+            createdAt = makeDate(DateGen.PAST),
+            updatedAt = makeDate(DateGen.PAST),
+            recipientId = makeId(),
+            phoneNumber = "+447880123456"
         )
     }
 }

@@ -1,5 +1,6 @@
 package uk.ac.ncl.openlab.irismsg.api
 
+import uk.ac.ncl.openlab.irismsg.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.*
 
 class LiveApi : ApiInterface {
@@ -35,7 +36,9 @@ class LiveApi : ApiInterface {
         TODO("not implemented")
     }
     
-    override fun createMember(organisationId: String, phoneNumber: String, countryCode: String): ApiCall<MemberEntity> {
+    override fun createMember(
+        organisationId: String, role : MemberRole, phoneNumber: String, countryCode: String
+    ): ApiCall<MemberEntity> {
         TODO("not implemented")
     }
     
@@ -51,7 +54,7 @@ class LiveApi : ApiInterface {
         TODO("not implemented")
     }
     
-    override fun listMessageAttempts(): ApiCall<List<MessageAttemptEntity>> {
+    override fun listPendingMessages() : ApiCall<List<PendingMessageEntity>> {
         TODO("not implemented")
     }
     

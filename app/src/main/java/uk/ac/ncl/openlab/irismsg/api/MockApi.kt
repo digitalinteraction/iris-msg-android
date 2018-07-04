@@ -1,21 +1,24 @@
 package uk.ac.ncl.openlab.irismsg.api
 
 import retrofit2.mock.Calls
+import uk.ac.ncl.openlab.irismsg.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.*
 
 class MockApi : ApiInterface {
     
     private val generator = EntityGenerator()
     
+    private fun <T> success (data: T? = null) : ApiCall<T> {
+        return Calls.response(ApiResponse.success(data))
+    }
+    
     override fun getSelf(): ApiCall<UserEntity> {
-        return Calls.response(
-            ApiResponse.success(generator.makeUser(UserGen.CURRENT))
+        return success(
+            generator.makeUser(UserGen.CURRENT)
         )
     }
     override fun requestLogin(phoneNumber: String, countryCode: String): ApiCall<Nothing> {
-        return Calls.response(ApiResponse(
-            phoneNumber != "fail"
-        ))
+        return Calls.response(ApiResponse(phoneNumber != "fail"))
     }
     override fun checkLogin(code: Int): ApiCall<UserAuthEntity> {
         return Calls.response(
@@ -29,50 +32,55 @@ class MockApi : ApiInterface {
     
     
     override fun listOrganisations(): ApiCall<List<OrganisationEntity>> {
-        return Calls.response(ApiResponse.success(listOf(
+        return success(listOf(
             generator.makeOrganisation(),
             generator.makeOrganisation(),
             generator.makeOrganisation(),
             generator.makeOrganisation(),
-            generator.makeOrganisation()
-        )))
-    }
-    override fun showOrganisation(id: String): ApiCall<OrganisationEntity> {
-        return Calls.response(ApiResponse.success(
             generator.makeOrganisation()
         ))
+    }
+    override fun showOrganisation(id: String): ApiCall<OrganisationEntity> {
+        return success(
+            generator.makeOrganisation()
+        )
     }
     override fun createOrganisation(name: String, info: String): ApiCall<OrganisationEntity> {
         val org = generator.makeOrganisation()
         org.name = name
         org.info = info
-        return Calls.response(ApiResponse.success(org))
+        return success(org)
     }
     override fun destroyOrganisation(id: String): ApiCall<Nothing> {
-        return Calls.response(ApiResponse.success())
+        return success()
     }
     
     
-    override fun createMember(organisationId: String, phoneNumber: String, countryCode: String)
-            : ApiCall<MemberEntity> {
-        TODO("not implemented")
+    override fun createMember(
+        organisationId: String, role: MemberRole, phoneNumber: String, countryCode: String
+    ) : ApiCall<MemberEntity> {
+        return success(generator.makeMember(role, UserGen.VERIFIED))
     }
     override fun destroyMember(memberId: String, organisationId: String): ApiCall<Nothing> {
-        TODO("not implemented")
+        return success()
     }
     override fun acceptMember(memberId: String): ApiCall<UserAuthEntity> {
-        TODO("not implemented")
+        return success(generator.makeUserAuth())
     }
     
     
     override fun createMessage(body: String, organisationId: String): ApiCall<MessageEntity> {
-        TODO("not implemented")
+        return success(generator.makeMessage(organisationId))
     }
-    override fun listMessageAttempts(): ApiCall<List<MessageAttemptEntity>> {
-        TODO("not implemented")
+    override fun listPendingMessages() : ApiCall<List<PendingMessageEntity>> {
+        return success(listOf(
+            generator.makePendingMessage("1", "Hello there"),
+            generator.makePendingMessage("2", "General Kenobi"),
+            generator.makePendingMessage("2", "You are a bold one")
+        ))
     }
     override fun updateMessageAttempts(updates: List<MessageAttemptUpdate>): ApiCall<Nothing> {
-        TODO("not implemented")
+        return success()
     }
     
 }

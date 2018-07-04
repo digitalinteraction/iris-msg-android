@@ -1,6 +1,7 @@
 package uk.ac.ncl.openlab.irismsg.api
 
 import retrofit2.Call
+import uk.ac.ncl.openlab.irismsg.MemberRole
 import uk.ac.ncl.openlab.irismsg.MessageAttemptState
 import uk.ac.ncl.openlab.irismsg.model.*
 
@@ -26,13 +27,13 @@ interface ApiInterface {
     fun destroyOrganisation (id: String) : ApiCall<Nothing>
     
     // Members Endpoints
-    fun createMember (organisationId: String, phoneNumber: String, countryCode: String)
+    fun createMember (organisationId: String, role: MemberRole, phoneNumber: String, countryCode: String)
             : ApiCall<MemberEntity>
     fun destroyMember (memberId: String, organisationId: String) : ApiCall<Nothing>
     fun acceptMember (memberId: String) : ApiCall<UserAuthEntity>
     
     // Messages Endpoints
     fun createMessage (body: String, organisationId: String) : ApiCall<MessageEntity>
-    fun listMessageAttempts () : ApiCall<List<MessageAttemptEntity>>
+    fun listPendingMessages () : ApiCall<List<PendingMessageEntity>>
     fun updateMessageAttempts (updates: List<MessageAttemptUpdate>) : ApiCall<Nothing>
 }
