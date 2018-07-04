@@ -174,7 +174,7 @@ class MockApiTest {
     }
     
     
-    // MokcApi#updateMessageAttempts
+    // MockApi#updateMessageAttempts
     
     @Test fun updateMessageAttempts_isSuccessful () {
         assertSuccess(api.updateMessageAttempts(listOf()))

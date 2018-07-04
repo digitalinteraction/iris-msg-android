@@ -6,30 +6,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
-
-import uk.ac.ncl.openlab.irismsg.OrganisationFragment.OnListFragmentInteractionListener
-import uk.ac.ncl.openlab.irismsg.dummy.DummyContent.DummyItem
-
 import kotlinx.android.synthetic.main.fragment_organisation.view.*
+import uk.ac.ncl.openlab.irismsg.OrganisationListFragment.OnListFragmentInteractionListener
+
+import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 
 /**
  * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
  * specified [OnListFragmentInteractionListener].
- * TODO: Replace the implementation with code for your data type.
  */
-class MyOrganisationRecyclerViewAdapter(
-        private val mValues: List<DummyItem>,
-        private val mListener: OnListFragmentInteractionListener?)
-    : RecyclerView.Adapter<MyOrganisationRecyclerViewAdapter.ViewHolder>() {
+class OrganisationRecyclerViewAdapter(
+        private val mValues: List<OrganisationEntity>,
+        private val mListener: OnListFragmentInteractionListener?
+) : RecyclerView.Adapter<OrganisationRecyclerViewAdapter.ViewHolder>() {
     
     private val mOnClickListener: View.OnClickListener
     
     init {
         mOnClickListener = View.OnClickListener { v ->
-            val item = v.tag as DummyItem
-            // Notify the active callbacks interface (the activity, if the fragment is attached to
-            // one) that an item has been selected.
-            mListener?.onListFragmentInteraction(item)
+            mListener?.onListFragmentInteraction(v.tag as OrganisationEntity)
         }
     }
     
@@ -40,12 +35,12 @@ class MyOrganisationRecyclerViewAdapter(
     }
     
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = mValues[position]
-        holder.mIdView.text = item.id
-        holder.mContentView.text = item.content
+        val org = mValues[position]
+        holder.mIdView.text = position.toString()
+        holder.mContentView.text = org.name
         
         with(holder.mView) {
-            tag = item
+            tag = org
             setOnClickListener(mOnClickListener)
         }
     }

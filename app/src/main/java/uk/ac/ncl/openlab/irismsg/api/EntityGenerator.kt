@@ -20,7 +20,7 @@ enum class UserGen {
 class EntityGenerator {
     
     companion object {
-        val currentUserId = "current-user-id"
+        private const val currentUserId = "current-user-id"
     }
     
     var nextEntityId = 1
@@ -37,6 +37,7 @@ class EntityGenerator {
             DateGen.PAST -> cal.set(Calendar.DAY_OF_YEAR, -7)
             DateGen.DISTANT_FUTURE-> cal.set(Calendar.DAY_OF_YEAR, 100)
             DateGen.DISTANT_PAST-> cal.set(Calendar.DAY_OF_YEAR, -100)
+            else -> {}
         }
         
         return cal.time
@@ -107,7 +108,7 @@ class EntityGenerator {
             id = makeId(),
             createdAt = makeDate(DateGen.PAST),
             updatedAt = makeDate(DateGen.PAST),
-            content = "Hello, World!",
+            content = content,
             organisationId = organisationId,
             authorId = currentUserId,
             attempts = listOf(

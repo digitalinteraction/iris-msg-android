@@ -1,35 +1,49 @@
 package uk.ac.ncl.openlab.irismsg
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.ViewModel
 import android.os.Bundle
-import android.support.design.widget.TabLayout
-import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import uk.ac.ncl.openlab.irismsg.dummy.DummyContent
+import kotlinx.android.synthetic.main.activity_organisation_list.*
+import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 
-class OrganisationListActivity : AppCompatActivity(), OrganisationFragment.OnListFragmentInteractionListener {
+class OrganisationListActivity : AppCompatActivity(),
+        OrganisationListFragment.OnListFragmentInteractionListener {
     
-    private lateinit var pagerAdapter: OrganisationsPagerAdapter
+    private var organisations = listOf<OrganisationEntity>()
+    private lateinit var pagerAdapter: OrganisationListPagerAdapter
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-    
-        pagerAdapter = OrganisationsPagerAdapter(supportFragmentManager, applicationContext)
         
+        // Create lazies
+        pagerAdapter = OrganisationListPagerAdapter(
+            supportFragmentManager,
+            applicationContext
+        )
+        
+        // Setup view
         setContentView(R.layout.activity_organisation_list)
+        setSupportActionBar(organisation_list_toolbar)
         
-        setSupportActionBar(findViewById(R.id.organisation_list_toolbar))
-        
-        val tabsPager = findViewById<ViewPager>(R.id.tabs_pager)
-        tabsPager.adapter = pagerAdapter
-    
-        val tabsControl = findViewById<TabLayout>(R.id.tabs_control)
-        tabsControl.setupWithViewPager(tabsPager)
+        // Setup tabs
+        tabs_pager.adapter = pagerAdapter
+        tabs_layout.setupWithViewPager(tabs_pager)
     }
     
+    override fun onListFragmentInteraction(org: OrganisationEntity) {
+        Log.v("Org", org.name)
+    }
+}
+
+class OrganisationListViewModel () : ViewModel() {
+    private lateinit var organisations: LiveData<List<OrganisationEntity>>
+    lateinit var userId: String
     
-    override fun onListFragmentInteraction(item: DummyContent.DummyItem?) {
-        Log.v("test", item.toString())
+    fun init (userId: String) {
+        this.userId = userId
     }
     
+    fun getOrganisations () = organisations
 }

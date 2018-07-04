@@ -21,3 +21,5 @@ enum class MessageAttemptState {
 enum class FcmType {
     NEW_DONATIONS
 }
+
+class ApiException(val messages: List<String>): Exception(messages.joinToString())
