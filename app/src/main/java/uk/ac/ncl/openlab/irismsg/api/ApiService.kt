@@ -7,6 +7,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
+import uk.ac.ncl.openlab.irismsg.repo.OrganisationRepository
 import javax.inject.*
 
 enum class ApiMode {
@@ -44,39 +45,13 @@ enum class ApiMode {
 //    fun fetchOrganisations () = handleCall(client.listOrganisations())
 //}
 
-private typealias OrgList = List<OrganisationEntity>
-
-@Singleton
-class OrganisationRepository {
-    
-    private val service: ApiInterface = MockApi()
-    
-    // TODO: Error handling
-    fun <T> handleEnqueue (call: ApiCall<T>) : LiveData<T> {
-        val target = MutableLiveData<T>()
-        
-        call.enqueue(object : Callback<ApiResponse<T>> {
-            override fun onResponse(call : Call<ApiResponse<T>>?, response : Response<ApiResponse<T>>?) {
-                response?.body()?.apply {
-                    if (data != null) target.value = data
-                }
-            }
-            override fun onFailure(call : Call<ApiResponse<T>>?, t : Throwable?) {}
-        })
-        return target
-    }
-    
-    fun getOrganisations (userId: String) : LiveData<OrgList> {
-        return handleEnqueue(service.listOrganisations())
-    }
-}
-
-class OrganisationListViewModel @Inject constructor(private val orgRepo: OrganisationRepository) : ViewModel() {
+class OrganisationListViewModel
+@Inject constructor(val organisationRepository : OrganisationRepository) : ViewModel() {
     
     lateinit var organisations: LiveData<List<OrganisationEntity>>
         private set
     
     fun init (userId: String) {
-        organisations = orgRepo.getOrganisations(userId)
+        organisations = organisationRepository.getOrganisations(userId)
     }
 }

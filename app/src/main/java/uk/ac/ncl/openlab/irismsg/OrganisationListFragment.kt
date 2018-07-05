@@ -1,6 +1,7 @@
 package uk.ac.ncl.openlab.irismsg
 
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
@@ -12,32 +13,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import uk.ac.ncl.openlab.irismsg.api.OrganisationListViewModel
+import uk.ac.ncl.openlab.irismsg.di.Injectable
 
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
+import uk.ac.ncl.openlab.irismsg.viewmodel.IrisViewModelFactory
+import javax.inject.Inject
 
 /**
  * A fragment representing a list of Items.
  * Activities containing this fragment SHOULD implement the
  * [OrganisationListFragment.OnListFragmentInteractionListener] interface.
  */
-class OrganisationListFragment : Fragment() {
+class OrganisationListFragment : Fragment(), Injectable {
     
     private var listener: OnListFragmentInteractionListener? = null
     private lateinit var role: MemberRole
     private lateinit var viewModel: OrganisationListViewModel
     
-    override fun onActivityCreated(savedInstanceState : Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        
-        viewModel.organisations.observe(this, Observer { orgs ->
-            Log.d("orgs", orgs.toString())
-        })
-    }
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    
+//    override fun onActivityCreated(savedInstanceState : Bundle?) {
+//        super.onActivityCreated(savedInstanceState)
+//
+//        viewModel.organisations.observe(this, Observer { orgs ->
+//            Log.d("orgs", orgs.toString())
+//        })
+//    }
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     
-        viewModel = ViewModelProviders.of(this)
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(OrganisationListViewModel::class.java)
         
         arguments?.let {
