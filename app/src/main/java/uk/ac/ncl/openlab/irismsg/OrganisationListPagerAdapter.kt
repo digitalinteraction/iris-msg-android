@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter
 
 private data class TitledFrag <T : Fragment> (val title: String, val frag: T)
 
-class OrganisationListPagerAdapter(fm : FragmentManager, context : Context) : FragmentPagerAdapter(fm) {
+class OrganisationListPagerAdapter(fm : FragmentManager) : FragmentPagerAdapter(fm) {
     
     private val pages = listOf(
         TitledFrag("Organisations", OrganisationListFragment.newInstance(MemberRole.COORDINATOR)),

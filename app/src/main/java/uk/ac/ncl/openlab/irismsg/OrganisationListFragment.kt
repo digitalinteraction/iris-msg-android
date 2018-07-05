@@ -1,14 +1,17 @@
 package uk.ac.ncl.openlab.irismsg
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import uk.ac.ncl.openlab.irismsg.api.OrganisationListViewModel
 
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 
@@ -23,6 +26,14 @@ class OrganisationListFragment : Fragment() {
     private lateinit var role: MemberRole
     private lateinit var viewModel: OrganisationListViewModel
     
+    override fun onActivityCreated(savedInstanceState : Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        
+        viewModel.organisations.observe(this, Observer { orgs ->
+            Log.d("orgs", orgs.toString())
+        })
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     
@@ -31,7 +42,8 @@ class OrganisationListFragment : Fragment() {
         
         arguments?.let {
             role = it.get(ARG_ROLE) as MemberRole
-            viewModel.init(it.getString(ARG_USER))
+            // viewModel.init(it.getString(ARG_USER))
+            viewModel.init("...")
         }
     }
     
@@ -79,7 +91,7 @@ class OrganisationListFragment : Fragment() {
      */
     interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        fun onListFragmentInteraction(item: OrganisationEntity)
+        fun onListFragmentInteraction(organisation: OrganisationEntity)
     }
     
     companion object {
@@ -88,6 +100,8 @@ class OrganisationListFragment : Fragment() {
         const val ARG_ROLE = "role"
         
         @JvmStatic fun newInstance(role: MemberRole) = OrganisationListFragment()
-                .apply { arguments = Bundle().apply { putSerializable(ARG_ROLE , role) } }
+                .apply { arguments = Bundle().apply {
+                    putSerializable(ARG_ROLE , role)
+                } }
     }
 }

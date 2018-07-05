@@ -3,12 +3,11 @@ package uk.ac.ncl.openlab.irismsg.api
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import io.reactivex.Observable
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import uk.ac.ncl.openlab.irismsg.ApiException
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
+import javax.inject.*
 
 enum class ApiMode {
     LIVE,
@@ -47,12 +46,10 @@ enum class ApiMode {
 
 private typealias OrgList = List<OrganisationEntity>
 
-class OrganisationListRepository (val service: ApiInterface) {
-
-//    fun <T> handleEnqueue (call: ApiCall<T>, target: MutableLiveData<T>) : LiveData<T> {
-//        call.enqueue(enqueueCallback(target))
-//        return target
-//    }
+@Singleton
+class OrganisationRepository {
+    
+    private val service: ApiInterface = MockApi()
     
     // TODO: Error handling
     fun <T> handleEnqueue (call: ApiCall<T>) : LiveData<T> {
@@ -69,7 +66,17 @@ class OrganisationListRepository (val service: ApiInterface) {
         return target
     }
     
-    fun getOrganisations () : LiveData<OrgList> {
+    fun getOrganisations (userId: String) : LiveData<OrgList> {
         return handleEnqueue(service.listOrganisations())
+    }
+}
+
+class OrganisationListViewModel @Inject constructor(private val orgRepo: OrganisationRepository) : ViewModel() {
+    
+    lateinit var organisations: LiveData<List<OrganisationEntity>>
+        private set
+    
+    fun init (userId: String) {
+        organisations = orgRepo.getOrganisations(userId)
     }
 }
