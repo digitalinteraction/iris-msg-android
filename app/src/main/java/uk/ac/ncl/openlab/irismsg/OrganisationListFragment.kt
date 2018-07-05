@@ -41,8 +41,8 @@ class OrganisationListFragment : Fragment(), Injectable {
 //        })
 //    }
     
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
     
         viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(OrganisationListViewModel::class.java)
@@ -52,6 +52,10 @@ class OrganisationListFragment : Fragment(), Injectable {
             // viewModel.init(it.getString(ARG_USER))
             viewModel.init("...")
         }
+    
+        viewModel.organisations.observe(this, Observer { orgs ->
+            // ...
+        })
     }
     
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
