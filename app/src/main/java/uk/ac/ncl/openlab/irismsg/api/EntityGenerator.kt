@@ -17,6 +17,10 @@ enum class UserGen {
     CURRENT, VERIFIED, UNVERIFIED
 }
 
+enum class OrganisationGen {
+    COORDINATOR, DONOR
+}
+
 class EntityGenerator {
     
     companion object {
@@ -62,7 +66,7 @@ class EntityGenerator {
         )
     }
     
-    fun makeOrganisation () : OrganisationEntity {
+    fun makeOrganisation (type: OrganisationGen) : OrganisationEntity {
         val nameLetter = (65 + ((nextEntityId - 1) % 24)).toChar()
         return OrganisationEntity(
             makeId(),
@@ -70,8 +74,10 @@ class EntityGenerator {
             makeDate(DateGen.PAST),
             "Organisation $nameLetter",
             "Maecenas faucibus mollis interdum. Etiam porta sem malesuada magna mollis euismod.",
-            listOf(
-                makeMember(MemberRole.COORDINATOR, UserGen.CURRENT),
+            listOfNotNull(
+                if (type == OrganisationGen.COORDINATOR) {
+                    makeMember(MemberRole.COORDINATOR, UserGen.CURRENT)
+                } else null,
                 makeMember(MemberRole.DONOR, UserGen.CURRENT),
                 makeMember(MemberRole.SUBSCRIBER, UserGen.VERIFIED),
                 makeMember(MemberRole.SUBSCRIBER, UserGen.VERIFIED)

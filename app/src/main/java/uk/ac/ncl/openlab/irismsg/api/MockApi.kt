@@ -33,20 +33,20 @@ class MockApi : ApiInterface {
     
     override fun listOrganisations(): ApiCall<List<OrganisationEntity>> {
         return success(listOf(
-            generator.makeOrganisation(),
-            generator.makeOrganisation(),
-            generator.makeOrganisation(),
-            generator.makeOrganisation(),
-            generator.makeOrganisation()
+            generator.makeOrganisation(OrganisationGen.COORDINATOR),
+            generator.makeOrganisation(OrganisationGen.COORDINATOR),
+            generator.makeOrganisation(OrganisationGen.DONOR),
+            generator.makeOrganisation(OrganisationGen.DONOR),
+            generator.makeOrganisation(OrganisationGen.DONOR)
         ))
     }
     override fun showOrganisation(id: String): ApiCall<OrganisationEntity> {
         return success(
-            generator.makeOrganisation()
+            generator.makeOrganisation(OrganisationGen.COORDINATOR)
         )
     }
     override fun createOrganisation(name: String, info: String): ApiCall<OrganisationEntity> {
-        val org = generator.makeOrganisation()
+        val org = generator.makeOrganisation(OrganisationGen.COORDINATOR)
         org.name = name
         org.info = info
         return success(org)

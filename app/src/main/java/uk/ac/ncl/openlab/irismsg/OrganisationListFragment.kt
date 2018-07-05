@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import uk.ac.ncl.openlab.irismsg.api.JsonWebToken
 import uk.ac.ncl.openlab.irismsg.api.OrganisationListViewModel
 import uk.ac.ncl.openlab.irismsg.di.Injectable
 
@@ -27,34 +28,37 @@ import javax.inject.Inject
 class OrganisationListFragment : Fragment(), Injectable {
     
     private var listener: OnListFragmentInteractionListener? = null
+    private lateinit var adapter: OrganisationRecyclerViewAdapter
     private lateinit var role: MemberRole
     private lateinit var viewModel: OrganisationListViewModel
     
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     
-//    override fun onActivityCreated(savedInstanceState : Bundle?) {
-//        super.onActivityCreated(savedInstanceState)
-//
-//        viewModel.organisations.observe(this, Observer { orgs ->
-//            Log.d("orgs", orgs.toString())
-//        })
-//    }
-    
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
     
         viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(OrganisationListViewModel::class.java)
-        
+
+        viewModel.init()
+
         arguments?.let {
             role = it.get(ARG_ROLE) as MemberRole
-            // viewModel.init(it.getString(ARG_USER))
-            viewModel.init("...")
         }
     
         viewModel.organisations.observe(this, Observer { orgs ->
-            // ...
+            val userId = JsonWebToken.load(context!!)?.getUserId()
+            if (userId != null && orgs != null) {
+                adapter.organisations = orgs.filter {
+                    when (role) {
+                        MemberRole.DONOR -> it.members.all {
+                            it.role != MemberRole.COORDINATOR || it.userId != userId }
+                        else -> it.members.any {
+                            it.role == MemberRole.COORDINATOR && it.userId == userId }
+                    }
+                }
+            }
         })
     }
     
@@ -64,13 +68,13 @@ class OrganisationListFragment : Fragment(), Injectable {
             R.layout.fragment_organisation_list, container,
             false
         )
+
+        adapter = OrganisationRecyclerViewAdapter(listener)
         
         // Set the adapter
         if (view is RecyclerView) {
-            with(view) {
-                layoutManager = LinearLayoutManager(context)
-                adapter = OrganisationRecyclerViewAdapter(listOf(), listener)
-            }
+            view.layoutManager = LinearLayoutManager(context)
+            view.adapter = adapter
         }
         
         return view

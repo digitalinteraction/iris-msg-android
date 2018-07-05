@@ -2,4 +2,5 @@
     <string name="app_name">Iris Msg</string>
     <string name="tab_coordinator">Organisations</string>
     <string name="tab_donor">Donations</string>
+    <string name="title_activity_login">Sign in</string>
 </resources>

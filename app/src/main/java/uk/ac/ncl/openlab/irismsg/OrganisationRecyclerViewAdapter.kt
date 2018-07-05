@@ -1,5 +1,6 @@
 package uk.ac.ncl.openlab.irismsg
 
+import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.TextView
 
 import kotlinx.android.synthetic.main.fragment_organisation.view.*
 import uk.ac.ncl.openlab.irismsg.OrganisationListFragment.OnListFragmentInteractionListener
+import uk.ac.ncl.openlab.irismsg.api.OrganisationListViewModel
 
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 
@@ -16,11 +18,11 @@ import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
  * specified [OnListFragmentInteractionListener].
  */
 class OrganisationRecyclerViewAdapter(
-        private val mValues: List<OrganisationEntity>,
         private val mListener: OnListFragmentInteractionListener?
 ) : RecyclerView.Adapter<OrganisationRecyclerViewAdapter.ViewHolder>() {
     
     private val mOnClickListener: View.OnClickListener
+    var organisations = listOf<OrganisationEntity>()
     
     init {
         mOnClickListener = View.OnClickListener { v ->
@@ -35,17 +37,15 @@ class OrganisationRecyclerViewAdapter(
     }
     
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val org = mValues[position]
-        holder.mIdView.text = position.toString()
-        holder.mContentView.text = org.name
-        
-        with(holder.mView) {
-            tag = org
-            setOnClickListener(mOnClickListener)
+        organisations[position].apply {
+            holder.mIdView.text = position.toString()
+            holder.mContentView.text = this.name
+            holder.mView.tag = this
+            holder.mView.setOnClickListener(mOnClickListener)
         }
     }
     
-    override fun getItemCount(): Int = mValues.size
+    override fun getItemCount(): Int = organisations.size
     
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
         val mIdView: TextView = mView.item_number

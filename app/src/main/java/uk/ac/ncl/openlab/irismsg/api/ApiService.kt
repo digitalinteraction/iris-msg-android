@@ -51,7 +51,8 @@ class OrganisationListViewModel
     lateinit var organisations: LiveData<List<OrganisationEntity>>
         private set
     
-    fun init (userId: String) {
-        organisations = organisationRepository.getOrganisations(userId)
+    fun init () {
+        if (::organisations.isInitialized) return
+        organisations = organisationRepository.getOrganisations()
     }
 }

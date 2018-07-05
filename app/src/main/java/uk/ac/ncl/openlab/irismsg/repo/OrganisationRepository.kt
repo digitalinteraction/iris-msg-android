@@ -33,7 +33,7 @@ class OrganisationRepository @Inject constructor() {
         return target
     }
     
-    fun getOrganisations (userId: String) : LiveData<List<OrganisationEntity>> {
+    fun getOrganisations () : LiveData<List<OrganisationEntity>> {
         return handleEnqueue(service.listOrganisations())
     }
 }
