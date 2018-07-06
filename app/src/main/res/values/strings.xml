@@ -2,5 +2,32 @@
     <string name="app_name">Iris Msg</string>
     <string name="tab_coordinator">Organisations</string>
     <string name="tab_donor">Donations</string>
-    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_login">Getting Started</string>
+    <string name="title_activity_onboard">Welcome to Iris Msg</string>
+
+    <string name="action_even_more">More Info</string>
+    <string name="action_open_lab">About Open Lab</string>
+
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="action_login">Get Started</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_phone_number">Phone Number</string>
+    <string name="prompt_country_code">Country Code</string>
+    <string name="action_login_short">Lets go!</string>
+    <string name="error_invalid_phone_number">This phone number is invalid</string>
+    <string name="error_invalid_country_code">This phone number is invalid</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="login_info">
+        We use your phone number to check who you are.
+        You will receive a 6 digit code to ensure you entered the correct number.
+    </string>
+    <string name="login_terms">
+        By tapping you are agreeing to our
+        <a href="http://irismsg.io/terms">terms of use</a>
+        and
+        <a href="http://irismsg.io/privacy">privacy policy</a>
+    </string>
+
+    <string name="api_unknown_error">An unknown error occured, please try again.</string>
 </resources>

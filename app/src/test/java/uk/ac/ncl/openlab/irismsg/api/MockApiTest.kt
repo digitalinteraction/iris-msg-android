@@ -3,6 +3,7 @@ package uk.ac.ncl.openlab.irismsg.api
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import uk.ac.ncl.openlab.irismsg.common.ApiCall
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 
 class MockApiTest {

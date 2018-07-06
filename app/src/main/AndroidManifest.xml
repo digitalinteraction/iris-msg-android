@@ -24,7 +24,12 @@
         <activity
             android:name=".activity.LoginActivity"
             android:label="@string/title_activity_login"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:parentActivityName=".activity.OnboardActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="uk.ac.ncl.openlab.irismsg.activity.OnboardActivity" />
+        </activity>
         <activity
             android:name=".activity.EmptyMainActivity"
             android:label="@string/app_name"
@@ -35,6 +40,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activity.OnboardActivity"
+            android:label="@string/title_activity_onboard"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.OnboardActivity"
+            android:label="@string/title_activity_onboard"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

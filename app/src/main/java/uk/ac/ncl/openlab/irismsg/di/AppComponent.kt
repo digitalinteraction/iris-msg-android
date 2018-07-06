@@ -12,7 +12,9 @@ import javax.inject.Singleton
     AndroidInjectionModule::class,
     AppModule::class,
     OrganisationListActivityModule::class,
-    EmptyMainActivityModule::class
+    EmptyMainActivityModule::class,
+    OnboardActivityModule::class,
+    LoginActivityModule::class
 ])
 @Suppress("unused")
 interface AppComponent {

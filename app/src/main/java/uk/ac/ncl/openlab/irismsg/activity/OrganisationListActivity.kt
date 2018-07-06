@@ -13,7 +13,6 @@ import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 import javax.inject.Inject
 
-
 class OrganisationListActivity : AppCompatActivity(),
         HasSupportFragmentInjector,
         OrganisationListFragment.OnListFragmentInteractionListener {

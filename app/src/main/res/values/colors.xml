@@ -4,5 +4,13 @@
     <color name="colorPrimary">#1289b2</color>
     <color name="colorPrimaryDark">#073b4c</color>
     <color name="colorAccent">#db5461</color>
+
     <color name="white">#fafaff</color>
+    <color name="black">#0a0a0a</color>
+
+    <color name="link">#3272dc</color>
+    <color name="info">#209cee</color>
+    <color name="success">#23d160</color>
+    <color name="warning">#ffdd57</color>
+    <color name="danger">#ff3860</color>
 </resources>

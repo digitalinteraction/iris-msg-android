@@ -32,28 +32,27 @@ class EmptyMainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         val jwt = JsonWebToken.load(this)
 
         if (jwt == null) {
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+            pushOnboard()
         } else {
             irisService.getSelf().enqueue(object : Callback<ApiResponse<UserEntity>> {
                 override fun onResponse(
                     call : Call<ApiResponse<UserEntity>>?, response : Response<ApiResponse<UserEntity>>?) {
                     UserEntity.current = response?.body()?.data
                     when (UserEntity.current) {
-                        null -> pushLogin()
+                        null -> pushOnboard()
                         else -> pushOrgList()
                     }
                 }
                 override fun onFailure(call : Call<ApiResponse<UserEntity>>?, t : Throwable?) {
                     Toast.makeText(applicationContext, t.toString(), Toast.LENGTH_SHORT).show()
-                    pushLogin()
+                    pushOnboard()
                 }
             })
         }
     }
     
-    fun pushLogin () {
-        startActivity(Intent(this, LoginActivity::class.java))
+    fun pushOnboard () {
+        startActivity(Intent(this, OnboardActivity::class.java))
         finish()
     }
     

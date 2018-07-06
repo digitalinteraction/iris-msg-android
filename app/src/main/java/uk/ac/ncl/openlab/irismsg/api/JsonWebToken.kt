@@ -14,8 +14,8 @@ class JsonWebToken (token: String) : JWT(token) {
         private fun getPrefs (ctx: Context) = ctx.getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)
         
         fun load (ctx: Context) : JsonWebToken? {
-//            val raw = getPrefs(ctx)?.getString(RAW_TOKEN_KEY, null) ?: return null
-            return JsonWebToken(fakedToken)
+            val raw = getPrefs(ctx)?.getString(RAW_TOKEN_KEY, null) ?: return null
+            return JsonWebToken(raw)
         }
         
         fun save (ctx: Context, token: String) {
