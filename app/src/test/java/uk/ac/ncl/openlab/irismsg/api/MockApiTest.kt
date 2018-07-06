@@ -3,29 +3,29 @@ package uk.ac.ncl.openlab.irismsg.api
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import uk.ac.ncl.openlab.irismsg.MemberRole
+import uk.ac.ncl.openlab.irismsg.common.MemberRole
 
 class MockApiTest {
     
-    lateinit var api: ApiInterface
+    lateinit var api: IrisMsgService
     
     @Before fun setUp () {
-        api = MockApi()
+        api = MockIrisMsgService()
     }
     
     fun <T> assertSuccess (call: ApiCall<T>) {
-        var body = call.execute().body()
+        val body = call.execute().body()
         assertTrue(body?.success ?: false)
     }
     
     fun <T> assertFail (call: ApiCall<T>) {
-        var body = call.execute().body()
+        val body = call.execute().body()
         assertFalse(body?.success ?: true)
     }
     
     fun <T> assertData(call: ApiCall<T>) {
-        var body = call.execute().body()
-        assertNotNull(body?.data?: null)
+        val body = call.execute().body()
+        assertNotNull(body?.data)
     }
     
     // MockApi#getSelf

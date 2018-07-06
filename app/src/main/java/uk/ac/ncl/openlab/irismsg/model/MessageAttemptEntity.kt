@@ -1,7 +1,7 @@
 package uk.ac.ncl.openlab.irismsg.model
 
 import com.squareup.moshi.Json
-import uk.ac.ncl.openlab.irismsg.MessageAttemptState
+import uk.ac.ncl.openlab.irismsg.common.MessageAttemptState
 import java.util.*
 
 data class MessageAttemptEntity(

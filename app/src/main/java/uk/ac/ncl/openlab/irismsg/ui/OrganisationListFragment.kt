@@ -1,4 +1,4 @@
-package uk.ac.ncl.openlab.irismsg
+package uk.ac.ncl.openlab.irismsg.ui
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
@@ -8,16 +8,16 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import uk.ac.ncl.openlab.irismsg.common.MemberRole
+import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.api.JsonWebToken
-import uk.ac.ncl.openlab.irismsg.api.OrganisationListViewModel
 import uk.ac.ncl.openlab.irismsg.di.Injectable
 
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
-import uk.ac.ncl.openlab.irismsg.viewmodel.IrisViewModelFactory
+import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationListViewModel
 import javax.inject.Inject
 
 /**
@@ -111,12 +111,12 @@ class OrganisationListFragment : Fragment(), Injectable {
     
     companion object {
         
-        const val ARG_USER = "user"
         const val ARG_ROLE = "role"
         
-        @JvmStatic fun newInstance(role: MemberRole) = OrganisationListFragment()
+        @JvmStatic
+        fun newInstance(role: MemberRole) = OrganisationListFragment()
                 .apply { arguments = Bundle().apply {
-                    putSerializable(ARG_ROLE , role)
+                    putSerializable(ARG_ROLE, role)
                 } }
     }
 }

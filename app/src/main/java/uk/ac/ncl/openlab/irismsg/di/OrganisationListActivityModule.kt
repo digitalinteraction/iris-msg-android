@@ -3,10 +3,10 @@ package uk.ac.ncl.openlab.irismsg.di
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
-import uk.ac.ncl.openlab.irismsg.OrganisationListActivity
+import uk.ac.ncl.openlab.irismsg.activity.OrganisationListActivity
 
-@Suppress("unused")
 @Module
+@Suppress("unused")
 abstract class OrganisationListActivityModule {
     
     @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])

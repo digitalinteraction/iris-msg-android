@@ -1,18 +1,11 @@
 package uk.ac.ncl.openlab.irismsg.api
 
-import retrofit2.Call
-import uk.ac.ncl.openlab.irismsg.MemberRole
-import uk.ac.ncl.openlab.irismsg.MessageAttemptState
+import uk.ac.ncl.openlab.irismsg.common.ApiCall
+import uk.ac.ncl.openlab.irismsg.common.MemberRole
+import uk.ac.ncl.openlab.irismsg.common.MessageAttemptUpdate
 import uk.ac.ncl.openlab.irismsg.model.*
 
-data class MessageAttemptUpdate(
-        val attemptId: String,
-        val newState: MessageAttemptState
-)
-
-typealias ApiCall<T> = Call<ApiResponse<T>>
-
-interface ApiInterface {
+interface IrisMsgService {
     
     // Auth Endpoints
     fun getSelf () : ApiCall<UserEntity>

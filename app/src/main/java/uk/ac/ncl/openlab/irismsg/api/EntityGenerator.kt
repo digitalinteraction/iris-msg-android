@@ -1,7 +1,6 @@
 package uk.ac.ncl.openlab.irismsg.api
 
-import uk.ac.ncl.openlab.irismsg.MemberRole
-import uk.ac.ncl.openlab.irismsg.MessageAttemptState
+import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.*
 import java.util.*
 
@@ -24,7 +23,7 @@ enum class OrganisationGen {
 class EntityGenerator {
     
     companion object {
-        private const val currentUserId = "current-user-id"
+        const val currentUserId = "current-user-id"
     }
     
     var nextEntityId = 1
@@ -49,35 +48,39 @@ class EntityGenerator {
     
     fun makeUser (type: UserGen) : UserEntity {
         return UserEntity(
-            if (type === UserGen.CURRENT) currentUserId else makeId(),
-            makeDate(DateGen.PAST),
-            makeDate(DateGen.PAST),
-            "gb",
-            "07880123456",
-            if (type !== UserGen.UNVERIFIED) makeDate(DateGen.NOW) else null,
-            if (type !== UserGen.UNVERIFIED) "abcdef-123456" else null
+            id = if (type === UserGen.CURRENT) currentUserId else makeId(),
+            createdAt = makeDate(DateGen.PAST),
+            updatedAt = makeDate(DateGen.PAST),
+            countryCode = "gb",
+            phoneNumber = "07880123456",
+            verifiedOn = if (type !== UserGen.UNVERIFIED) makeDate(DateGen.NOW) else null,
+            fcmToken = if (type !== UserGen.UNVERIFIED) "abcdef-123456" else null
         )
     }
     
     fun makeUserAuth () : UserAuthEntity {
         return UserAuthEntity(
-            makeUser(UserGen.CURRENT),
-            "some-really-long-jsonwebtoken"
+            user = makeUser(UserGen.CURRENT),
+            token = "some-really-long-jsonwebtoken"
         )
     }
     
-    fun makeOrganisation (type: OrganisationGen) : OrganisationEntity {
+    fun makeOrganisation (type: OrganisationGen = OrganisationGen.COORDINATOR) : OrganisationEntity {
         val nameLetter = (65 + ((nextEntityId - 1) % 24)).toChar()
+        
+        val owningMember = when (type) {
+            OrganisationGen.COORDINATOR -> UserGen.CURRENT
+            else -> UserGen.VERIFIED
+        }
+        
         return OrganisationEntity(
-            makeId(),
-            makeDate(DateGen.PAST),
-            makeDate(DateGen.PAST),
-            "Organisation $nameLetter",
-            "Maecenas faucibus mollis interdum. Etiam porta sem malesuada magna mollis euismod.",
-            listOfNotNull(
-                if (type == OrganisationGen.COORDINATOR) {
-                    makeMember(MemberRole.COORDINATOR, UserGen.CURRENT)
-                } else null,
+            id = makeId(),
+            createdAt = makeDate(DateGen.PAST),
+            updatedAt = makeDate(DateGen.PAST),
+            name = "Organisation $nameLetter",
+            info = "Maecenas faucibus mollis interdum. Etiam porta sem malesuada magna mollis euismod.",
+            members = listOfNotNull(
+                makeMember(MemberRole.COORDINATOR, owningMember),
                 makeMember(MemberRole.DONOR, UserGen.CURRENT),
                 makeMember(MemberRole.SUBSCRIBER, UserGen.VERIFIED),
                 makeMember(MemberRole.SUBSCRIBER, UserGen.VERIFIED)

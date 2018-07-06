@@ -1,9 +1,11 @@
 package uk.ac.ncl.openlab.irismsg.api
 
-import uk.ac.ncl.openlab.irismsg.MemberRole
+import uk.ac.ncl.openlab.irismsg.common.ApiCall
+import uk.ac.ncl.openlab.irismsg.common.MemberRole
+import uk.ac.ncl.openlab.irismsg.common.MessageAttemptUpdate
 import uk.ac.ncl.openlab.irismsg.model.*
 
-class LiveApi : ApiInterface {
+class LiveIrisMsgService : IrisMsgService {
     override fun getSelf(): ApiCall<UserEntity> {
         TODO("not implemented")
     }

@@ -1,6 +1,5 @@
-package uk.ac.ncl.openlab.irismsg
+package uk.ac.ncl.openlab.irismsg.ui
 
-import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -8,15 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 
 import kotlinx.android.synthetic.main.fragment_organisation.view.*
-import uk.ac.ncl.openlab.irismsg.OrganisationListFragment.OnListFragmentInteractionListener
-import uk.ac.ncl.openlab.irismsg.api.OrganisationListViewModel
+import uk.ac.ncl.openlab.irismsg.R
+import uk.ac.ncl.openlab.irismsg.ui.OrganisationListFragment.OnListFragmentInteractionListener
 
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 
-/**
- * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
- * specified [OnListFragmentInteractionListener].
- */
 class OrganisationRecyclerViewAdapter(
         private val mListener: OnListFragmentInteractionListener?
 ) : RecyclerView.Adapter<OrganisationRecyclerViewAdapter.ViewHolder>() {

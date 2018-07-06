@@ -3,8 +3,7 @@ package uk.ac.ncl.openlab.irismsg.api
 import org.junit.Before
 import org.junit.Test
 import org.junit.Assert.*
-import uk.ac.ncl.openlab.irismsg.MemberRole
-import uk.ac.ncl.openlab.irismsg.MessageAttemptState
+import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.ApiEntity
 
 class EntityGeneratorTest {
@@ -79,10 +78,17 @@ class EntityGeneratorTest {
         assertEquals(EntityGenerator.currentUserId, org.members[1].userId)
         assertEquals(MemberRole.DONOR, org.members[1].role)
     }
-    @Test fun makeOrganisation_addsSubScribers() {
+    @Test fun makeOrganisation_addsSubscribers() {
         val org = generator.makeOrganisation()
         assertEquals(MemberRole.SUBSCRIBER, org.members[2].role)
         assertEquals(MemberRole.SUBSCRIBER, org.members[3].role)
+    }
+    @Test fun makeOrganisation_isOnlyDonor() {
+        val org = generator.makeOrganisation(OrganisationGen.DONOR)
+        assertFalse(org.members.any { member ->
+            member.role == MemberRole.COORDINATOR
+                    && member.userId == EntityGenerator.currentUserId
+        })
     }
     
     
@@ -94,13 +100,13 @@ class EntityGeneratorTest {
         assertEquals(MemberRole.SUBSCRIBER, member.role)
     }
     @Test fun makeMember_createsForACurrentUser () {
-        var member = generator.makeMember(MemberRole.SUBSCRIBER, UserGen.CURRENT)
+        val member = generator.makeMember(MemberRole.SUBSCRIBER, UserGen.CURRENT)
         assertEquals(EntityGenerator.currentUserId, member.userId)
         assertNotNull(member.confirmedOn)
         assertNull(member.deletedOn)
     }
     @Test fun makeMember_createsForAnUnverifiedUser () {
-        var member = generator.makeMember(MemberRole.SUBSCRIBER, UserGen.UNVERIFIED)
+        val member = generator.makeMember(MemberRole.SUBSCRIBER, UserGen.UNVERIFIED)
         assertNotEquals(EntityGenerator.currentUserId, member.userId)
         assertNull(member.confirmedOn)
     }

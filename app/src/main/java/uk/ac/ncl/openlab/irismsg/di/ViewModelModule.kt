@@ -6,8 +6,8 @@ import android.arch.lifecycle.ViewModelProvider
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import uk.ac.ncl.openlab.irismsg.api.OrganisationListViewModel
 import uk.ac.ncl.openlab.irismsg.viewmodel.IrisViewModelFactory
+import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationListViewModel
 
 @Module
 @Suppress("unused")

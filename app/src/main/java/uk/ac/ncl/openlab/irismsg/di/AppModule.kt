@@ -1,15 +1,20 @@
 package uk.ac.ncl.openlab.irismsg.di
 
-import android.app.Application
 import dagger.Module
 import dagger.Provides
-import retrofit2.Retrofit
 import javax.inject.Singleton
+import uk.ac.ncl.openlab.irismsg.api.*
 
 @Module(includes = [
     ViewModelModule::class
 ])
 class AppModule {
+    
+    @Singleton
+    @Provides
+    fun provideIrisApiService() : IrisMsgService {
+        return MockIrisMsgService()
+    }
 
 //    @Singleton
 //    @Provides

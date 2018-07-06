@@ -1,7 +1,7 @@
 package uk.ac.ncl.openlab.irismsg.model
 
 import com.squareup.moshi.Json
-import uk.ac.ncl.openlab.irismsg.MemberRole
+import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import java.util.Date
 
 data class MemberEntity(

@@ -1,8 +1,9 @@
-package uk.ac.ncl.openlab.irismsg
+package uk.ac.ncl.openlab.irismsg.ui
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import uk.ac.ncl.openlab.irismsg.common.MemberRole
 
 private data class TitledFrag <T : Fragment> (val title: String, val frag: T)
 

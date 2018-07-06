@@ -27,5 +27,5 @@ class JsonWebToken (token: String) : JWT(token) {
         }
     }
     
-    fun getUserId () : String? =this.getClaim("usr").asString()
+    fun getUserId () : String? = this.getClaim("usr").asString()
 }
