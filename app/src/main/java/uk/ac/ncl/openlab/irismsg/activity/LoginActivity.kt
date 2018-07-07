@@ -2,6 +2,7 @@ package uk.ac.ncl.openlab.irismsg.activity
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
@@ -11,6 +12,8 @@ import android.widget.TextView
 
 import android.support.v4.app.Fragment
 import android.text.method.LinkMovementMethod
+import android.util.Log
+import android.view.MenuItem
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 
@@ -21,6 +24,9 @@ import retrofit2.Response
 import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.api.ApiResponse
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
+import uk.ac.ncl.openlab.irismsg.api.JsonWebToken
+import uk.ac.ncl.openlab.irismsg.model.UserAuthEntity
+import uk.ac.ncl.openlab.irismsg.model.UserEntity
 import javax.inject.Inject
 
 private enum class LoginState {
@@ -46,17 +52,20 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         super.onCreate(savedInstanceState)
         
         setContentView(R.layout.activity_login)
-        setupActionBar()
+        
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         
         phone_number.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                attemptLogin()
+                attemptLoginRequest()
                 return@OnEditorActionListener true
             }
             false
         })
         
-        sign_in_button.setOnClickListener { attemptLogin() }
+        request_button.setOnClickListener { attemptLoginRequest() }
+        
+        check_button.setOnClickListener { attemptLoginCheck() }
         
         terms_text_view.movementMethod = LinkMovementMethod.getInstance()
         
@@ -69,33 +78,32 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         enterState(LoginState.REQUEST)
     }
     
-    /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
-     */
-    private fun setupActionBar() {
-        
-        // Show the Up button in the action bar.
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    override fun onBackPressed() {
+        if (currentState == LoginState.CHECK) {
+            enterState(LoginState.REQUEST)
+        } else {
+            super.onBackPressed()
+        }
     }
     
     private fun enterState (newState: LoginState) {
         
         // Perform leaving transitions
-        when (currentState) {
-            LoginState.WORKING -> showProgress(false)
-            LoginState.REQUEST -> request_form.visibility = View.GONE
-            LoginState.CHECK -> check_form.visibility = View.GONE
-        }
+        toggleElem(when (currentState) {
+            LoginState.WORKING -> login_progress
+            LoginState.REQUEST -> request_form
+            LoginState.CHECK -> check_form
+        }, false)
         
         // Set the state
         currentState = newState
     
         // Perform entering transitions
-        when (newState) {
-            LoginState.WORKING -> showProgress(true)
-            LoginState.REQUEST -> request_form.visibility = View.VISIBLE
-            LoginState.CHECK -> check_form.visibility = View.VISIBLE
-        }
+        toggleElem(when (newState) {
+            LoginState.WORKING -> login_progress
+            LoginState.REQUEST -> request_form
+            LoginState.CHECK -> check_form
+        }, true)
     }
 
     
@@ -104,13 +112,11 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private fun attemptLogin() {
+    private fun attemptLoginRequest() {
         
         // Reset errors.
         phone_number.error = null
         country_code.error = null
-        api_error_text_view.text = ""
-        api_error_text_view.visibility = View.GONE
         
         // Grab the submitted values
         val countryCodeStr = country_code.text.toString()
@@ -155,7 +161,9 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     private fun requestLoginCode (countryCode: String, phoneNumber: String) {
         enterState(LoginState.WORKING)
-        irisService.requestLogin(phoneNumber, countryCode).enqueue(object : Callback<ApiResponse<Nothing>> {
+        showApiError(null)
+        val call = irisService.requestLogin(phoneNumber, countryCode)
+        call.enqueue(object : Callback<ApiResponse<Nothing>> {
             override fun onResponse(call : Call<ApiResponse<Nothing>>?, response : Response<ApiResponse<Nothing>>?) {
                 
                 val body = response?.body()
@@ -171,9 +179,76 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
             }
             override fun onFailure(call : Call<ApiResponse<Nothing>>?, t : Throwable?) {
                 enterState(LoginState.REQUEST)
+                showApiError(getString(R.string.api_unknown_error))
             }
         })
     }
+    
+    
+    private fun attemptLoginCheck () {
+        verification_code.error = null
+        
+        val codeStr = verification_code.text.toString()
+    
+        var cancel = false
+        var nextFocus : View? = null
+        
+        if (TextUtils.isEmpty(codeStr)) {
+            verification_code.error = getString(R.string.error_field_required)
+            nextFocus = verification_code
+            cancel = true
+        } else if (!isValidVerificationCode(codeStr)) {
+            verification_code.error = getString(R.string.error_invalid_verification_code)
+            nextFocus = verification_code
+            cancel = true
+        }
+        
+        if (cancel) {
+            nextFocus?.requestFocus()
+        } else {
+            checkLoginCode(codeStr.toInt())
+        }
+    }
+    
+    private fun checkLoginCode (code: Int) {
+        enterState(LoginState.WORKING)
+        showApiError(null)
+        val call = irisService.checkLogin(code)
+        call.enqueue(object : Callback<ApiResponse<UserAuthEntity>> {
+            override fun onResponse(call : Call<ApiResponse<UserAuthEntity>>?, response : Response<ApiResponse<UserAuthEntity>>?) {
+                
+                val body = response?.body()
+                
+                if (body == null) {
+                    enterState(LoginState.CHECK)
+                    showApiError(getString(R.string.api_unknown_error))
+                } else if (!body.success || body.data == null) {
+                    enterState(LoginState.CHECK)
+                    showApiError(body.messages.joinToString())
+                } else {
+                    finishLogin(body.data)
+                }
+            }
+            override fun onFailure(call : Call<ApiResponse<UserAuthEntity>>?, t : Throwable?) {
+                enterState(LoginState.CHECK)
+                showApiError(getString(R.string.api_unknown_error))
+            }
+        })
+    }
+    
+    private fun finishLogin (userAuth: UserAuthEntity) {
+    
+        JsonWebToken.save(applicationContext, userAuth.token)
+        UserEntity.current = userAuth.user
+        
+        Log.d("login:token", userAuth.token)
+        Log.d("login:user", userAuth.user.toString())
+        
+        startActivity(Intent(this, OrganisationListActivity::class.java))
+        setResult(RESULT_LOGGED_IN)
+        finish()
+    }
+    
     
     private fun isValidPhoneNumber(phoneNumber : String) : Boolean {
         return phoneNumber.length > 5
@@ -183,32 +258,26 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         return countryCode.isNotEmpty()
     }
     
+    private fun isValidVerificationCode(codeStr : String) : Boolean {
+        val code = codeStr.toIntOrNull() ?: return false
+        return code in 0..999999
+    }
+    
     /**
      * Shows the progress UI and hides the login form.
      */
-    private fun showProgress(show : Boolean) {
-        
+    private fun toggleElem (view: View, show: Boolean) {
         val shortAnimTime = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-        
-        request_form.visibility = if (show) View.GONE else View.VISIBLE
-        request_form.animate()
-                .setDuration(shortAnimTime)
-                .alpha((if (show) 0 else 1).toFloat())
-                .setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation : Animator) {
-                        request_form.visibility = if (show) View.GONE else View.VISIBLE
-                    }
-                })
-        
-        login_progress.visibility = if (show) View.VISIBLE else View.GONE
-        login_progress.animate()
-                .setDuration(shortAnimTime)
-                .alpha((if (show) 1 else 0).toFloat())
-                .setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation : Animator) {
-                        login_progress.visibility = if (show) View.VISIBLE else View.GONE
-                    }
-                })
+    
+        view.visibility = if (show) View.VISIBLE else View.GONE
+        view.animate()
+            .setDuration(shortAnimTime)
+            .alpha((if (show) 1 else 0).toFloat())
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation : Animator) {
+                    view.visibility = if (show) View.VISIBLE else View.GONE
+                }
+            })
     }
     
     /**
@@ -227,64 +296,10 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         }
     }
     
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-//    inner class UserLoginTask internal constructor(private val mEmail : String, private val mPassword : String) : AsyncTask<Void, Void, Boolean>() {
-//
-//        override fun doInBackground(vararg params : Void) : Boolean? {
-//            // TODO: attempt authentication against a network service.
-//
-//            try {
-//                // Simulate network access.
-//                Thread.sleep(2000)
-//            } catch (e : InterruptedException) {
-//                return false
-//            }
-//
-//            return DUMMY_CREDENTIALS
-//                    .map { it.split(":") }
-//                    .firstOrNull { it[0] == mEmail }
-//                    ?.let {
-//                        // Account exists, return true if the password matches.
-//                        it[1] == mPassword
-//                    }
-//                    ?: true
-//        }
-//
-//        override fun onPostExecute(success : Boolean?) {
-//            mAuthTask = null
-//            showProgress(false)
-//
-//            if (success!!) {
-//                finish()
-//            } else {
-//                password.error = getString(R.string.error_incorrect_password)
-//                password.requestFocus()
-//            }
-//        }
-//
-//        override fun onCancelled() {
-//            mAuthTask = null
-//            showProgress(false)
-//        }
-//    }
-    
-//    companion object {
-//
-//        /**
-//         * Id to identity READ_CONTACTS permission request.
-//         */
-//        private val REQUEST_READ_CONTACTS = 0
-//
-//        /**
-//         * A dummy authentication store containing known user names and passwords.
-//         * TODO: remove after connecting to a real authentication system.
-//         */
-//        private val DUMMY_CREDENTIALS = arrayOf(
-//            "foo@example.com:hello",
-//            "bar@example.com:world"
-//        )
-//    }
+    companion object {
+        const val REQUEST_LOGIN = 1
+        
+        const val RESULT_LOGGED_IN = 1
+        const val RESULT_CANCELLED = 2
+    }
 }

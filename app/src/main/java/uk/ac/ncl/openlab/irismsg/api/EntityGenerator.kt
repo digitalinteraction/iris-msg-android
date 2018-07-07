@@ -61,7 +61,7 @@ class EntityGenerator {
     fun makeUserAuth () : UserAuthEntity {
         return UserAuthEntity(
             user = makeUser(UserGen.CURRENT),
-            token = "some-really-long-jsonwebtoken"
+            token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3IiOiJjdXJyZW50LXVzZXItaWQiLCJpYXQiOjE1MzA3MTM1NzZ9.swsQwUsEVghOiABq2Dokm3iM3aIaDQ9X4jd_B5RRH8g"
         )
     }
     

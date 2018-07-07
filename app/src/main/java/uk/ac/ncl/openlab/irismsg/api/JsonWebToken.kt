@@ -18,7 +18,7 @@ class JsonWebToken (token: String) : JWT(token) {
             return JsonWebToken(raw)
         }
         
-        fun save (ctx: Context, token: String) {
+        fun save (ctx: Context, token: String?) {
             val prefs = getPrefs(ctx) ?: return
             with (prefs.edit()) {
                 putString(RAW_TOKEN_KEY, token)

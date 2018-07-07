@@ -1,6 +1,7 @@
 package uk.ac.ncl.openlab.irismsg.activity
 
 import android.content.Intent
+import android.net.Uri
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 
@@ -56,11 +57,23 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
 //        }
     
         login_button.setOnClickListener { view ->
-            startActivity(Intent(this, LoginActivity::class.java))
+            startActivityForResult(
+                Intent(this, LoginActivity::class.java),
+                LoginActivity.REQUEST_LOGIN
+            )
         }
         
     }
     
+    override fun onActivityResult(requestCode : Int, resultCode : Int, data : Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        
+        if (requestCode == LoginActivity.REQUEST_LOGIN) {
+            when (resultCode) {
+                LoginActivity.RESULT_LOGGED_IN -> finish()
+            }
+        }
+    }
     
     override fun onCreateOptionsMenu(menu : Menu) : Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -72,15 +85,14 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        val view = findViewById<View>(android.R.id.content)
         
-        val snack = when (item.itemId) {
-            R.id.action_even_more -> Snackbar.make(view, "Open irismsg.io", Snackbar.LENGTH_LONG)
-            R.id.action_open_lab  -> Snackbar.make(view, "Open openlab.ncl.ac.uk", Snackbar.LENGTH_LONG)
+        val intent = when (item.itemId) {
+            R.id.action_even_more -> Intent(Intent.ACTION_VIEW, Uri.parse("http://irismsg.io"))
+            R.id.action_open_lab  -> Intent(Intent.ACTION_VIEW, Uri.parse("http://openlab.ncl.ac.uk"))
             else -> null
         }
-        
-        snack?.show()
+    
+        if (intent != null) startActivity(intent)
         
         return super.onOptionsItemSelected(item)
     }
