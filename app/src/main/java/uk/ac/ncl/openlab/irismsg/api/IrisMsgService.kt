@@ -1,32 +1,68 @@
 package uk.ac.ncl.openlab.irismsg.api
 
+import retrofit2.http.*
 import uk.ac.ncl.openlab.irismsg.common.ApiCall
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
-import uk.ac.ncl.openlab.irismsg.common.MessageAttemptUpdate
 import uk.ac.ncl.openlab.irismsg.model.*
 
 interface IrisMsgService {
     
+    //
     // Auth Endpoints
+    //
+    
+    @GET("/users/me")
     fun getSelf () : ApiCall<UserEntity>
-    fun requestLogin (phoneNumber: String, countryCode: String) : ApiCall<Nothing>
-    fun checkLogin (code: Int) : ApiCall<UserAuthEntity>
-    fun updateFcm (fcmToken: String) : ApiCall<Nothing>
     
+    @POST("/users/login/request")
+    fun requestLogin (@Body body: RequestLoginRequest) : ApiCall<Any>
+    
+    @POST("/users/login/check")
+    fun checkLogin (@Body body: CheckLoginRequest) : ApiCall<UserAuthEntity>
+    
+    @POST("/users/update_fcm")
+    fun updateFcm (@Body body: UpdateFcmRequest) : ApiCall<Any>
+    
+    //
     // Organisations Endpoints
+    //
+    
+    @GET("/organisations")
     fun listOrganisations () : ApiCall<List<OrganisationEntity>>
-    fun showOrganisation (id: String) : ApiCall<OrganisationEntity>
-    fun createOrganisation (name: String, info: String) : ApiCall<OrganisationEntity>
-    fun destroyOrganisation (id: String) : ApiCall<Nothing>
     
+    @GET("/organisations/{org_id}")
+    fun showOrganisation (@Path("org_id") id: String) : ApiCall<OrganisationEntity>
+    
+    @POST("/organisations")
+    fun createOrganisation (@Body body: CreateOrganisationRequest) : ApiCall<OrganisationEntity>
+    
+    @DELETE("/organisations/{org_id}")
+    fun destroyOrganisation (@Path("org_id") id: String) : ApiCall<Any>
+    
+    //
     // Members Endpoints
-    fun createMember (organisationId: String, role: MemberRole, phoneNumber: String, countryCode: String)
-            : ApiCall<MemberEntity>
-    fun destroyMember (memberId: String, organisationId: String) : ApiCall<Nothing>
-    fun acceptMember (memberId: String) : ApiCall<UserAuthEntity>
+    //
     
+    @POST("/organisations/{org_id}/members")
+    fun createMember (@Path("org_id") organisationId: String, @Body body: CreateMemberRequest)
+            : ApiCall<MemberEntity>
+    
+    @DELETE("/organisations/{org_id}/members/{mem_id}")
+    fun destroyMember (@Path("mem_id") memberId: String, @Path("org_id") organisationId: String) : ApiCall<Any>
+    
+    @POST("/organisations/accept/{mem_id}")
+    fun acceptMember (@Path("mem_id") memberId: String) : ApiCall<UserAuthEntity>
+    
+    //
     // Messages Endpoints
-    fun createMessage (body: String, organisationId: String) : ApiCall<MessageEntity>
+    //
+    
+    @POST("/messages")
+    fun createMessage (@Body body: CreateMessageRequest) : ApiCall<MessageEntity>
+    
+    @GET("/messages/attempts")
     fun listPendingMessages () : ApiCall<List<PendingMessageEntity>>
-    fun updateMessageAttempts (updates: List<MessageAttemptUpdate>) : ApiCall<Nothing>
+    
+    @POST("/messages/attempts")
+    fun updateMessageAttempts (@Body body: UpdateMessageAttemptsRequest) : ApiCall<Any>
 }

@@ -56,7 +56,7 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
 //                    .setAction("Action", null).show()
 //        }
     
-        login_button.setOnClickListener { view ->
+        login_button.setOnClickListener { _ ->
             startActivityForResult(
                 Intent(this, LoginActivity::class.java),
                 LoginActivity.REQUEST_LOGIN

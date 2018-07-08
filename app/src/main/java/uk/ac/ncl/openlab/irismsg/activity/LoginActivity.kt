@@ -22,9 +22,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import uk.ac.ncl.openlab.irismsg.R
-import uk.ac.ncl.openlab.irismsg.api.ApiResponse
-import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
-import uk.ac.ncl.openlab.irismsg.api.JsonWebToken
+import uk.ac.ncl.openlab.irismsg.api.*
 import uk.ac.ncl.openlab.irismsg.model.UserAuthEntity
 import uk.ac.ncl.openlab.irismsg.model.UserEntity
 import javax.inject.Inject
@@ -160,28 +158,27 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
     
     private fun requestLoginCode (countryCode: String, phoneNumber: String) {
+        
         enterState(LoginState.WORKING)
         showApiError(null)
-        val call = irisService.requestLogin(phoneNumber, countryCode)
-        call.enqueue(object : Callback<ApiResponse<Nothing>> {
-            override fun onResponse(call : Call<ApiResponse<Nothing>>?, response : Response<ApiResponse<Nothing>>?) {
-                
-                val body = response?.body()
-                if (body == null) {
-                    enterState(LoginState.REQUEST)
-                    showApiError(getString(R.string.api_unknown_error))
-                } else if (!body.success) {
-                    enterState(LoginState.REQUEST)
-                    showApiError(body.messages.joinToString())
-                } else {
-                    enterState(LoginState.CHECK)
-                }
-            }
-            override fun onFailure(call : Call<ApiResponse<Nothing>>?, t : Throwable?) {
+        
+        val call = irisService.requestLogin(RequestLoginRequest(phoneNumber, countryCode))
+        
+        call.enqueue(ApiCallback({ res ->
+            if (res == null) {
                 enterState(LoginState.REQUEST)
                 showApiError(getString(R.string.api_unknown_error))
+            } else if (!res.success) {
+                enterState(LoginState.REQUEST)
+                showApiError(res.messages.joinToString())
+            } else {
+                enterState(LoginState.CHECK)
             }
-        })
+            
+        }, { _ ->
+            enterState(LoginState.REQUEST)
+            showApiError(getString(R.string.api_unknown_error))
+        }))
     }
     
     
@@ -213,27 +210,21 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     private fun checkLoginCode (code: Int) {
         enterState(LoginState.WORKING)
         showApiError(null)
-        val call = irisService.checkLogin(code)
-        call.enqueue(object : Callback<ApiResponse<UserAuthEntity>> {
-            override fun onResponse(call : Call<ApiResponse<UserAuthEntity>>?, response : Response<ApiResponse<UserAuthEntity>>?) {
-                
-                val body = response?.body()
-                
-                if (body == null) {
-                    enterState(LoginState.CHECK)
-                    showApiError(getString(R.string.api_unknown_error))
-                } else if (!body.success || body.data == null) {
-                    enterState(LoginState.CHECK)
-                    showApiError(body.messages.joinToString())
-                } else {
-                    finishLogin(body.data)
-                }
-            }
-            override fun onFailure(call : Call<ApiResponse<UserAuthEntity>>?, t : Throwable?) {
+        val call = irisService.checkLogin(CheckLoginRequest(code))
+        call.enqueue(ApiCallback({ res ->
+            if (res == null) {
                 enterState(LoginState.CHECK)
                 showApiError(getString(R.string.api_unknown_error))
+            } else if (!res.success || res.data == null) {
+                enterState(LoginState.CHECK)
+                showApiError(res.messages.joinToString())
+            } else {
+                finishLogin(res.data)
             }
-        })
+        }, { _ ->
+            enterState(LoginState.CHECK)
+            showApiError(getString(R.string.api_unknown_error))
+        }))
     }
     
     private fun finishLogin (userAuth: UserAuthEntity) {
@@ -283,7 +274,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     /**
      * Shows an api error or hides the control
      */
-    private fun showApiError(error: String?) {
+    private fun showApiError (error: String?) {
         when (error) {
             null -> {
                 api_error_text_view.visibility = View.GONE

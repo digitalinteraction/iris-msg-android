@@ -1,16 +1,38 @@
 package uk.ac.ncl.openlab.irismsg.api
 
+import com.squareup.moshi.Json
+
 data class ApiResponse <T> (
-    val success: Boolean,
-    val messages: List<String> = listOf(),
-    val data: T? = null
+    @Json(name = "meta") val meta: ApiMeta,
+    @Json(name = "data") val data: T? = null
 ) {
     companion object {
         fun <T> success (data: T? = null) : ApiResponse<T> {
-            return ApiResponse(true, listOf(), data)
+            return ApiResponse(
+                ApiMeta(true, listOf()),
+                data
+            )
         }
         fun <T> fail (messages : List<String> = listOf()) : ApiResponse<T> {
-            return ApiResponse(false, messages)
+            return ApiResponse(
+                ApiMeta(false, messages)
+            )
+        }
+        fun <T> create (
+            success: Boolean = true, messages: List<String> = listOf(), data: T? = null
+        ) : ApiResponse<T> {
+            return ApiResponse(ApiMeta(success, messages), data)
         }
     }
+    
+    val success: Boolean
+        get() = meta.success
+    
+    val messages: List<String>
+        get() = meta.messages
 }
+
+data class ApiMeta(
+    @Json(name = "success") val success: Boolean,
+    @Json(name = "messages") val messages: List<String>
+)

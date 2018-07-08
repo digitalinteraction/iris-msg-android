@@ -35,5 +35,11 @@
         <a href="http://irismsg.io/privacy">privacy policy</a>
     </string>
 
-    <string name="api_unknown_error">An unknown error occured, please try again.</string>
+    <string name="api_unknown_error">An unknown error occurred, please try again.</string>
+
+    <!-- Preferences -->
+    <string name="pref_api_mode">App Mode</string>
+    <string name="pref_api_mode_info">How the app operates</string>
+    <string name="pref_api_host">Api Location</string>
+    <string name="pref_api_host_info">The url of where the api is</string>
 </resources>

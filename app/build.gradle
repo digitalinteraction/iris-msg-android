@@ -65,6 +65,7 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
     implementation "com.squareup.retrofit2:retrofit-mock:$retrofit_version"
+    implementation "com.squareup.moshi:moshi-adapters:1.6.0"
 
     // JWT
     implementation 'com.auth0.android:jwtdecode:1.1.1'

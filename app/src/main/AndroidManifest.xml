@@ -44,10 +44,6 @@
             android:name=".activity.OnboardActivity"
             android:label="@string/title_activity_onboard"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activity.OnboardActivity"
-            android:label="@string/title_activity_onboard"
-            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

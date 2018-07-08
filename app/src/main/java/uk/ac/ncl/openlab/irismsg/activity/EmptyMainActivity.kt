@@ -10,9 +10,11 @@ import dagger.android.support.HasSupportFragmentInjector
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.ApiResponse
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.api.JsonWebToken
+import uk.ac.ncl.openlab.irismsg.common.ApiCall
 import uk.ac.ncl.openlab.irismsg.model.UserEntity
 import javax.inject.Inject
 
@@ -34,20 +36,16 @@ class EmptyMainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         if (jwt == null) {
             pushOnboard()
         } else {
-            irisService.getSelf().enqueue(object : Callback<ApiResponse<UserEntity>> {
-                override fun onResponse(
-                    call : Call<ApiResponse<UserEntity>>?, response : Response<ApiResponse<UserEntity>>?) {
-                    UserEntity.current = response?.body()?.data
-                    when (UserEntity.current) {
-                        null -> pushOnboard()
-                        else -> pushOrgList()
-                    }
+            irisService.getSelf().enqueue(ApiCallback({ res ->
+                UserEntity.current = res?.data
+                when (UserEntity.current) {
+                    null -> pushOnboard()
+                    else -> pushOrgList()
                 }
-                override fun onFailure(call : Call<ApiResponse<UserEntity>>?, t : Throwable?) {
-                    Toast.makeText(applicationContext, t.toString(), Toast.LENGTH_SHORT).show()
-                    pushOnboard()
-                }
-            })
+            }, { t ->
+                Toast.makeText(applicationContext, t.toString(), Toast.LENGTH_SHORT).show()
+                pushOnboard()
+            }))
         }
     }
     

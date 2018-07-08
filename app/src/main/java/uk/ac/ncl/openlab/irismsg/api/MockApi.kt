@@ -1,10 +1,8 @@
 package uk.ac.ncl.openlab.irismsg.api
 
-import retrofit2.mock.BehaviorDelegate
 import retrofit2.mock.Calls
 import uk.ac.ncl.openlab.irismsg.common.ApiCall
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
-import uk.ac.ncl.openlab.irismsg.common.MessageAttemptUpdate
 import uk.ac.ncl.openlab.irismsg.model.*
 
 class MockIrisMsgService : IrisMsgService {
@@ -20,16 +18,16 @@ class MockIrisMsgService : IrisMsgService {
             generator.makeUser(UserGen.CURRENT)
         )
     }
-    override fun requestLogin(phoneNumber: String, countryCode: String): ApiCall<Nothing> {
-        return Calls.response(ApiResponse(phoneNumber != "fail"))
+    override fun requestLogin(body: RequestLoginRequest): ApiCall<Any> {
+        return Calls.response(ApiResponse.create(body.phoneNumber != "fail"))
     }
-    override fun checkLogin(code: Int): ApiCall<UserAuthEntity> {
+    override fun checkLogin(body: CheckLoginRequest): ApiCall<UserAuthEntity> {
         return Calls.response(
-            if (code >= 0) ApiResponse.success(generator.makeUserAuth())
+            if (body.code >= 0) ApiResponse.success(generator.makeUserAuth())
             else ApiResponse.fail()
         )
     }
-    override fun updateFcm(fcmToken: String): ApiCall<Nothing> {
+    override fun updateFcm(body: UpdateFcmRequest): ApiCall<Any> {
         return Calls.response(ApiResponse.success())
     }
     
@@ -48,23 +46,21 @@ class MockIrisMsgService : IrisMsgService {
             generator.makeOrganisation(OrganisationGen.COORDINATOR)
         )
     }
-    override fun createOrganisation(name: String, info: String): ApiCall<OrganisationEntity> {
+    override fun createOrganisation(body: CreateOrganisationRequest): ApiCall<OrganisationEntity> {
         val org = generator.makeOrganisation(OrganisationGen.COORDINATOR)
-        org.name = name
-        org.info = info
+        org.name = body.name
+        org.info = body.info
         return success(org)
     }
-    override fun destroyOrganisation(id: String): ApiCall<Nothing> {
+    override fun destroyOrganisation(id: String): ApiCall<Any> {
         return success()
     }
     
     
-    override fun createMember(
-        organisationId: String, role: MemberRole, phoneNumber: String, countryCode: String
-    ) : ApiCall<MemberEntity> {
-        return success(generator.makeMember(role, UserGen.VERIFIED))
+    override fun createMember(organisationId: String, body: CreateMemberRequest) : ApiCall<MemberEntity> {
+        return success(generator.makeMember(body.role, UserGen.VERIFIED))
     }
-    override fun destroyMember(memberId: String, organisationId: String): ApiCall<Nothing> {
+    override fun destroyMember(memberId: String, organisationId: String): ApiCall<Any> {
         return success()
     }
     override fun acceptMember(memberId: String): ApiCall<UserAuthEntity> {
@@ -72,8 +68,8 @@ class MockIrisMsgService : IrisMsgService {
     }
     
     
-    override fun createMessage(body: String, organisationId: String): ApiCall<MessageEntity> {
-        return success(generator.makeMessage(organisationId))
+    override fun createMessage(body: CreateMessageRequest): ApiCall<MessageEntity> {
+        return success(generator.makeMessage(body.orgId))
     }
     override fun listPendingMessages() : ApiCall<List<PendingMessageEntity>> {
         return success(listOf(
@@ -82,7 +78,7 @@ class MockIrisMsgService : IrisMsgService {
             generator.makePendingMessage("2", "You are a bold one")
         ))
     }
-    override fun updateMessageAttempts(updates: List<MessageAttemptUpdate>): ApiCall<Nothing> {
+    override fun updateMessageAttempts(body: UpdateMessageAttemptsRequest): ApiCall<Any> {
         return success()
     }
     
