@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_organisation_list.*
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.api.JsonWebToken
@@ -50,7 +51,9 @@ class OrganisationListFragment : Fragment(), Injectable {
         val userId = JsonWebToken.load(context!!)?.getUserId() ?: return
         
         // Listen for organisations
+        swipe_refresh.isRefreshing = true
         viewModel.organisations.observe(this, Observer { orgs ->
+            swipe_refresh.isRefreshing = false
             if (orgs == null) return@Observer
             
             adapter.organisations = when (role) {
@@ -76,6 +79,11 @@ class OrganisationListFragment : Fragment(), Injectable {
             
             adapter.notifyDataSetChanged()
         })
+    
+        swipe_refresh.setOnRefreshListener {
+            swipe_refresh.isRefreshing = true
+            viewModel.reload()
+        }
     }
     
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -87,11 +95,11 @@ class OrganisationListFragment : Fragment(), Injectable {
 
         adapter = OrganisationRecyclerViewAdapter(listener)
         
+        val recycler = view.findViewById<RecyclerView>(R.id.org_list_recycler)
+        
         // Set the adapter
-        if (view is RecyclerView) {
-            view.layoutManager = LinearLayoutManager(context)
-            view.adapter = adapter
-        }
+        recycler.layoutManager = LinearLayoutManager(context)
+        recycler.adapter = adapter
         
         return view
     }

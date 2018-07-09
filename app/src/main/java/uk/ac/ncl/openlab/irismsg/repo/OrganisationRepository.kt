@@ -21,9 +21,7 @@ class OrganisationRepository @Inject constructor() {
     @Inject
     lateinit var irisService: IrisMsgService
     
-    private fun <T> handleEnqueue (call: ApiCall<T>) : LiveData<T> {
-        val target = MutableLiveData<T>()
-        
+    private fun <T> loadDataFromCall (call: ApiCall<T>, target: MutableLiveData<T>) : MutableLiveData<T> {
         call.enqueue(ApiCallback({ res ->
             target.value = res.data
         }, { _ ->
@@ -32,7 +30,15 @@ class OrganisationRepository @Inject constructor() {
         return target
     }
     
-    fun getOrganisations () : LiveData<List<OrganisationEntity>> {
+    private fun <T> handleEnqueue (call: ApiCall<T>) : MutableLiveData<T> {
+        return loadDataFromCall(call, MutableLiveData<T>())
+    }
+    
+    fun getOrganisations () : MutableLiveData<List<OrganisationEntity>> {
         return handleEnqueue(irisService.listOrganisations())
+    }
+    
+    fun reloadOrganisations (data: MutableLiveData<List<OrganisationEntity>>) {
+        loadDataFromCall(irisService.listOrganisations(), data)
     }
 }

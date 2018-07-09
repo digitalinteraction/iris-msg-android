@@ -47,6 +47,11 @@ class OrganisationListActivity : AppCompatActivity(),
         // Setup tabs
         tabs_pager.adapter = pagerAdapter
         tabs_layout.setupWithViewPager(tabs_pager)
+        
+        // Setup click handler
+        add_organisation_fab.setOnClickListener { view ->
+        
+        }
     }
     
     override fun onCreateOptionsMenu(menu : Menu?) : Boolean {
