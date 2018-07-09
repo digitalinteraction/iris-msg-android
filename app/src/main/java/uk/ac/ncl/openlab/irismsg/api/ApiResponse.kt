@@ -2,6 +2,9 @@ package uk.ac.ncl.openlab.irismsg.api
 
 import com.squareup.moshi.Json
 
+/**
+ * The response envelope the api should return responses as, with some utils for creation / usage
+ */
 data class ApiResponse <T> (
     @Json(name = "meta") val meta: ApiMeta,
     @Json(name = "data") val data: T? = null

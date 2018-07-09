@@ -20,19 +20,24 @@ enum class OrganisationGen {
     COORDINATOR, DONOR
 }
 
+/**
+ * A util for generating entities for testing, uses an incremental id so every object is unique
+ */
 class EntityGenerator {
     
     companion object {
         const val currentUserId = "current-user-id"
+        const val fakeJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3IiOiJjdXJyZW50LXVzZXItaWQiLCJpYXQiOjE1MzA3MTM1NzZ9.swsQwUsEVghOiABq2Dokm3iM3aIaDQ9X4jd_B5RRH8g"
     }
     
-    var nextEntityId = 1
+    private var nextEntityId = 1
     
     fun makeId () : String {
         return (nextEntityId++).toString()
     }
     
-    fun makeDate (type: DateGen) : Date {
+    /** Make a date relative to today */
+    private fun makeDate (type: DateGen) : Date {
         val cal = Calendar.getInstance()
     
         when (type) {
@@ -61,7 +66,7 @@ class EntityGenerator {
     fun makeUserAuth () : UserAuthEntity {
         return UserAuthEntity(
             user = makeUser(UserGen.CURRENT),
-            token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3IiOiJjdXJyZW50LXVzZXItaWQiLCJpYXQiOjE1MzA3MTM1NzZ9.swsQwUsEVghOiABq2Dokm3iM3aIaDQ9X4jd_B5RRH8g"
+            token = fakeJwt
         )
     }
     

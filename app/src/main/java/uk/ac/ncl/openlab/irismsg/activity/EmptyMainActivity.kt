@@ -7,17 +7,15 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
-import uk.ac.ncl.openlab.irismsg.api.ApiResponse
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.api.JsonWebToken
-import uk.ac.ncl.openlab.irismsg.common.ApiCall
 import uk.ac.ncl.openlab.irismsg.model.UserEntity
 import javax.inject.Inject
 
+/**
+ * An empty Activity to check if there is a current user and push the OrgList / Onboarding accordingly
+ */
 class EmptyMainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     @Inject
@@ -31,13 +29,17 @@ class EmptyMainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // See if there is a current user
         val jwt = JsonWebToken.load(this)
 
+        // If there isn't, push them to onboarding
         if (jwt == null) {
             pushOnboard()
         } else {
+            
+            // If there is a token, fetch the current user
             irisService.getSelf().enqueue(ApiCallback({ res ->
-                UserEntity.current = res?.data
+                UserEntity.current = res.data
                 when (UserEntity.current) {
                     null -> pushOnboard()
                     else -> pushOrgList()
@@ -49,12 +51,12 @@ class EmptyMainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         }
     }
     
-    fun pushOnboard () {
+    private fun pushOnboard () {
         startActivity(Intent(this, OnboardActivity::class.java))
         finish()
     }
     
-    fun pushOrgList () {
+    private fun pushOrgList () {
         startActivity(Intent(this, OrganisationListActivity::class.java))
         finish()
     }

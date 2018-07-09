@@ -19,6 +19,10 @@ import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 import uk.ac.ncl.openlab.irismsg.model.UserEntity
 import javax.inject.Inject
 
+/**
+ * An Activity to present a Organisations that the user is part of either as a coordinator or donor
+ * TODO - Implement organisation clicks
+ */
 class OrganisationListActivity : AppCompatActivity(),
         HasSupportFragmentInjector,
         OrganisationListFragment.OnListFragmentInteractionListener {
@@ -59,11 +63,15 @@ class OrganisationListActivity : AppCompatActivity(),
         }
     
         if (intent != null) startActivity(intent)
-        
+    
+        // Perform logout
         if (item?.itemId == R.id.action_logout) {
+            
+            // Un-store the jwt and current user
             JsonWebToken.save(applicationContext, null)
             UserEntity.current = null
             
+            // Go to the onboarding activity
             startActivity(Intent(this, OnboardActivity::class.java))
             finish()
         }

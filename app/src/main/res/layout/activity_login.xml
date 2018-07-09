@@ -58,11 +58,13 @@
                 android:id="@+id/api_error_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingBottom="12dp"
                 android:text=""
                 android:textAllCaps="false"
                 android:textColor="@color/danger"
                 android:textSize="18sp"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:text="Something went wrong" />
 
             <ScrollView
                 android:id="@+id/request_form"
@@ -75,22 +77,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/country_code"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/prompt_country_code"
-                            android:inputType="phone"
-                            android:maxLines="1"
-                            android:singleLine="true" />
-
-                    </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
@@ -141,7 +127,6 @@
                         android:id="@+id/textView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:text="@string/login_code_sent"
                         android:paddingTop="12dp"
                         android:paddingBottom="12dp"
@@ -164,9 +149,8 @@
                         android:id="@+id/check_button"
                         style="@style/Widget.AppCompat.Button.Colored"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:layout_marginTop="16dp"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="16dp"
                         android:text="@string/action_login_check" />
 
                 </LinearLayout>

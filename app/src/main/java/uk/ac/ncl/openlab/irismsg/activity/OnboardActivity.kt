@@ -2,9 +2,7 @@ package uk.ac.ncl.openlab.irismsg.activity
 
 import android.content.Intent
 import android.net.Uri
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
@@ -16,12 +14,16 @@ import android.view.View
 import android.view.ViewGroup
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
-
 import kotlinx.android.synthetic.main.activity_onboard.*
 import kotlinx.android.synthetic.main.fragment_onboard.view.*
 import uk.ac.ncl.openlab.irismsg.R
 import javax.inject.Inject
 
+/**
+ * An Activity to onboard the user into the app
+ * TODO - Check / Add permissions dialog on login tapped
+ * TODO - Add / Implement actual pages
+ */
 class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     @Inject
@@ -29,33 +31,20 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
-    /**
-     * The [android.support.v4.view.PagerAdapter] that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * [android.support.v4.app.FragmentStatePagerAdapter].
-     */
     private var mSectionsPagerAdapter : SectionsPagerAdapter? = null
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Setup the view
         setContentView(R.layout.activity_onboard)
-        
         setSupportActionBar(toolbar)
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
         
-        // Set up the ViewPager with the sections adapter.
+        // Create an adapter to serve the pages
+        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
         container.adapter = mSectionsPagerAdapter
         
-//        fab.setOnClickListener { view ->
-//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show()
-//        }
-    
+        // Listen for login clicks
         login_button.setOnClickListener { _ ->
             startActivityForResult(
                 Intent(this, LoginActivity::class.java),
@@ -68,6 +57,7 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
     override fun onActivityResult(requestCode : Int, resultCode : Int, data : Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         
+        // Close ourself if the login activity was successful
         if (requestCode == LoginActivity.REQUEST_LOGIN) {
             when (resultCode) {
                 LoginActivity.RESULT_LOGGED_IN -> finish()
@@ -86,12 +76,13 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         
+        // Processes menu clicks
         val intent = when (item.itemId) {
             R.id.action_even_more -> Intent(Intent.ACTION_VIEW, Uri.parse("http://irismsg.io"))
             R.id.action_open_lab  -> Intent(Intent.ACTION_VIEW, Uri.parse("http://openlab.ncl.ac.uk"))
             else -> null
         }
-    
+        
         if (intent != null) startActivity(intent)
         
         return super.onOptionsItemSelected(item)
@@ -131,7 +122,7 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
              * The fragment argument representing the section number for this
              * fragment.
              */
-            private val ARG_SECTION_NUMBER = "section_number"
+            private const val ARG_SECTION_NUMBER = "section_number"
             
             /**
              * Returns a new instance of this fragment for the given section

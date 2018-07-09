@@ -49,7 +49,7 @@ class EntityGeneratorTest {
     
     @Test fun makeUserAuth_hasAToken () {
         val userAuth= generator.makeUserAuth()
-        assertEquals("some-really-long-jsonwebtoken", userAuth.token)
+        assertEquals(EntityGenerator.fakeJwt, userAuth.token)
     }
     @Test fun makeUserAuth_hasAUser () {
         val userAuth= generator.makeUserAuth()
