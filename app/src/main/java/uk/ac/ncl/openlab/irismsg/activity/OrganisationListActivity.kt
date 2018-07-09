@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
@@ -49,9 +50,22 @@ class OrganisationListActivity : AppCompatActivity(),
         tabs_layout.setupWithViewPager(tabs_pager)
         
         // Setup click handler
-        add_organisation_fab.setOnClickListener { view ->
-        
+        add_organisation_fab.setOnClickListener { _ ->
+            startActivity(
+                Intent(this, EditOrganisationActivity::class.java)
+            )
         }
+        
+        tabs_pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(p0 : Int) { }
+            override fun onPageScrolled(p0 : Int, p1 : Float, p2 : Int) { }
+            override fun onPageSelected(p0 : Int) {
+                when (p0) {
+                    0 -> add_organisation_fab.show()
+                    else -> add_organisation_fab.hide()
+                }
+            }
+        })
     }
     
     override fun onCreateOptionsMenu(menu : Menu?) : Boolean {

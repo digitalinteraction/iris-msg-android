@@ -44,7 +44,10 @@
             android:name=".activity.OnboardActivity"
             android:label="@string/title_activity_onboard"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activity.EditOrganisationActivity"></activity>
+        <activity
+            android:name=".activity.EditOrganisationActivity"
+            android:label="@string/title_activity_add_organisation"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

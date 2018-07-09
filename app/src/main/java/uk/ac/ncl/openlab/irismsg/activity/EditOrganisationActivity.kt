@@ -12,6 +12,7 @@ class EditOrganisationActivity : AppCompatActivity() {
     }
     
     companion object {
-        const val REQUEST_ORG_ID = 1
+        const val MODE_ADD = 1
+        const val MODE_EDIT = 2
     }
 }

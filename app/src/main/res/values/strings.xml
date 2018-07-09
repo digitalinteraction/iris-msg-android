@@ -5,6 +5,7 @@
     <string name="title_activity_login">Getting Started</string>
     <string name="title_activity_onboard">Welcome to Iris Msg</string>
     <string name="title_activity_organisation_list">Iris Msg</string>
+    <string name="title_activity_add_organisation">Create Organisation</string>
 
     <string name="action_even_more">More Info</string>
     <string name="action_open_lab">About Open Lab</string>
