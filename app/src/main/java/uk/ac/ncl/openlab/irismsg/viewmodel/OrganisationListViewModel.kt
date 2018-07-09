@@ -6,14 +6,19 @@ import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 import uk.ac.ncl.openlab.irismsg.repo.OrganisationRepository
 import javax.inject.Inject
 
+/**
+ * A View model for a list of Organisation Entities
+ */
 class OrganisationListViewModel
-@Inject constructor(val organisationRepository : OrganisationRepository) : ViewModel() {
+@Inject constructor(private val orgRepo : OrganisationRepository) : ViewModel() {
     
     lateinit var organisations: LiveData<List<OrganisationEntity>>
         private set
     
-    fun init () {
-        if (::organisations.isInitialized) return
-        organisations = organisationRepository.getOrganisations()
+    fun init () : OrganisationListViewModel {
+        if (!::organisations.isInitialized) {
+            organisations = orgRepo.getOrganisations()
+        }
+        return this
     }
 }

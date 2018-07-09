@@ -7,6 +7,9 @@ import uk.ac.ncl.openlab.irismsg.common.MemberRole
 
 private data class TitledFrag <T : Fragment> (val title: String, val frag: T)
 
+/**
+ * A Pager Adapter to display organisation lists for different roles
+ */
 class OrganisationListPagerAdapter(fm : FragmentManager) : FragmentPagerAdapter(fm) {
 
     private val pages = listOf(

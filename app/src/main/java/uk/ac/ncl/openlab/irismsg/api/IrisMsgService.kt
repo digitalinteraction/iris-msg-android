@@ -5,6 +5,9 @@ import uk.ac.ncl.openlab.irismsg.common.ApiCall
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.*
 
+/**
+ * An interface for talking to the IrisMsg service, annotated for Retrofit
+ */
 interface IrisMsgService {
     
     //
@@ -68,20 +71,24 @@ interface IrisMsgService {
     
     
     //
-    // Utilities (Wrap the object creation for @Body definitions)
+    // Utilities (Wraps the object creation for @Body definitions)
     //
     fun requestLogin (phoneNumber: String, countryCode: String) : ApiCall<Any> {
         return requestLogin(RequestLoginRequest(phoneNumber, countryCode))
     }
+    
     fun checkLogin (code: Int) : ApiCall<UserAuthEntity> {
         return checkLogin(CheckLoginRequest(code))
     }
+    
     fun updateFcm (fcmToken: String) : ApiCall<Any> {
         return updateFcm(UpdateFcmRequest(fcmToken))
     }
+    
     fun createOrganisation (name: String, info: String) : ApiCall<OrganisationEntity> {
         return createOrganisation(CreateOrganisationRequest(name, info))
     }
+    
     fun createMember (
         organisationId: String, role: MemberRole, phoneNumber: String, countryCode: String
     ) : ApiCall<MemberEntity> {
@@ -90,9 +97,11 @@ interface IrisMsgService {
             CreateMemberRequest(role, phoneNumber, countryCode)
         )
     }
+    
     fun createMessage (organisationId: String, content: String) : ApiCall<MessageEntity> {
         return createMessage(CreateMessageRequest(content, organisationId))
     }
+    
     fun updateMessageAttempts (updates: List<MessageAttemptUpdate>) : ApiCall<Any> {
         return updateMessageAttempts(UpdateMessageAttemptsRequest(updates))
     }

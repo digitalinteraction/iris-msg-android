@@ -11,27 +11,24 @@ import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * A repository responsible for organisation entities
+ * TODO - Error handling
+ */
 @Singleton
 class OrganisationRepository @Inject constructor() {
     
     @Inject
     lateinit var irisService: IrisMsgService
     
-    // TODO: Error handling
-    
     private fun <T> handleEnqueue (call: ApiCall<T>) : LiveData<T> {
         val target = MutableLiveData<T>()
         
-        call.enqueue(object : Callback<ApiResponse<T>> {
-            override fun onResponse(call : Call<ApiResponse<T>>?, response : Response<ApiResponse<T>>?) {
-                response?.body()?.apply {
-                    if (data != null) target.value = data
-                }
-            }
-            override fun onFailure(call : Call<ApiResponse<T>>?, t : Throwable?) {
-                // ...
-            }
-        })
+        call.enqueue(ApiCallback({ res ->
+            target.value = res.data
+        }, { _ ->
+            TODO("Handle this error")
+        }))
         return target
     }
     

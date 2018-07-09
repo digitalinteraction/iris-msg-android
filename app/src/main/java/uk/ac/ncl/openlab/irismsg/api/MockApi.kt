@@ -5,6 +5,9 @@ import uk.ac.ncl.openlab.irismsg.common.ApiCall
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.*
 
+/**
+ * A fake implementation of the IrisMsg api using locally generated entities
+ */
 class MockIrisMsgService : IrisMsgService {
     
     private val generator = EntityGenerator()

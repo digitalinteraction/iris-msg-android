@@ -12,8 +12,11 @@ import uk.ac.ncl.openlab.irismsg.ui.OrganisationListFragment.OnListFragmentInter
 
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 
+/**
+ * A Recycler adapter to show a list of Organisation Entities
+ */
 class OrganisationRecyclerViewAdapter(
-        private val mListener: OnListFragmentInteractionListener?
+    private val mListener: OnListFragmentInteractionListener?
 ) : RecyclerView.Adapter<OrganisationRecyclerViewAdapter.ViewHolder>() {
     
     private val mOnClickListener: View.OnClickListener

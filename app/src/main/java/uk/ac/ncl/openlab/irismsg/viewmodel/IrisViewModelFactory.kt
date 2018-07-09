@@ -9,6 +9,9 @@ import javax.inject.Singleton
 
 typealias ViewModelMap = Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
 
+/**
+ * A Factory to create a model:ViewModel map to provide to ViewModelProviders
+ */
 @Singleton
 class IrisViewModelFactory @Inject constructor(private val creators: ViewModelMap)
     : ViewModelProvider.Factory {

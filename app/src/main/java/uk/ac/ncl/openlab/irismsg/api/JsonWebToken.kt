@@ -5,6 +5,9 @@ import com.auth0.android.jwt.JWT
 
 private const val fakedToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3IiOiJjdXJyZW50LXVzZXItaWQiLCJpYXQiOjE1MzA3MTM1NzZ9.swsQwUsEVghOiABq2Dokm3iM3aIaDQ9X4jd_B5RRH8g"
 
+/**
+ * A utility for accessing storing the authentication jwt in SharedPreferences
+ */
 class JsonWebToken (token: String) : JWT(token) {
     
     companion object {
@@ -28,4 +31,5 @@ class JsonWebToken (token: String) : JWT(token) {
     }
     
     fun getUserId () : String? = this.getClaim("usr").asString()
+    fun getLocale () : String? = this.getClaim("loc").asString()
 }

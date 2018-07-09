@@ -21,9 +21,7 @@ import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationListViewModel
 import javax.inject.Inject
 
 /**
- * A fragment representing a list of Items.
- * Activities containing this fragment SHOULD implement the
- * [OrganisationListFragment.OnListFragmentInteractionListener] interface.
+ * A fragment representing a list of Organisations, filtered by a MemberRole
  */
 class OrganisationListFragment : Fragment(), Injectable {
     
@@ -40,22 +38,22 @@ class OrganisationListFragment : Fragment(), Injectable {
     
         viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(OrganisationListViewModel::class.java)
-
-        viewModel.init()
+                .init()
 
         arguments?.let {
             role = it.get(ARG_ROLE) as MemberRole
         }
     
+        val userId = JsonWebToken.load(context!!)?.getUserId() ?: return
+        
         viewModel.organisations.observe(this, Observer { orgs ->
-            val userId = JsonWebToken.load(context!!)?.getUserId()
-            if (userId != null && orgs != null) {
-                adapter.organisations = orgs.filter {
-                    when (role) {
-                        MemberRole.DONOR -> it.members.all {
-                            it.role != MemberRole.COORDINATOR || it.userId != userId }
-                        else -> it.members.any {
-                            it.role == MemberRole.COORDINATOR && it.userId == userId }
+            adapter.organisations = (orgs ?: listOf()).filter { org ->
+                when (role) {
+                    MemberRole.DONOR -> org.members.all { member ->
+                        member.role != MemberRole.COORDINATOR || member.userId != userId
+                    }
+                    else -> org.members.any { member ->
+                        member.role == MemberRole.COORDINATOR && member.userId == userId
                     }
                 }
             }

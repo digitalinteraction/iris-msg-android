@@ -1,14 +1,18 @@
 package uk.ac.ncl.openlab.irismsg.di
 
+import android.app.Application
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import dagger.Module
 import dagger.Provides
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import uk.ac.ncl.openlab.irismsg.IrisMsgApp
 import javax.inject.Singleton
 import uk.ac.ncl.openlab.irismsg.api.*
 import java.util.*
+import javax.inject.Inject
 
 @Module(includes = [
     ViewModelModule::class
@@ -25,17 +29,22 @@ class AppModule {
     
     @Singleton
     @Provides
-    fun provideRetrofit () : Retrofit {
+    fun provideRetrofit (moshi: Moshi, application: Application) : Retrofit {
+        val httpClient = OkHttpClient.Builder()
+                .addInterceptor(JwtAuthorisationInterceptor(application))
+                .build()
+        
         return Retrofit.Builder()
                 .baseUrl("https://api.dev.irismsg.io")
-                .addConverterFactory(MoshiConverterFactory.create(provideMoshi()))
+                .addConverterFactory(MoshiConverterFactory.create(moshi))
+                .client(httpClient)
                 .build()
     }
     
     @Singleton
     @Provides
-    fun provideIrisApiService() : IrisMsgService {
-        return provideRetrofit().create(IrisMsgService::class.java)
+    fun provideIrisApiService(retrofit: Retrofit) : IrisMsgService {
+        return retrofit.create(IrisMsgService::class.java)
     }
 
 //    @Singleton
