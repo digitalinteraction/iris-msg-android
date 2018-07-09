@@ -1,18 +1,28 @@
 package uk.ac.ncl.openlab.irismsg.di
 
 import android.app.Application
-import com.squareup.moshi.Moshi
+import com.squareup.moshi.*
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import uk.ac.ncl.openlab.irismsg.IrisMsgApp
 import javax.inject.Singleton
 import uk.ac.ncl.openlab.irismsg.api.*
+import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import java.util.*
-import javax.inject.Inject
+
+class MemberRoleJsonAdapter : JsonAdapter<MemberRole>() {
+    @FromJson override fun fromJson(reader : JsonReader) : MemberRole? {
+        return MemberRole.valueOf(reader.nextString().toUpperCase())
+    }
+    
+    @ToJson override fun toJson(writer : JsonWriter, value : MemberRole?) {
+        writer.value(value?.toString()?.toLowerCase())
+    }
+}
 
 @Module(includes = [
     ViewModelModule::class
@@ -23,7 +33,9 @@ class AppModule {
     @Provides
     fun provideMoshi () : Moshi {
         return Moshi.Builder()
-                .add(Date::class.java, Rfc3339DateJsonAdapter())
+                .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
+                .add(MemberRole::class.java, MemberRoleJsonAdapter())
+                .add(KotlinJsonAdapterFactory())
                 .build()
     }
     

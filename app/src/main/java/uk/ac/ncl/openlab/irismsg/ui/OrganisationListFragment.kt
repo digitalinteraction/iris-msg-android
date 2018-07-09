@@ -35,28 +35,46 @@ class OrganisationListFragment : Fragment(), Injectable {
     
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-    
+        
+        // Get a ViewModel to manage the data
         viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(OrganisationListViewModel::class.java)
                 .init()
-
+        
+        // Parse our arguments
         arguments?.let {
             role = it.get(ARG_ROLE) as MemberRole
         }
-    
+        
+        // Grab the user's id from our jwt
         val userId = JsonWebToken.load(context!!)?.getUserId() ?: return
         
+        // Listen for organisations
         viewModel.organisations.observe(this, Observer { orgs ->
-            adapter.organisations = (orgs ?: listOf()).filter { org ->
-                when (role) {
-                    MemberRole.DONOR -> org.members.all { member ->
-                        member.role != MemberRole.COORDINATOR || member.userId != userId
+            if (orgs == null) return@Observer
+            
+            adapter.organisations = when (role) {
+                MemberRole.COORDINATOR -> {
+                    orgs.filter { org ->
+                        org.members.any { member ->
+                            member.role == MemberRole.COORDINATOR
+                                    && member.userId == userId
+                                    && member.isActive()
+                        }
                     }
-                    else -> org.members.any { member ->
-                        member.role == MemberRole.COORDINATOR && member.userId == userId
+                }
+                else -> {
+                    orgs.filter { org ->
+                        org.members.all { member ->
+                            member.role != MemberRole.COORDINATOR ||
+                                    member.userId != userId ||
+                                    !member.isActive()
+                        }
                     }
                 }
             }
+            
+            adapter.notifyDataSetChanged()
         })
     }
     

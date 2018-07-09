@@ -56,7 +56,6 @@ class EntityGenerator {
             id = if (type === UserGen.CURRENT) currentUserId else makeId(),
             createdAt = makeDate(DateGen.PAST),
             updatedAt = makeDate(DateGen.PAST),
-            countryCode = "gb",
             phoneNumber = "07880123456",
             verifiedOn = if (type !== UserGen.UNVERIFIED) makeDate(DateGen.NOW) else null,
             fcmToken = if (type !== UserGen.UNVERIFIED) "abcdef-123456" else null
