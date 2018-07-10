@@ -68,10 +68,10 @@ class OrganisationListFragment : Fragment(), Injectable {
                 }
                 else -> {
                     orgs.filter { org ->
-                        org.members.all { member ->
-                            member.role != MemberRole.COORDINATOR ||
-                                    member.userId != userId ||
-                                    !member.isActive()
+                        !org.members.any { member ->
+                            member.role == MemberRole.COORDINATOR &&
+                                    member.userId == userId &&
+                                    member.isActive()
                         }
                     }
                 }

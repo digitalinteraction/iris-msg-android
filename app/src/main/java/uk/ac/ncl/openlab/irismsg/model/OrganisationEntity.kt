@@ -3,6 +3,8 @@ package uk.ac.ncl.openlab.irismsg.model
 import com.squareup.moshi.Json
 import java.util.Date
 
+private const val shortInfoLength = 120
+
 data class OrganisationEntity(
     @Json(name = "_id") override val id: String,
     @Json(name = "createdAt") override val createdAt: Date,
@@ -10,4 +12,9 @@ data class OrganisationEntity(
     @Json(name = "name") var name: String,
     @Json(name = "info") var info: String,
     @Json(name = "members") val members: List<MemberEntity>
-) : ApiEntity
+) : ApiEntity {
+    
+    val shortInfo: String
+        get () = info.substring(0, Math.min(info.length, shortInfoLength)) +
+                if (info.length > shortInfoLength) "..." else ""
+}

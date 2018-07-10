@@ -46,7 +46,8 @@ class ViewsUtil @Inject constructor(val app: Application) {
         showApiError(apiView, errors.joinToString())
     }
     
-    fun unFocus (currentFocus: View) {
+    fun unFocus (currentFocus: View?) {
+        currentFocus ?: return
         val currentInput = app.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
         currentInput.hideSoftInputFromWindow(currentFocus.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
     }
