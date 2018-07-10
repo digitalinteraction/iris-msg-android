@@ -23,6 +23,7 @@ import javax.inject.Inject
 
 /**
  * A fragment representing a list of Organisations, filtered by a MemberRole
+ * TODO: Handle loading errors?
  */
 class OrganisationListFragment : Fragment(), Injectable {
     
@@ -52,17 +53,25 @@ class OrganisationListFragment : Fragment(), Injectable {
         // Listen for organisations
         swipe_refresh.isRefreshing = true
         viewModel.organisations.observe(this, Observer { orgs ->
+            
+            // Stop the refresh animation
             swipe_refresh.isRefreshing = false
+            
+            // Do nothing more if there are no organisations
+            // TODO: Handle this error
             if (orgs == null) return@Observer
             
+            // Filter the organisations based on our role
             adapter.organisations = when (role) {
                 MemberRole.COORDINATOR -> orgs.filter { it.isCoordinator(userId) }
                 else -> orgs.filter { !it.isCoordinator(userId) }
             }
             
+            // Tell the recycler to reload
             adapter.notifyDataSetChanged()
         })
     
+        // Listen for refresh events
         swipe_refresh.setOnRefreshListener {
             swipe_refresh.isRefreshing = true
             viewModel.reload()
@@ -72,14 +81,13 @@ class OrganisationListFragment : Fragment(), Injectable {
     override fun onResume() {
         super.onResume()
         
-        viewModel.reload()
+        viewModel.reloadFromCache()
     }
     
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(
-            R.layout.fragment_organisation_list, container,
-            false
+            R.layout.fragment_organisation_list, container, false
         )
 
         adapter = OrganisationRecyclerViewAdapter(listener)
@@ -95,9 +103,7 @@ class OrganisationListFragment : Fragment(), Injectable {
     
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnListFragmentInteractionListener) {
-            listener = context
-        }
+        if (context is OnListFragmentInteractionListener) { listener = context }
     }
     
     override fun onDetach() {

@@ -27,12 +27,17 @@ import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationViewModel
 import javax.inject.Inject
 
+/**
+ * An Activity to show an Organisation in detail
+ * TODO - Setup the tabs
+ * TODO - Setup the fab
+ * TODO - Add a dialog to the destroy click
+ */
 class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
+    // Dagger injection point
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    
     override fun supportFragmentInjector() = dispatchingAndroidInjector
-    
     
     
     private lateinit var viewModel: OrganisationViewModel
@@ -45,18 +50,25 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_organisation_detail)
         
+        // Setup the view
+        setContentView(R.layout.activity_organisation_detail)
         setSupportActionBar(toolbar)
-//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    
+        // supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        
+        
+        // Get the passed org id or fail
         organisationId = intent.extras.getString(ORGANISATION_ID_KEY)
                 ?: throw RuntimeException("OrganisationDetailActivity not passed an Organisation id")
         
+        
+        // Create a ViewModel to handle the api entity
         viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(OrganisationViewModel::class.java)
                 .init(organisationId)
         
+        
+        // Listen to changes for our ViewModel (ie it loading)
         viewModel.organisation.observe(this, Observer { org ->
             if (org != null) {
                 supportActionBar?.title = org.name
@@ -66,45 +78,34 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
             }
         })
         
+        // TODO - Setup the tabs
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
-        
-        // Set up the ViewPager with the sections adapter.
         container.adapter = mSectionsPagerAdapter
-        
         container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
         tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
-        
+    
+    
+        // TODO - Setup the fab
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
         }
-        
     }
     
     
     override fun onCreateOptionsMenu(menu : Menu) : Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_organisation_detail, menu)
         return true
     }
     
     override fun onOptionsItemSelected(item : MenuItem) : Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId
         
-        if (id == R.id.action_delete_organisation) {
-    
+        if (item.itemId== R.id.action_delete_organisation) {
+            
+            // Destroy the organisation
             irisService.destroyOrganisation(organisationId).enqueue(ApiCallback({ res ->
-                
-                if (res.success) {
-                    finish()
-                } else {
-                    Snackbar.make(toolbar, res.messages.joinToString(), Snackbar.LENGTH_LONG)
-                            .show()
-                }
-                
+                if (res.success) finish()
+                else Snackbar.make(toolbar, res.messages.joinToString(), Snackbar.LENGTH_LONG).show()
             }, { _ ->
                 TODO("Handle orgs.destroy api failure")
             }))
@@ -126,11 +127,8 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
      */
     inner class SectionsPagerAdapter(fm : FragmentManager) : FragmentPagerAdapter(fm) {
         
-        override fun getItem(position : Int) : Fragment {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1)
-        }
+        override fun getItem(position : Int)
+                = PlaceholderFragment.newInstance(position + 1)
     
         override fun getCount() = 3
     }

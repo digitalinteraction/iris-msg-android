@@ -22,7 +22,6 @@ import javax.inject.Inject
 
 /**
  * An Activity to present a Organisations that the user is part of either as a coordinator or donor
- * TODO - Implement organisation clicks
  */
 class OrganisationListActivity : AppCompatActivity(),
         HasSupportFragmentInjector,
@@ -56,11 +55,12 @@ class OrganisationListActivity : AppCompatActivity(),
             )
         }
         
+        // Listen for page changes to update the fab
         tabs_pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(p0 : Int) { }
             override fun onPageScrolled(p0 : Int, p1 : Float, p2 : Int) { }
-            override fun onPageSelected(p0 : Int) {
-                when (p0) {
+            override fun onPageSelected(newPage : Int) {
+                when (newPage) {
                     0 -> add_organisation_fab.show()
                     else -> add_organisation_fab.hide()
                 }
@@ -73,17 +73,19 @@ class OrganisationListActivity : AppCompatActivity(),
         return true
     }
     
-    override fun onOptionsItemSelected(item : MenuItem?) : Boolean {
+    override fun onOptionsItemSelected(item : MenuItem) : Boolean {
     
-        val intent = when (item?.itemId) {
+        // Create an intent based on the id
+        val intent = when (item.itemId) {
             R.id.action_even_more -> Intent(Intent.ACTION_VIEW, Uri.parse("http://irismsg.io"))
             R.id.action_open_lab  -> Intent(Intent.ACTION_VIEW, Uri.parse("http://openlab.ncl.ac.uk"))
             else -> null
         }
-    
+        
+        // If an intent was created, start it
         if (intent != null) startActivity(intent)
     
-        // Perform logout
+        // If they clicked logout, perform the logout
         if (item?.itemId == R.id.action_logout) {
             
             // Un-store the jwt and current user

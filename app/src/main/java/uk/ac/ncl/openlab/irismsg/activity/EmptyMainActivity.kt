@@ -18,14 +18,13 @@ import javax.inject.Inject
  */
 class EmptyMainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    
-    @Inject
-    lateinit var irisService : IrisMsgService
-    
+    // Dagger injection point
+    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
     override fun supportFragmentInjector() = dispatchingAndroidInjector
-
+    
+    
+    @Inject lateinit var irisService : IrisMsgService
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

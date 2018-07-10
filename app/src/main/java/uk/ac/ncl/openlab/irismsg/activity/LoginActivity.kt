@@ -31,10 +31,9 @@ import javax.inject.Inject
  */
 class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
+    // Dagger injection point
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    
     override fun supportFragmentInjector() = dispatchingAndroidInjector
-    
     
     
     @Inject lateinit var irisService: IrisMsgService
@@ -48,7 +47,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         // Setup the view
         setContentView(R.layout.activity_login)
         setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        
         
         // Listen for keyboard done events
         phone_number.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
@@ -117,6 +116,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     private fun attemptLoginRequest() {
     
+        // Unfocus any fields
         viewsUtil.unFocus(currentFocus)
         
         // Reset errors.
@@ -126,92 +126,92 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         var countryCodeStr = ""
         var phoneNumberStr = phone_number.text.toString()
         
-        var cancel = false
-        var nextFocus : View? = null
+        // The view to refocus if validation fails
+        var toRefocus : View? = null
         
+        // Parse the phone number
         val phoneNumber = parsePhoneNumber(phoneNumberStr)
         
+        // Validate the phone number
         if (phoneNumber == null) {
             phone_number.error = getString(R.string.error_invalid_phone_number)
-            nextFocus = phone_number
-            cancel = true
+            toRefocus = phone_number
         } else {
             phoneNumberStr = phoneNumber.nationalNumber.toString()
             countryCodeStr = PhoneNumberUtil.getInstance().getRegionCodeForNumber(phoneNumber)
         }
         
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            nextFocus?.requestFocus()
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            requestLoginCode(countryCodeStr, phoneNumberStr)
-        }
+        // Either refocus the invalid field or perform the login request
+        if (toRefocus != null) toRefocus.requestFocus()
+        else requestLoginCode(countryCodeStr, phoneNumberStr)
     }
     
     private fun requestLoginCode (countryCode: String, phoneNumber: String) {
         
+        // Enter the working state and clear previous api errors
         enterState(State.WORKING)
-        showApiError(null)
+        viewsUtil.showApiError(api_error, null)
         
+        // Perform the request and update the state accordingly
         irisService.requestLogin(RequestLoginRequest(phoneNumber, countryCode)).enqueue(ApiCallback({ res ->
             if (!res.success) {
                 enterState(State.REQUEST)
-                showApiError(res.messages.joinToString())
+                viewsUtil.showApiError(api_error, res.messages.joinToString())
             } else {
                 enterState(State.CHECK)
             }
         }, { _ ->
             enterState(State.REQUEST)
-            showApiError(getString(R.string.api_unknown_error))
+            viewsUtil.showApiError(api_error, getString(R.string.api_unknown_error))
         }))
     }
     
     
     private fun attemptLoginCheck () {
     
+        // Unfocus any fields
         viewsUtil.unFocus(currentFocus)
         
+        // Clear previous errors
         verification_code.error = null
         
+        // Get the code they entered
         val codeStr = verification_code.text.toString()
     
-        var cancel = false
-        var nextFocus : View? = null
+        // The field to refocus if invalid
+        var toRefocus : View? = null
         
+        // Validate the code they entered
         if (TextUtils.isEmpty(codeStr)) {
             verification_code.error = getString(R.string.error_field_required)
-            nextFocus = verification_code
-            cancel = true
+            toRefocus = verification_code
         } else if (!isValidVerificationCode(codeStr)) {
             verification_code.error = getString(R.string.error_invalid_verification_code)
-            nextFocus = verification_code
-            cancel = true
+            toRefocus = verification_code
         }
-        
-        if (cancel) {
-            nextFocus?.requestFocus()
-        } else {
-            checkLoginCode(codeStr.toInt())
-        }
+    
+        // Either refocus the invalid field or perform the login request
+        if (toRefocus != null) toRefocus?.requestFocus()
+        else checkLoginCode(codeStr.toInt())
     }
     
     private fun checkLoginCode (code: Int) {
+        
+        // Enter the working state
         enterState(State.WORKING)
-        showApiError(null)
+        viewsUtil.showApiError(api_error, null)
     
+        // Perform the request and update the state accordingly
         irisService.checkLogin(CheckLoginRequest(code)).enqueue(ApiCallback({ res ->
             if (!res.success || res.data == null) {
                 enterState(State.CHECK)
-                showApiError(res.messages.joinToString())
+                viewsUtil.showApiError(api_error, res.messages.joinToString())
             } else {
                 finishLogin(res.data)
             }
         }, { _ ->
             enterState(State.CHECK)
-            showApiError(getString(R.string.api_unknown_error))
+            viewsUtil.showApiError(api_error, getString(R.string.api_unknown_error))
         }))
     }
     
@@ -236,22 +236,6 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     private fun isValidVerificationCode(codeStr : String) : Boolean {
         val code = codeStr.toIntOrNull() ?: return false
         return code in 0..999999
-    }
-    
-    /**
-     * Shows an api error or hides the control
-     */
-    private fun showApiError (error: String?) {
-        when (error) {
-            null -> {
-                api_error.visibility = View.GONE
-                api_error.text = ""
-            }
-            else -> {
-                api_error.visibility = View.VISIBLE
-                api_error.text = error
-            }
-        }
     }
     
     companion object {

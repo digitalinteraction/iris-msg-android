@@ -7,7 +7,9 @@ import dagger.android.HasActivityInjector
 import uk.ac.ncl.openlab.irismsg.di.AppInjector
 import javax.inject.Inject
 
-
+/**
+ * The Android application, injectable onto objects via Dagger
+ */
 class IrisMsgApp : Application(), HasActivityInjector {
     
     @Inject

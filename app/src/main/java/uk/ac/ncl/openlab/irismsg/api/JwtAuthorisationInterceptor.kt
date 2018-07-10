@@ -10,14 +10,17 @@ import okhttp3.Response
 class JwtAuthorisationInterceptor (private val ctx: Context) : Interceptor {
     override fun intercept(chain : Interceptor.Chain) : Response {
         
+        // Create a cloned builder for the modified request
         val request = chain.request()
         val jwt = JsonWebToken.load(ctx)
         val builder = request.newBuilder()
         
-        jwt?.apply {
-            builder.addHeader("Authorization", "Bearer $this")
+        // If set, add the jwt bearer header
+        jwt?.let { jwt ->
+            builder.addHeader("Authorization", "Bearer $jwt")
         }
         
+        // Continue the chain with the (maybe modified) request
         return chain.proceed(builder.build())
     }
 }

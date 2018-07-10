@@ -10,15 +10,23 @@ import android.widget.TextView
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * A utility for Activities/Fragments to perform common actions, designed to be @Inject'd in
+ */
 @Singleton
 class ViewsUtil @Inject constructor(val app: Application) {
     
+    /** Toggle an element with an short fade animation */
     fun toggleElem (view: View?, show: Boolean) {
         view ?: return
         
+        // Get the animation time
         val shortAnimTime = app.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         
+        // Set the visibility
         view.visibility = if (show) View.VISIBLE else View.GONE
+        
+        // Animate the alpha
         view.animate()
                 .setDuration(shortAnimTime)
                 .alpha((if (show) 1 else 0).toFloat())
@@ -29,6 +37,7 @@ class ViewsUtil @Inject constructor(val app: Application) {
                 })
     }
     
+    /** Show an api error or hide its field if null */
     fun showApiError (apiView: TextView, error: String?) {
         when (error) {
             null -> {
@@ -42,10 +51,12 @@ class ViewsUtil @Inject constructor(val app: Application) {
         }
     }
     
+    /** Show a set of api errors, joining them with commas */
     fun showApiErrors (apiView: TextView, errors: List<String>) {
         showApiError(apiView, errors.joinToString())
     }
     
+    /** Unfocus the currently focused input */
     fun unFocus (currentFocus: View?) {
         currentFocus ?: return
         val currentInput = app.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return

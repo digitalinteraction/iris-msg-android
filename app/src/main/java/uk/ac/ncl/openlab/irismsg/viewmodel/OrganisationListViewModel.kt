@@ -15,6 +15,7 @@ class OrganisationListViewModel
     lateinit var organisations: MutableLiveData<List<OrganisationEntity>>
         private set
     
+    // Initialize ourself (we don't control the constructor)
     fun init () : OrganisationListViewModel {
         if (!::organisations.isInitialized) {
             organisations = orgRepo.getOrganisations()
@@ -22,13 +23,13 @@ class OrganisationListViewModel
         return this
     }
     
+    // Force a reload of the organisations
     fun reload () {
         orgRepo.reloadOrganisations(organisations)
     }
     
-    fun push (org: OrganisationEntity) {
-        val mutable = organisations.value?.toMutableList() ?: mutableListOf()
-        mutable.add(org)
-        organisations.value = mutable
+    // Reload the organisations from the cache
+    fun reloadFromCache () {
+        orgRepo.reloadOrganisationsFromCache(organisations)
     }
 }

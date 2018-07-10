@@ -26,9 +26,8 @@ import javax.inject.Inject
  */
 class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    
+    // Dagger injection point
+    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
     private var mSectionsPagerAdapter : SectionsPagerAdapter? = null
@@ -72,9 +71,6 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
     
     override fun onOptionsItemSelected(item : MenuItem) : Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         
         // Processes menu clicks
         val intent = when (item.itemId) {
@@ -83,6 +79,7 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
             else -> null
         }
         
+        // If there is an activity, start it
         if (intent != null) startActivity(intent)
         
         return super.onOptionsItemSelected(item)

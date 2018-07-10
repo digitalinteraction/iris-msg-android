@@ -16,11 +16,13 @@ import uk.ac.ncl.openlab.irismsg.common.ViewsUtil
 import uk.ac.ncl.openlab.irismsg.repo.OrganisationRepository
 import javax.inject.Inject
 
+/**
+ * An Activity to create an Organisation
+ */
 class EditOrganisationActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    
+    // Dagger injection point
+    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
     
@@ -33,28 +35,30 @@ class EditOrganisationActivity : AppCompatActivity(), HasSupportFragmentInjector
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         
+        // Seup the view
         setContentView(R.layout.activity_edit_organisation)
         setSupportActionBar(toolbar)
         
-        save_button.setOnClickListener { _ ->
-            viewsUtil.unFocus(currentFocus)
-            attemptSave()
-        }
+        // Listen for save clicks
+        save_button.setOnClickListener { _ -> attemptSave() }
         
-        listOf(api_progress, edit_form).forEach {
-            it.visibility = View.GONE
-        }
+        // Hide ui ready for state change
+        listOf(api_progress, edit_form).forEach { it.visibility = View.GONE }
         
+        // Enter the input state
         enterState(State.INPUT)
     }
     
     private fun attemptSave () {
+    
+        viewsUtil.unFocus(currentFocus)
         
         var cancelFocus: View? = null
         
         val nameStr = name.text.toString()
         val infoStr = info.text.toString()
     
+        // Check if the info is valid
         if (TextUtils.isEmpty(info.text)) {
             info.error = getString(R.string.error_field_required)
             cancelFocus = info
@@ -62,7 +66,8 @@ class EditOrganisationActivity : AppCompatActivity(), HasSupportFragmentInjector
             info.error = getString(R.string.error_invalid_info)
             cancelFocus = info
         }
-        
+    
+        // Check if the name is valid
         if (TextUtils.isEmpty(name.text)) {
             name.error = getString(R.string.error_field_required)
             cancelFocus = name
@@ -71,9 +76,12 @@ class EditOrganisationActivity : AppCompatActivity(), HasSupportFragmentInjector
             cancelFocus = name
         }
         
+        // If either was invalid, refocus that
         if (cancelFocus != null) {
             cancelFocus.requestFocus()
         } else {
+            
+            // If both were valid, create the organisation
             saveOrganisation(nameStr, infoStr)
         }
     }
@@ -87,39 +95,49 @@ class EditOrganisationActivity : AppCompatActivity(), HasSupportFragmentInjector
     }
     
     private fun saveOrganisation (name: String, info: String) {
+        
+        // Move to the working state and clear the api error
         enterState(State.WORKING)
         viewsUtil.showApiError(api_error, null)
         
+        // Perform the create
         val body = CreateOrganisationRequest(name, info)
-        
         irisService.createOrganisation(body).enqueue(ApiCallback({ res ->
+            
+            // If it failed, show the errors
             if (!res.success || res.data == null) {
                 enterState(State.INPUT)
                 viewsUtil.showApiErrors(api_error, res.messages)
             } else {
-                // Add Org to OrganisationRepo
-//                viewModel.push(res.data)
+
+                // If successful, update the cache
                 orgRepo.organisationCreated(res.data)
                 
-                // Move to Org Detail?
+                // Close ourself
                 setResult(RESULT_CREATED)
                 finish()
             }
         }, { _ ->
+            
+            // If anything unknown went wrong, show a generic error
             enterState(State.INPUT)
             viewsUtil.showApiError(api_error, getString(R.string.api_unknown_error))
         }))
     }
     
     private fun enterState (newState: State) {
+        
+        // Toggle out the old state
         viewsUtil.toggleElem(when (currentState) {
             State.INPUT -> edit_form
             State.WORKING -> api_progress
             else -> null
         }, false)
         
+        // Set the state
         currentState = newState
     
+        // Toggle in the new state
         viewsUtil.toggleElem(when (newState) {
             State.INPUT -> edit_form
             State.WORKING -> api_progress
