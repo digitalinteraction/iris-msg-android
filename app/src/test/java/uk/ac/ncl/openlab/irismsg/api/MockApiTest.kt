@@ -8,7 +8,11 @@ import uk.ac.ncl.openlab.irismsg.common.MemberRole
 
 class MockApiTest {
     
-    lateinit var api: IrisMsgService
+    private lateinit var api: IrisMsgService
+    
+    private val createOrgBody = CreateOrganisationRequest("Test name", "Test info")
+    private val createMsgBody = CreateMessageRequest("Hello, World!", "1")
+    private val updateAttemptsBody = UpdateMessageAttemptsRequest(listOf())
     
     @Before fun setUp () {
         api = MockIrisMsgService()
@@ -44,27 +48,27 @@ class MockApiTest {
     // MockApi#requestLogin
     
     @Test fun requestLogin_isSuccessful () {
-        assertSuccess(api.requestLogin("07880123456", "GB"))
+        assertSuccess(api.requestLogin(RequestLoginRequest("07880123456", "GB")))
     }
     @Test fun requestLogin_canFail () {
-        assertFail(api.requestLogin("fail", "GB"))
+        assertFail(api.requestLogin(RequestLoginRequest("fail", "GB")))
     }
     
     
     // MockApi#checkLogin
     
     @Test fun checkLogin_isSuccessful () {
-        assertSuccess(api.checkLogin(123456))
+        assertSuccess(api.checkLogin(CheckLoginRequest(123456)))
     }
     @Test fun checkLogin_canFail () {
-        assertFail(api.checkLogin(-1))
+        assertFail(api.checkLogin(CheckLoginRequest(-1)))
     }
     
     
     // MockApi#updateFcm
     
     @Test fun updateFcm_isSuccessful () {
-        assertSuccess(api.updateFcm("new-fcm-token"))
+        assertSuccess(api.updateFcm(UpdateFcmRequest("new-fcm-token")))
     }
     
     
@@ -92,14 +96,14 @@ class MockApiTest {
     // MockApi#createOrganisation
     
     @Test fun createOrganisation_isSuccessful () {
-        assertSuccess(api.createOrganisation("Test name", "Test info"))
+        assertSuccess(api.createOrganisation(createOrgBody))
     }
     @Test fun createOrganisation_isOrganisation () {
-        assertData(api.createOrganisation("Test name", "Test info"))
+        assertData(api.createOrganisation(createOrgBody))
     }
     @Test fun createOrganisation_setsFields () {
-        val res = api.createOrganisation("Test name", "Test info").execute().body()
-        assertNotNull(res?.data ?: null)
+        val res = api.createOrganisation(createOrgBody).execute().body()
+        assertNotNull(res?.data)
         assertEquals(res?.data?.name, "Test name")
         assertEquals(res?.data?.info, "Test info")
     }
@@ -117,20 +121,24 @@ class MockApiTest {
     @Test fun createMember_isSuccessful () {
         assertSuccess(api.createMember(
             "1",
-            MemberRole.SUBSCRIBER,
-            "07880123456",
-            "GB"
+            CreateMemberRequest(
+                MemberRole.SUBSCRIBER,
+                "07880123456",
+                "GB"
+            )
         ))
     }
     @Test fun createMember_isMember () {
         val call = api.createMember(
             "1",
-            MemberRole.SUBSCRIBER,
-            "07880123456",
-            "GB"
+            CreateMemberRequest(
+                MemberRole.SUBSCRIBER,
+                "07880123456",
+                "GB"
+            )
         )
         val res = call.execute().body()
-        assertNotNull(res?.data?: null)
+        assertNotNull(res?.data)
     }
     
     
@@ -154,10 +162,10 @@ class MockApiTest {
     // MockApi#createMessage
     
     @Test fun createMessage_isSuccessful () {
-        assertSuccess(api.createMessage("Hello, World!", "1"))
+        assertSuccess(api.createMessage(createMsgBody))
     }
     @Test fun createMessage_isMessage () {
-        assertData(api.createMessage("Hey", "1"))
+        assertData(api.createMessage(createMsgBody))
     }
     
     
@@ -178,6 +186,6 @@ class MockApiTest {
     // MockApi#updateMessageAttempts
     
     @Test fun updateMessageAttempts_isSuccessful () {
-        assertSuccess(api.updateMessageAttempts(listOf()))
+        assertSuccess(api.updateMessageAttempts(updateAttemptsBody))
     }
 }
