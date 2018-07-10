@@ -1,6 +1,5 @@
 package uk.ac.ncl.openlab.irismsg.viewmodel
 
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
@@ -25,5 +24,11 @@ class OrganisationListViewModel
     
     fun reload () {
         orgRepo.reloadOrganisations(organisations)
+    }
+    
+    fun push (org: OrganisationEntity) {
+        val mutable = organisations.value?.toMutableList() ?: mutableListOf()
+        mutable.add(org)
+        organisations.value = mutable
     }
 }

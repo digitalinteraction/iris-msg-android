@@ -39,6 +39,18 @@
 
     <string name="api_unknown_error">An unknown error occurred, please try again.</string>
 
+
+    <!-- Add Organisation -->
+    <string name="add_organisation_info">
+        An organisation is a group of donors and subscribers that you use to send messages through.
+    </string>
+    <string name="prompt_organisation_name">Name</string>
+    <string name="prompt_organisation_info">Info</string>
+    <string name="action_add_organisation">Create</string>
+    <string name="error_invalid_name">This name is not long enough</string>
+    <string name="error_invalid_info">This info is not long enough</string>
+
+
     <!-- Preferences -->
     <string name="pref_api_mode">App Mode</string>
     <string name="pref_api_mode_info">How the app operates</string>

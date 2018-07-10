@@ -86,6 +86,12 @@ class OrganisationListFragment : Fragment(), Injectable {
         }
     }
     
+    override fun onResume() {
+        super.onResume()
+        
+        viewModel.reload()
+    }
+    
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(

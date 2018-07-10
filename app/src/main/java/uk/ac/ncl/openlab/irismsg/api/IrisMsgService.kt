@@ -73,36 +73,36 @@ interface IrisMsgService {
     //
     // Utilities (Wraps the object creation for @Body definitions)
     //
-    fun requestLogin (phoneNumber: String, countryCode: String) : ApiCall<Any> {
-        return requestLogin(RequestLoginRequest(phoneNumber, countryCode))
-    }
-    
-    fun checkLogin (code: Int) : ApiCall<UserAuthEntity> {
-        return checkLogin(CheckLoginRequest(code))
-    }
-    
-    fun updateFcm (fcmToken: String) : ApiCall<Any> {
-        return updateFcm(UpdateFcmRequest(fcmToken))
-    }
-    
-    fun createOrganisation (name: String, info: String) : ApiCall<OrganisationEntity> {
-        return createOrganisation(CreateOrganisationRequest(name, info))
-    }
-    
-    fun createMember (
-        organisationId: String, role: MemberRole, phoneNumber: String, countryCode: String
-    ) : ApiCall<MemberEntity> {
-        return createMember(
-            organisationId,
-            CreateMemberRequest(role, phoneNumber, countryCode)
-        )
-    }
-    
-    fun createMessage (organisationId: String, content: String) : ApiCall<MessageEntity> {
-        return createMessage(CreateMessageRequest(content, organisationId))
-    }
-    
-    fun updateMessageAttempts (updates: List<MessageAttemptUpdate>) : ApiCall<Any> {
-        return updateMessageAttempts(UpdateMessageAttemptsRequest(updates))
-    }
+//    fun requestLogin (phoneNumber: String, countryCode: String) : ApiCall<Any> {
+//        return requestLogin(RequestLoginRequest(phoneNumber, countryCode))
+//    }
+//
+//    fun checkLogin (code: Int) : ApiCall<UserAuthEntity> {
+//        return checkLogin(CheckLoginRequest(code))
+//    }
+//
+//    fun updateFcm (fcmToken: String) : ApiCall<Any> {
+//        return updateFcm(UpdateFcmRequest(fcmToken))
+//    }
+//
+//    fun createOrganisation (name: String, info: String) : ApiCall<OrganisationEntity> {
+//        return createOrganisation(CreateOrganisationRequest(name, info))
+//    }
+//
+//    fun createMember (
+//        organisationId: String, role: MemberRole, phoneNumber: String, countryCode: String
+//    ) : ApiCall<MemberEntity> {
+//        return createMember(
+//            organisationId,
+//            CreateMemberRequest(role, phoneNumber, countryCode)
+//        )
+//    }
+//
+//    fun createMessage (organisationId: String, content: String) : ApiCall<MessageEntity> {
+//        return createMessage(CreateMessageRequest(content, organisationId))
+//    }
+//
+//    fun updateMessageAttempts (updates: List<MessageAttemptUpdate>) : ApiCall<Any> {
+//        return updateMessageAttempts(UpdateMessageAttemptsRequest(updates))
+//    }
 }

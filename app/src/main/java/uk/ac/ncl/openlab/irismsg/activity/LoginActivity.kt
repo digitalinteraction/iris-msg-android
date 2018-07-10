@@ -2,15 +2,16 @@ package uk.ac.ncl.openlab.irismsg.activity
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
@@ -19,14 +20,11 @@ import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_login.*
 import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.api.*
+import uk.ac.ncl.openlab.irismsg.common.ViewsUtil
 import uk.ac.ncl.openlab.irismsg.model.UserAuthEntity
 import uk.ac.ncl.openlab.irismsg.model.UserEntity
 import java.util.*
 import javax.inject.Inject
-
-private enum class LoginState {
-    REQUEST, CHECK, WORKING
-}
 
 /**
  * An Activity to login the user using a phone number and verification code
@@ -38,10 +36,15 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
+    
+    
     @Inject
     lateinit var irisService: IrisMsgService
     
-    private var currentState: LoginState = LoginState.REQUEST
+    @Inject
+    lateinit var viewsUtil: ViewsUtil
+    
+    private var currentState: State = State.REQUEST
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +57,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         phone_number.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attemptLoginRequest()
+                viewsUtil.unFocus(currentFocus)
                 return@OnEditorActionListener true
             }
             false
@@ -63,6 +67,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         verification_code.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attemptLoginCheck()
+                viewsUtil.unFocus(currentFocus)
                 return@OnEditorActionListener true
             }
             false
@@ -72,7 +77,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         request_button.setOnClickListener { attemptLoginRequest() }
         check_button.setOnClickListener { attemptLoginCheck() }
         
-        // Make terms / privact links clickable
+        // Make terms / privacy links clickable
         terms_text_view.movementMethod = LinkMovementMethod.getInstance()
         
         // Reset the state
@@ -81,39 +86,41 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         }
     
         // Enter the requesting state
-        enterState(LoginState.REQUEST)
+        enterState(State.REQUEST)
     }
     
     override fun onBackPressed() {
         // Override 'back' when checking to let the user try again
         when (currentState) {
-            LoginState.CHECK -> enterState(LoginState.REQUEST)
-            LoginState.WORKING -> return
+            State.CHECK -> enterState(State.REQUEST)
+            State.WORKING -> return
             else -> super.onBackPressed()
         }
     }
     
-    private fun enterState (newState: LoginState) {
+    private fun enterState (newState: State) {
         
         // Perform leaving transitions
-        toggleElem(when (currentState) {
-            LoginState.WORKING -> login_progress
-            LoginState.REQUEST -> request_form
-            LoginState.CHECK -> check_form
+        viewsUtil.toggleElem(when (currentState) {
+            State.WORKING -> login_progress
+            State.REQUEST -> request_form
+            State.CHECK -> check_form
         }, false)
         
         // Set the state
         currentState = newState
     
         // Perform entering transitions
-        toggleElem(when (newState) {
-            LoginState.WORKING -> login_progress
-            LoginState.REQUEST -> request_form
-            LoginState.CHECK -> check_form
+        viewsUtil.toggleElem(when (newState) {
+            State.WORKING -> login_progress
+            State.REQUEST -> request_form
+            State.CHECK -> check_form
         }, true)
     }
     
     private fun attemptLoginRequest() {
+    
+        viewsUtil.unFocus(currentFocus)
         
         // Reset errors.
         phone_number.error = null
@@ -149,24 +156,27 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     private fun requestLoginCode (countryCode: String, phoneNumber: String) {
         
-        enterState(LoginState.WORKING)
+        enterState(State.WORKING)
         showApiError(null)
         
         irisService.requestLogin(RequestLoginRequest(phoneNumber, countryCode)).enqueue(ApiCallback({ res ->
             if (!res.success) {
-                enterState(LoginState.REQUEST)
+                enterState(State.REQUEST)
                 showApiError(res.messages.joinToString())
             } else {
-                enterState(LoginState.CHECK)
+                enterState(State.CHECK)
             }
         }, { _ ->
-            enterState(LoginState.REQUEST)
+            enterState(State.REQUEST)
             showApiError(getString(R.string.api_unknown_error))
         }))
     }
     
     
     private fun attemptLoginCheck () {
+    
+        viewsUtil.unFocus(currentFocus)
+        
         verification_code.error = null
         
         val codeStr = verification_code.text.toString()
@@ -192,18 +202,18 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
     
     private fun checkLoginCode (code: Int) {
-        enterState(LoginState.WORKING)
+        enterState(State.WORKING)
         showApiError(null)
     
         irisService.checkLogin(CheckLoginRequest(code)).enqueue(ApiCallback({ res ->
             if (!res.success || res.data == null) {
-                enterState(LoginState.CHECK)
+                enterState(State.CHECK)
                 showApiError(res.messages.joinToString())
             } else {
                 finishLogin(res.data)
             }
         }, { _ ->
-            enterState(LoginState.CHECK)
+            enterState(State.CHECK)
             showApiError(getString(R.string.api_unknown_error))
         }))
     }
@@ -231,32 +241,18 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         return code in 0..999999
     }
     
-    private fun toggleElem (view: View, show: Boolean) {
-        val shortAnimTime = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-    
-        view.visibility = if (show) View.VISIBLE else View.GONE
-        view.animate()
-            .setDuration(shortAnimTime)
-            .alpha((if (show) 1 else 0).toFloat())
-            .setListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation : Animator) {
-                    view.visibility = if (show) View.VISIBLE else View.GONE
-                }
-            })
-    }
-    
     /**
      * Shows an api error or hides the control
      */
     private fun showApiError (error: String?) {
         when (error) {
             null -> {
-                api_error_text_view.visibility = View.GONE
-                api_error_text_view.text = ""
+                api_error.visibility = View.GONE
+                api_error.text = ""
             }
             else -> {
-                api_error_text_view.visibility = View.VISIBLE
-                api_error_text_view.text = error
+                api_error.visibility = View.VISIBLE
+                api_error.text = error
             }
         }
     }
@@ -266,5 +262,9 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         const val RESULT_LOGGED_IN = 1
         const val RESULT_CANCELLED = 2
+    }
+    
+    private enum class State {
+        REQUEST, CHECK, WORKING
     }
 }

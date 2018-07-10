@@ -11,6 +11,8 @@ import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 import javax.inject.Inject
 import javax.inject.Singleton
 
+typealias OrgList = List<OrganisationEntity>
+
 /**
  * A repository responsible for organisation entities
  * TODO - Error handling
@@ -21,24 +23,33 @@ class OrganisationRepository @Inject constructor() {
     @Inject
     lateinit var irisService: IrisMsgService
     
-    private fun <T> loadDataFromCall (call: ApiCall<T>, target: MutableLiveData<T>) : MutableLiveData<T> {
-        call.enqueue(ApiCallback({ res ->
+    var orgsCache: MutableList<OrganisationEntity> = mutableListOf()
+    
+    private fun loadOrgsInto (target: MutableLiveData<OrgList>) : MutableLiveData<OrgList> {
+        
+        irisService.listOrganisations().enqueue(ApiCallback({ res ->
+            
             target.value = res.data
-        }, { _ ->
+            orgsCache = res.data?.toMutableList() ?: mutableListOf()
+            
+        }, {
             TODO("Handle this error")
         }))
+        
         return target
     }
     
-    private fun <T> handleEnqueue (call: ApiCall<T>) : MutableLiveData<T> {
-        return loadDataFromCall(call, MutableLiveData<T>())
-    }
-    
     fun getOrganisations () : MutableLiveData<List<OrganisationEntity>> {
-        return handleEnqueue(irisService.listOrganisations())
+        val data = MutableLiveData<OrgList>()
+        data.value = orgsCache
+        return loadOrgsInto(data)
     }
     
     fun reloadOrganisations (data: MutableLiveData<List<OrganisationEntity>>) {
-        loadDataFromCall(irisService.listOrganisations(), data)
+        loadOrgsInto(data)
+    }
+    
+    fun organisationCreated (org: OrganisationEntity) {
+        orgsCache.add(org)
     }
 }

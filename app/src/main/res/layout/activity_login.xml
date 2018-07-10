@@ -56,12 +56,11 @@
                 android:visibility="gone" />
 
             <TextView
-                android:id="@+id/api_error_text_view"
+                android:id="@+id/api_error"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="12dp"
                 android:text=""
-                android:textAllCaps="false"
                 android:textColor="@color/danger"
                 android:textSize="18sp"
                 android:visibility="gone"
@@ -83,7 +82,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <AutoCompleteTextView
+                        <android.support.design.widget.TextInputEditText
                             android:id="@+id/phone_number"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -126,18 +125,18 @@
 
                     <TextView
                         android:id="@+id/textView"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/login_code_sent"
-                        android:paddingTop="12dp"
                         android:paddingBottom="12dp"
+                        android:paddingTop="12dp"
+                        android:text="@string/login_code_sent"
                         android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <AutoCompleteTextView
+                        <android.support.design.widget.TextInputEditText
                             android:id="@+id/verification_code"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

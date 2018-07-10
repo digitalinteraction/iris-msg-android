@@ -12,6 +12,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 import uk.ac.ncl.openlab.irismsg.api.*
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
+import uk.ac.ncl.openlab.irismsg.common.ViewsUtil
 import java.util.*
 
 class MemberRoleJsonAdapter : JsonAdapter<MemberRole>() {

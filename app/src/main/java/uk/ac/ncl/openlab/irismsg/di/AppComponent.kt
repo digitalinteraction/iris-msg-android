@@ -16,7 +16,8 @@ import javax.inject.Singleton
     OrganisationListActivityModule::class,
     EmptyMainActivityModule::class,
     OnboardActivityModule::class,
-    LoginActivityModule::class
+    LoginActivityModule::class,
+    EditOrganisationActivityModule::class
 ])
 @Suppress("unused")
 interface AppComponent {
