@@ -47,7 +47,16 @@
         <activity
             android:name=".activity.EditOrganisationActivity"
             android:label="@string/title_activity_add_organisation"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.OrganisationDetailActivity"
+            android:label="@string/title_activity_organisation_detail"
+            android:parentActivityName=".activity.OrganisationListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="uk.ac.ncl.openlab.irismsg.activity.OrganisationListActivity" />
+        </activity>
     </application>
 
 </manifest>

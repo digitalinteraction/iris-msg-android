@@ -31,18 +31,14 @@ import javax.inject.Inject
  */
 class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
+    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
     
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
     
     
-    @Inject
-    lateinit var irisService: IrisMsgService
-    
-    @Inject
-    lateinit var viewsUtil: ViewsUtil
+    @Inject lateinit var irisService: IrisMsgService
+    @Inject lateinit var viewsUtil: ViewsUtil
     
     private var currentState: State = State.REQUEST
     
@@ -51,6 +47,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         // Setup the view
         setContentView(R.layout.activity_login)
+        setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         
         // Listen for keyboard done events

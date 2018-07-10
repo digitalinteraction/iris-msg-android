@@ -52,4 +52,10 @@ class OrganisationRepository @Inject constructor() {
     fun organisationCreated (org: OrganisationEntity) {
         orgsCache.add(org)
     }
+    
+    fun getOrganisation (id: String) : MutableLiveData<OrganisationEntity> {
+        val data = MutableLiveData<OrganisationEntity>()
+        data.value = orgsCache.find { org -> org.id == id }
+        return data
+    }
 }

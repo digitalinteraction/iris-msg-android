@@ -99,6 +99,9 @@ class OrganisationListActivity : AppCompatActivity(),
     }
     
     override fun onListFragmentInteraction(organisation: OrganisationEntity) {
-         Log.v("Org", organisation.name)
+         startActivity(
+             Intent(this, OrganisationDetailActivity::class.java)
+                     .putExtra(OrganisationDetailActivity.ORGANISATION_ID_KEY, organisation.id)
+         )
     }
 }

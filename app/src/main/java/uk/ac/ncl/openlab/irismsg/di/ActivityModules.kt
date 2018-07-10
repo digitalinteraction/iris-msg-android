@@ -48,3 +48,12 @@ abstract class EditOrganisationActivityModule {
     @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
     abstract fun contributeMainActivity(): EditOrganisationActivity
 }
+
+
+@Module
+@Suppress("unused")
+abstract class OrganisationDetailActivityModule {
+
+    @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
+    abstract fun contributeMainActivity(): OrganisationDetailActivity
+}

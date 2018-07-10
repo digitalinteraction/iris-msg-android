@@ -31,8 +31,7 @@ class OrganisationListFragment : Fragment(), Injectable {
     private lateinit var role: MemberRole
     private lateinit var viewModel: OrganisationListViewModel
     
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -57,24 +56,8 @@ class OrganisationListFragment : Fragment(), Injectable {
             if (orgs == null) return@Observer
             
             adapter.organisations = when (role) {
-                MemberRole.COORDINATOR -> {
-                    orgs.filter { org ->
-                        org.members.any { member ->
-                            member.role == MemberRole.COORDINATOR
-                                    && member.userId == userId
-                                    && member.isActive()
-                        }
-                    }
-                }
-                else -> {
-                    orgs.filter { org ->
-                        !org.members.any { member ->
-                            member.role == MemberRole.COORDINATOR &&
-                                    member.userId == userId &&
-                                    member.isActive()
-                        }
-                    }
-                }
+                MemberRole.COORDINATOR -> orgs.filter { it.isCoordinator(userId) }
+                else -> orgs.filter { !it.isCoordinator(userId) }
             }
             
             adapter.notifyDataSetChanged()

@@ -15,6 +15,8 @@
     <string name="more_text_format">%1$d…</string>
     <string name="action_login">Get Started</string>
 
+    <string name="action_delete_organisation">Delete Organisation</string>
+
 
     <!-- Login Activity -->
     <string name="prompt_phone_number">Phone Number</string>
@@ -52,9 +54,18 @@
     <string name="error_invalid_info">This info is not long enough</string>
 
 
+    <!-- Organisation Detail Activity -->
+    <string name="title_activity_organisation_detail">Organisation Detail</string>
+    <string name="tab_messaging">Messages</string>
+    <string name="tab_donors">Donors</string>
+    <string name="tab_subscribers">Subscribers</string>
+
+
     <!-- Preferences -->
     <string name="pref_api_mode">App Mode</string>
     <string name="pref_api_mode_info">How the app operates</string>
     <string name="pref_api_host">Api Location</string>
     <string name="pref_api_host_info">The url of where the api is</string>
+
+
 </resources>

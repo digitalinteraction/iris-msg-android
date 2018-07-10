@@ -8,6 +8,7 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import uk.ac.ncl.openlab.irismsg.viewmodel.IrisViewModelFactory
 import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationListViewModel
+import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationViewModel
 
 @Module
 @Suppress("unused")
@@ -16,7 +17,12 @@ abstract class ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(OrganisationListViewModel::class)
-    abstract fun bindOrganisationListViewModel(organisationListViewModel : OrganisationListViewModel) : ViewModel
+    abstract fun bindOrganisationListViewModel(organisationListViewModel: OrganisationListViewModel) : ViewModel
+    
+    @Binds
+    @IntoMap
+    @ViewModelKey(OrganisationViewModel::class)
+    abstract fun bindOrganisationViewModel(organisationViewModel: OrganisationViewModel) : ViewModel
     
     @Binds
     abstract fun bindViewModelFactory(factory: IrisViewModelFactory): ViewModelProvider.Factory
