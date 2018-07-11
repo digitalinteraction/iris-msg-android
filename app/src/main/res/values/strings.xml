@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Iris Msg</string>
-    <string name="tab_coordinator">Organisations</string>
-    <string name="tab_donor">Donations</string>
     <string name="title_activity_login">Getting Started</string>
     <string name="title_activity_onboard">Welcome to Iris Msg</string>
     <string name="title_activity_organisation_list">Iris Msg</string>
@@ -16,6 +14,11 @@
     <string name="action_login">Get Started</string>
 
     <string name="action_delete_organisation">Delete Organisation</string>
+
+
+    <!-- Organisation List Activity -->
+    <string name="tab_coordinator">Organisations</string>
+    <string name="tab_donor">Donations</string>
 
 
     <!-- Login Activity -->
@@ -57,8 +60,8 @@
     <!-- Organisation Detail Activity -->
     <string name="title_activity_organisation_detail">Organisation Detail</string>
     <string name="tab_messaging">Messages</string>
-    <string name="tab_donors">Donors</string>
-    <string name="tab_subscribers">Subscribers</string>
+    <string name="tab_org_donors">Donors</string>
+    <string name="tab_org_subscribers">Subscribers</string>
 
 
     <!-- Preferences -->

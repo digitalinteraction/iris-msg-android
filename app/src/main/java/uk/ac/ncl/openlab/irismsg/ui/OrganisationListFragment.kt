@@ -7,9 +7,12 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import kotlinx.android.synthetic.main.fragment_organisation_item.view.*
 import kotlinx.android.synthetic.main.fragment_organisation_list.*
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.R
@@ -27,7 +30,7 @@ import javax.inject.Inject
 class OrganisationListFragment : Fragment(), Injectable {
     
     private var listener: Listener? = null
-    private lateinit var adapter: OrganisationRecyclerViewAdapter
+    private lateinit var adapter: RecyclerAdapter
     private lateinit var viewModel: OrganisationListViewModel
     
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -42,7 +45,7 @@ class OrganisationListFragment : Fragment(), Injectable {
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = OrganisationRecyclerViewAdapter(listener)
+        adapter = RecyclerAdapter(listener)
     }
     
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -120,6 +123,41 @@ class OrganisationListFragment : Fragment(), Injectable {
             arguments = Bundle().apply {
                 putSerializable(ARG_MEMBER_ROLE, role)
             }
+        }
+    }
+    
+    inner class RecyclerAdapter (private val listener: Listener?)
+        : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+        
+        private val onClickListener: View.OnClickListener
+        var organisations: List<OrganisationEntity> = listOf()
+        
+        init {
+            onClickListener = View.OnClickListener { view ->
+                listener?.onOrganisationSelected(view.tag as OrganisationEntity)
+            }
+        }
+    
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : ViewHolder {
+            val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.fragment_organisation_item, parent, false)
+            return ViewHolder(view)
+        }
+        
+        override fun getItemCount(): Int = organisations.size
+    
+        override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
+            organisations[pos].let { org ->
+                holder.nameView.text = org.name
+                holder.infoView.text = org.shortInfo
+                holder.view.tag = org
+                holder.view.setOnClickListener(onClickListener)
+            }
+        }
+        
+        inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+            val nameView: TextView = view.name
+            val infoView: TextView = view.info
         }
     }
     

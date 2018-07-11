@@ -36,6 +36,9 @@ class MemberListFragment : Fragment(), Injectable {
     private val memberRole: MemberRole
         get () = arguments?.getSerializable(ARG_MEMBER_ROLE) as MemberRole
     
+    
+    
+    
     override fun onAttach(context : Context?) {
         super.onAttach(context)
         if (context is Listener) { listener = context }
@@ -72,8 +75,7 @@ class MemberListFragment : Fragment(), Injectable {
             if (org == null) return@Observer
             
             recyclerAdapter.members = org.members.filter { member ->
-                member.role == memberRole &&
-                        member.isActive()
+                member.role == memberRole && member.isActive()
             }
             
             recyclerAdapter.notifyDataSetChanged()
@@ -102,7 +104,8 @@ class MemberListFragment : Fragment(), Injectable {
         fun onDeleteMember (memberId: String)
     }
     
-    inner class RecyclerAdapter (val listener: Listener?) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+    inner class RecyclerAdapter (private val listener: Listener?)
+        : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
     
         private val onDeleteListener : View.OnClickListener
         var members: List<MemberEntity> = listOf()

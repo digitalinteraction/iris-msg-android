@@ -52,7 +52,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     @Inject lateinit var irisService: IrisMsgService
     @Inject lateinit var orgRepo: OrganisationRepository
     
-    private var pagerAdapter : PagerAdapter? = null
+    private lateinit var pagerAdapter : PagerAdapter
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,14 +83,14 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
             }
         })
         
-        // TODO - Setup the tabs
+        // Setup tabs
         pagerAdapter = PagerAdapter(supportFragmentManager)
         tabs_pager.adapter = pagerAdapter
-        tabs_pager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
-        tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        tabs_layout.setupWithViewPager(tabs_pager)
+
+        tabs_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
     
             override fun onTabSelected(tab : TabLayout.Tab) {
-                tabs_pager.currentItem = tab.position
                 val fabIcon = when (tab.position) {
                     0 -> R.drawable.ic_send_black_24dp
                     else -> R.drawable.ic_add_black_24dp
@@ -104,7 +104,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         })
     
     
-        // TODO - Setup the fab
+        // Setup fab
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
@@ -150,13 +150,26 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     
     inner class PagerAdapter(fm : FragmentManager) : FragmentPagerAdapter(fm) {
         
+        private val titles = listOf(
+            getString(R.string.tab_messaging),
+            getString(R.string.tab_org_donors),
+            getString(R.string.tab_org_subscribers)
+        )
+    
+        override fun getCount() = 3
+        
         override fun getItem(position : Int) = when (position) {
             1 -> MemberListFragment.newInstance(MemberRole.DONOR, organisationId)
             2 -> MemberListFragment.newInstance(MemberRole.SUBSCRIBER, organisationId)
             else -> PlaceholderFragment.newInstance(position + 1)
         }
     
-        override fun getCount() = 3
+        override fun getPageTitle(position : Int) : CharSequence? = when (position) {
+            0 -> getString(R.string.tab_messaging)
+            1 -> getString(R.string.tab_org_donors)
+            2 -> getString(R.string.tab_org_subscribers)
+            else -> null
+        }
     }
     
     class PlaceholderFragment : Fragment() {

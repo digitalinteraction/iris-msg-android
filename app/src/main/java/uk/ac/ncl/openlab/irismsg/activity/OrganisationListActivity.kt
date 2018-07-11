@@ -3,7 +3,10 @@ package uk.ac.ncl.openlab.irismsg.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
+import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -12,9 +15,9 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_organisation_list.*
 import uk.ac.ncl.openlab.irismsg.ui.OrganisationListFragment
-import uk.ac.ncl.openlab.irismsg.ui.OrganisationListPagerAdapter
 import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.api.JsonWebToken
+import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 import uk.ac.ncl.openlab.irismsg.model.UserEntity
 import javax.inject.Inject
@@ -26,7 +29,7 @@ class OrganisationListActivity : AppCompatActivity(),
         HasSupportFragmentInjector,
         OrganisationListFragment.Listener {
     
-    private lateinit var pagerAdapter: OrganisationListPagerAdapter
+    private lateinit var pagerAdapter: PagerAdapter
     
     @Inject
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
@@ -36,19 +39,18 @@ class OrganisationListActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Create lazies
-        pagerAdapter = OrganisationListPagerAdapter(supportFragmentManager)
-        
         // Setup view
         setContentView(R.layout.activity_organisation_list)
         setSupportActionBar(organisation_list_toolbar)
         
+        
         // Setup tabs
+        pagerAdapter = PagerAdapter(supportFragmentManager)
         tabs_pager.adapter = pagerAdapter
         tabs_layout.setupWithViewPager(tabs_pager)
         
         // Setup click handler
-        add_organisation_fab.setOnClickListener { _ ->
+        fab.setOnClickListener { _ ->
             startActivity(
                 Intent(this, EditOrganisationActivity::class.java)
             )
@@ -60,8 +62,8 @@ class OrganisationListActivity : AppCompatActivity(),
             override fun onPageScrolled(p0 : Int, p1 : Float, p2 : Int) { }
             override fun onPageSelected(newPage : Int) {
                 when (newPage) {
-                    0 -> add_organisation_fab.show()
-                    else -> add_organisation_fab.hide()
+                    0 -> fab.show()
+                    else -> fab.hide()
                 }
             }
         })
@@ -104,5 +106,22 @@ class OrganisationListActivity : AppCompatActivity(),
              Intent(this, OrganisationDetailActivity::class.java)
                      .putExtra(OrganisationDetailActivity.ARG_ORGANISATION_ID, organisation.id)
          )
+    }
+    
+    inner class PagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+        
+        private val titles = listOf(
+            getString(R.string.tab_coordinator),
+            getString(R.string.tab_donor)
+        )
+    
+        private val pages = listOf<Fragment>(
+            OrganisationListFragment.newInstance(MemberRole.COORDINATOR),
+            OrganisationListFragment.newInstance(MemberRole.DONOR)
+        )
+    
+        override fun getCount () = pages.size
+        override fun getItem (index: Int) = pages[index]
+        override fun getPageTitle (index: Int) : CharSequence? = titles[index]
     }
 }

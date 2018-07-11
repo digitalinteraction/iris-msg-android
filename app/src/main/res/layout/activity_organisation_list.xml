@@ -40,7 +40,7 @@
     </android.support.v4.view.ViewPager>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_organisation_fab"
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"

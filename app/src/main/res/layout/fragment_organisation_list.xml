@@ -16,6 +16,6 @@
         android:layout_marginRight="16dp"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         tools:context=".ui.OrganisationListFragment"
-        tools:listitem="@layout/fragment_organisation" />
+        tools:listitem="@layout/fragment_organisation_item" />
 
 </android.support.v4.widget.SwipeRefreshLayout>

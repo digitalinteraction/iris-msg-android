@@ -21,9 +21,6 @@
             android:layout_height="?android:attr/actionBarSize"
             android:layout_weight="1"
             android:background="@color/colorPrimary"
-            app:tabIndicatorColor="@color/colorPrimaryLight"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
             app:title="@string/title_activity_organisation_detail">
 
         </android.support.v7.widget.Toolbar>
@@ -38,31 +35,12 @@
             tools:text="Nullam id dolor id nibh ultricies vehicula ut id elit. Maecenas sed diam eget risus varius blandit sit amet non magna. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet." />
 
         <android.support.design.widget.TabLayout
-            android:id="@+id/tabs"
+            android:id="@+id/tabs_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:tabIndicatorColor="@color/colorPrimaryLight"
-            app:tabTextColor="@color/white">
+            app:tabTextColor="@color/white"/>
 
-            <android.support.design.widget.TabItem
-                android:id="@+id/tab_messaging"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/tab_messaging" />
-
-            <android.support.design.widget.TabItem
-                android:id="@+id/tab_donors"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/tab_donors" />
-
-            <android.support.design.widget.TabItem
-                android:id="@+id/tab_subscribers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/tab_subscribers" />
-
-        </android.support.design.widget.TabLayout>
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager
