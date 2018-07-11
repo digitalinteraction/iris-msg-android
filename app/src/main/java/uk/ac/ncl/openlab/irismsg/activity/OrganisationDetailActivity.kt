@@ -217,10 +217,17 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     private fun onAddMember (role: MemberRole) {
         val organisation = viewModel.organisation.value ?: return
         
+        val title = getString(R.string.title_add_member, role.humanized.toLowerCase())
+        
+        val message = when (role) {
+            MemberRole.SUBSCRIBER -> getString(R.string.body_add_subscriber)
+            else -> getString(R.string.body_add_donor)
+        }
+        
         // Create a dialog to add the member
         val dialog = AlertDialog.Builder(this)
-                .setTitle("Add ${role.humanized}")
-                .setMessage("Add a new member to ${organisation.name}?")
+                .setTitle(title)
+                .setMessage(message)
                 .setView(R.layout.dialog_add_member)
                 .setPositiveButton(R.string.action_confirm, null)
                 .setNegativeButton(R.string.action_cancel, null)

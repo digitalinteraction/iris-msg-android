@@ -13,7 +13,7 @@
     <string name="more_text_format">%1$d…</string>
     <string name="action_login">Get Started</string>
 
-    <string name="action_delete_organisation">Delete Organisation</string>
+    <string name="action_delete_organisation">oanisation</string>
 
 
     <!-- Organisation List Activity -->
@@ -65,7 +65,11 @@
     <string name="title_confirm_delete_org">Remove organisation</string>
     <string name="body_confirm_delete_org">Are you sure you want to delete this organisation? This action cannot be undone</string>
     <string name="title_confirm_delete_member">Remove %1$s</string>
+
+    <string name="title_add_member">Add a %1$s</string>
     <string name="body_confirm_delete_member">Are you sure you want to remove this member from your organisation?</string>
+    <string name="body_add_subscriber">Add a phone number to receive the messages you send to this organisation.</string>
+    <string name="body_add_donor">Add a donor to this organisation, they are responsible for forwarding forwarding your through this app.</string>
     <string name="member_created">%1$s has been added!</string>
 
     <string name="action_delete">Remove</string>
@@ -78,5 +82,5 @@
     <string name="pref_api_mode_info">How the app operates</string>
     <string name="pref_api_host">Api Location</string>
     <string name="pref_api_host_info">The url of where the api is</string>
-    
+
 </resources>
