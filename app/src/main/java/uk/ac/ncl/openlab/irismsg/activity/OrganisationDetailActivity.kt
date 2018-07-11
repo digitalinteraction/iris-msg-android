@@ -50,15 +50,13 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
-    
     private lateinit var viewModel: OrganisationViewModel
     private lateinit var organisationId: String
+    private lateinit var pagerAdapter : PagerAdapter
     
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     @Inject lateinit var irisService: IrisMsgService
     @Inject lateinit var orgRepo: OrganisationRepository
-    
-    private lateinit var pagerAdapter : PagerAdapter
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,19 +85,21 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
             }
         })
         
+        
         // Setup tabs
         pagerAdapter = PagerAdapter(supportFragmentManager)
         tabs_pager.adapter = pagerAdapter
         tabs_layout.setupWithViewPager(tabs_pager)
-
+        
+        
+        // Listen for tab changes and set the fab icon
         tabs_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
     
             override fun onTabSelected(tab : TabLayout.Tab) {
-                val fabIcon = when (tab.position) {
+                fab.setImageDrawable(ContextCompat.getDrawable(applicationContext, when (tab.position) {
                     0 -> R.drawable.ic_send_black_24dp
                     else -> R.drawable.ic_add_black_24dp
-                }
-                fab.setImageDrawable(ContextCompat.getDrawable(applicationContext, fabIcon))
+                }))
             }
     
             override fun onTabUnselected(tab : TabLayout.Tab) {}
@@ -127,19 +127,15 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     override fun onOptionsItemSelected(item : MenuItem) : Boolean {
         
         if (item.itemId == R.id.action_delete_organisation) {
-            
-            // Destroy the organisation
-            irisService.destroyOrganisation(organisationId).enqueue(ApiCallback({ res ->
-                if (res.success) {
-                    orgRepo.organisationDestroyed(organisationId)
-                    finish()
-                }
-                else {
-                    Snackbar.make(toolbar, res.messages.joinToString(), Snackbar.LENGTH_LONG).show()
-                }
-            }, { _ ->
-                TODO("Handle orgs.destroy api failure")
-            }))
+    
+            // Confirm the deletion
+            AlertDialog.Builder(this)
+                    .setTitle(R.string.title_confirm_delete_org)
+                    .setMessage(R.string.body_confirm_delete_org)
+                    .setPositiveButton(R.string.action_delete) { _, _ -> performDeleteOrganisation() }
+                    .setNegativeButton(R.string.action_cancel, null)
+                    .create()
+                    .show()
             
             return true
         }
@@ -147,12 +143,18 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         return super.onOptionsItemSelected(item)
     }
     
-    override fun onDeleteMember(memberId : String) {
+    override fun onDeleteMember(memberId: String, role: MemberRole) {
         viewModel.organisation.value ?: return
+        
+        // Format the title of the alert
+        val title = getString(
+            R.string.title_confirm_delete_member,
+            role.humanized.toLowerCase()
+        )
         
         // Confirm the deletion
         AlertDialog.Builder(this)
-                .setTitle(R.string.title_confirm_delete_member)
+                .setTitle(title)
                 .setMessage(R.string.body_confirm_delete_member)
                 .setPositiveButton(R.string.action_confirm) { _, _ -> performDeleteMember(memberId) }
                 .setNegativeButton(R.string.action_cancel) { alert, _ -> alert.dismiss() }
@@ -160,15 +162,48 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 .show()
     }
     
+    private fun performDeleteOrganisation () {
+    
+        // Destroy the organisation
+        irisService.destroyOrganisation(organisationId).enqueue(ApiCallback({ res ->
+            if (res.success) {
+                
+                // Update the cache and finish
+                orgRepo.organisationDestroyed(organisationId)
+                finish()
+            }
+            else {
+                
+                // Present any errors
+                Snackbar.make(
+                    main_content,
+                    res.messages.joinToString(),
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
+        }, { _ ->
+            TODO("Handle orgs.destroy api failure")
+        }))
+    }
+    
     private fun performDeleteMember (memberId: String) {
+        
+        // Perform the request
         irisService.destroyMember(memberId, organisationId).enqueue(ApiCallback({ res ->
             if (res.success) {
+                
+                // Update the organisation ViewModel
                 viewModel.organisation.value = viewModel.organisation.value?.apply {
                     members.removeAll { member -> member.id == memberId }
                 }
             } else {
-                val view = findViewById<View>(R.id.main_content)
-                Snackbar.make(view, res.messages.joinToString(), Snackbar.LENGTH_LONG).show()
+                
+                // Present any errors
+                Snackbar.make(
+                    main_content,
+                    res.messages.joinToString(),
+                    Snackbar.LENGTH_LONG
+                ).show()
             }
         }, { _ ->
             TODO("Handle orgs.members.destroy api failure")
@@ -176,16 +211,13 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     }
     
     private fun onSendMessage () {
-    
+        // TODO ...
     }
     
     private fun onAddMember (role: MemberRole) {
         val organisation = viewModel.organisation.value ?: return
         
-//        val customView = LayoutInflater.from(applicationContext).inflate(
-//            R.layout.dialog_add_member, null, false
-//        )
-        
+        // Create a dialog to add the member
         val dialog = AlertDialog.Builder(this)
                 .setTitle("Add ${role.humanized}")
                 .setMessage("Add a new member to ${organisation.name}?")
@@ -194,8 +226,10 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 .setNegativeButton(R.string.action_cancel, null)
                 .create()
         
+        // Show the dialog
         dialog.show()
     
+        // Override the click handler to perform validation
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
             attemptAddMember(role, dialog)
         }
@@ -203,41 +237,52 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     
     private fun attemptAddMember (role: MemberRole, dialog: AlertDialog) {
         
+        // Grab the text field & entered value
         val field = dialog.findViewById<EditText>(R.id.phone_number)!!
-        
         val phoneNumberStr = field.text.toString()
     
+        // Parse the phone number, using the phone's current local as a base
         val util = PhoneNumberUtil.getInstance()
         val number = util.parse(phoneNumberStr, Locale.getDefault().country)
         
+        // Show an error and stop if the number is invalid
         if (!util.isValidNumber(number)) {
             field.error = getString(R.string.error_invalid_phone_number)
             return
         }
         
-        val phone = number.nationalNumber.toString()
-        val country = PhoneNumberUtil.getInstance().getRegionCodeForNumber(number)
+        // Perform the request
+        performAddMember(
+            role,
+            number.nationalNumber.toString(),
+            util.getRegionCodeForNumber(number)
+        )
         
-        performAddMember(role, phone, country)
-        
+        // Dismiss the dialog
         dialog.dismiss()
     }
     
     private fun performAddMember (role: MemberRole, phoneNumber: String, countryCode: String) {
         
+        // Make the request
         val body = CreateMemberRequest(role, phoneNumber, countryCode)
         irisService.createMember(organisationId, body).enqueue(ApiCallback({ res ->
             if (res.success && res.data != null) {
+                
+                // Let the user know it was successful
                 Snackbar.make(
                     findViewById<View>(R.id.main_content),
                     getString(R.string.member_created, phoneNumber),
                     Snackbar.LENGTH_LONG
                 ).show()
                 
+                // Add the member to the organisation (w/ data binding)
                 viewModel.organisation.value = viewModel.organisation.value?.apply {
                     members.add(res.data)
                 }
             } else {
+                
+                // Show the user the error
                 Snackbar.make(
                     findViewById<View>(R.id.main_content),
                     res.messages.joinToString(),

@@ -38,7 +38,6 @@ class MemberListFragment : Fragment(), Injectable {
     
     
     
-    
     override fun onAttach(context : Context?) {
         super.onAttach(context)
         if (context is Listener) { listener = context }
@@ -67,17 +66,21 @@ class MemberListFragment : Fragment(), Injectable {
     override fun onActivityCreated(savedInstanceState : Bundle?) {
         super.onActivityCreated(savedInstanceState)
         
+        // Get a view model for the members
         viewModel = ViewModelProviders.of(activity!!, viewModelFactory)
                 .get(OrganisationViewModel::class.java)
                 .init(organisationId)
         
+        // Observe members changes and re-render accordingly
         viewModel.members.observe(this, Observer { members ->
             if (members == null) return@Observer
             
+            // Get the active members in our role
             recyclerAdapter.members = members.filter { member ->
                 member.role == memberRole && member.isActive()
             }
             
+            // Reload the recycler
             recyclerAdapter.notifyDataSetChanged()
         })
     }
@@ -101,7 +104,7 @@ class MemberListFragment : Fragment(), Injectable {
     }
     
     interface Listener {
-        fun onDeleteMember (memberId: String)
+        fun onDeleteMember (memberId: String, role: MemberRole)
     }
     
     inner class RecyclerAdapter (private val listener: Listener?)
@@ -113,7 +116,7 @@ class MemberListFragment : Fragment(), Injectable {
         init {
             onDeleteListener = View.OnClickListener { button ->
                 (button.tag as MemberEntity).let { member ->
-                    listener?.onDeleteMember(member.id)
+                    listener?.onDeleteMember(member.id, memberRole)
                 }
             }
         }
