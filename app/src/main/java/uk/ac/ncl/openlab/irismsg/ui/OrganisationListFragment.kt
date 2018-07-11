@@ -157,7 +157,7 @@ class OrganisationListFragment : Fragment(), Injectable {
         
         inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             val nameView: TextView = view.name
-            val infoView: TextView = view.info
+            val infoView: TextView = view.organisation_info
         }
     }
     

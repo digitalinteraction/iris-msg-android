@@ -3,6 +3,7 @@ package uk.ac.ncl.openlab.irismsg.activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.content.DialogInterface
 import android.support.design.widget.TabLayout
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -12,12 +13,15 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 
@@ -25,11 +29,13 @@ import uk.ac.ncl.openlab.irismsg.R
 import kotlinx.android.synthetic.main.activity_organisation_detail.*
 import kotlinx.android.synthetic.main.fragment_organisation_detail.view.*
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
+import uk.ac.ncl.openlab.irismsg.api.CreateMemberRequest
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.repo.OrganisationRepository
 import uk.ac.ncl.openlab.irismsg.ui.MemberListFragment
 import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationViewModel
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -77,9 +83,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         viewModel.organisation.observe(this, Observer { org ->
             if (org != null) {
                 supportActionBar?.title = org.name
-                info.text = org.info
-            } else {
-                finish()
+                organisation_info.text = org.info
             }
         })
         
@@ -106,8 +110,11 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     
         // Setup fab
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+            when (tabs_pager.currentItem) {
+                0 -> onSendMessage()
+                1 -> onAddMember(MemberRole.DONOR)
+                2 -> onAddMember(MemberRole.SUBSCRIBER)
+            }
         }
     }
     
@@ -141,7 +148,105 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     }
     
     override fun onDeleteMember(memberId : String) {
-        Log.d("delete", memberId)
+        viewModel.organisation.value ?: return
+        
+        // Confirm the deletion
+        AlertDialog.Builder(this)
+                .setTitle(R.string.title_confirm_delete_member)
+                .setMessage(R.string.body_confirm_delete_member)
+                .setPositiveButton(R.string.action_confirm) { _, _ -> performDeleteMember(memberId) }
+                .setNegativeButton(R.string.action_cancel) { alert, _ -> alert.dismiss() }
+                .create()
+                .show()
+    }
+    
+    private fun performDeleteMember (memberId: String) {
+        irisService.destroyMember(memberId, organisationId).enqueue(ApiCallback({ res ->
+            if (res.success) {
+                viewModel.organisation.value = viewModel.organisation.value?.apply {
+                    members.removeAll { member -> member.id == memberId }
+                }
+            } else {
+                val view = findViewById<View>(R.id.main_content)
+                Snackbar.make(view, res.messages.joinToString(), Snackbar.LENGTH_LONG).show()
+            }
+        }, { _ ->
+            TODO("Handle orgs.members.destroy api failure")
+        }))
+    }
+    
+    private fun onSendMessage () {
+    
+    }
+    
+    private fun onAddMember (role: MemberRole) {
+        val organisation = viewModel.organisation.value ?: return
+        
+//        val customView = LayoutInflater.from(applicationContext).inflate(
+//            R.layout.dialog_add_member, null, false
+//        )
+        
+        val dialog = AlertDialog.Builder(this)
+                .setTitle("Add ${role.humanized}")
+                .setMessage("Add a new member to ${organisation.name}?")
+                .setView(R.layout.dialog_add_member)
+                .setPositiveButton(R.string.action_confirm, null)
+                .setNegativeButton(R.string.action_cancel, null)
+                .create()
+        
+        dialog.show()
+    
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+            attemptAddMember(role, dialog)
+        }
+    }
+    
+    private fun attemptAddMember (role: MemberRole, dialog: AlertDialog) {
+        
+        val field = dialog.findViewById<EditText>(R.id.phone_number)!!
+        
+        val phoneNumberStr = field.text.toString()
+    
+        val util = PhoneNumberUtil.getInstance()
+        val number = util.parse(phoneNumberStr, Locale.getDefault().country)
+        
+        if (!util.isValidNumber(number)) {
+            field.error = getString(R.string.error_invalid_phone_number)
+            return
+        }
+        
+        val phone = number.nationalNumber.toString()
+        val country = PhoneNumberUtil.getInstance().getRegionCodeForNumber(number)
+        
+        performAddMember(role, phone, country)
+        
+        dialog.dismiss()
+    }
+    
+    private fun performAddMember (role: MemberRole, phoneNumber: String, countryCode: String) {
+        
+        val body = CreateMemberRequest(role, phoneNumber, countryCode)
+        irisService.createMember(organisationId, body).enqueue(ApiCallback({ res ->
+            if (res.success && res.data != null) {
+                Snackbar.make(
+                    findViewById<View>(R.id.main_content),
+                    getString(R.string.member_created, phoneNumber),
+                    Snackbar.LENGTH_LONG
+                ).show()
+                
+                viewModel.organisation.value = viewModel.organisation.value?.apply {
+                    members.add(res.data)
+                }
+            } else {
+                Snackbar.make(
+                    findViewById<View>(R.id.main_content),
+                    res.messages.joinToString(),
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
+        }, { _ ->
+            TODO("Handle orgs.members.create api failure")
+        }))
     }
     
     companion object {
@@ -149,12 +254,6 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     }
     
     inner class PagerAdapter(fm : FragmentManager) : FragmentPagerAdapter(fm) {
-        
-        private val titles = listOf(
-            getString(R.string.tab_messaging),
-            getString(R.string.tab_org_donors),
-            getString(R.string.tab_org_subscribers)
-        )
     
         override fun getCount() = 3
         

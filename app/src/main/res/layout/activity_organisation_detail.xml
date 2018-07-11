@@ -26,7 +26,7 @@
         </android.support.v7.widget.Toolbar>
 
         <TextView
-            android:id="@+id/info"
+            android:id="@+id/organisation_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

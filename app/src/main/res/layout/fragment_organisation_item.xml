@@ -22,7 +22,7 @@
             tools:text="Nullam Mollis Etiam Pharetra" />
 
         <TextView
-            android:id="@+id/info"
+            android:id="@+id/organisation_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

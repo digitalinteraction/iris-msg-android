@@ -12,7 +12,7 @@ data class OrganisationEntity(
     @Json(name = "updatedAt") override val updatedAt: Date,
     @Json(name = "name") var name: String,
     @Json(name = "info") var info: String,
-    @Json(name = "members") val members: List<MemberEntity>
+    @Json(name = "members") val members: MutableList<MemberEntity>
 ) : ApiEntity {
     
     val shortInfo: String

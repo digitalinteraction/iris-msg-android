@@ -78,7 +78,7 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_organisation_name"
                             android:inputType="text"
-                            android:nextFocusDown="@id/info" />
+                            android:nextFocusDown="@id/organisation_info" />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
@@ -86,7 +86,7 @@
                         android:layout_height="match_parent">
 
                         <android.support.design.widget.TextInputEditText
-                            android:id="@+id/info"
+                            android:id="@+id/organisation_info"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_organisation_info"

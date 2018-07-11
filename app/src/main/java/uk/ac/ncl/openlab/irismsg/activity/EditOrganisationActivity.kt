@@ -56,15 +56,15 @@ class EditOrganisationActivity : AppCompatActivity(), HasSupportFragmentInjector
         var cancelFocus: View? = null
         
         val nameStr = name.text.toString()
-        val infoStr = info.text.toString()
+        val infoStr = organisation_info.text.toString()
     
         // Check if the info is valid
-        if (TextUtils.isEmpty(info.text)) {
-            info.error = getString(R.string.error_field_required)
-            cancelFocus = info
+        if (TextUtils.isEmpty(organisation_info.text)) {
+            organisation_info.error = getString(R.string.error_field_required)
+            cancelFocus = organisation_info
         } else if (!isValidInfo(infoStr)) {
-            info.error = getString(R.string.error_invalid_info)
-            cancelFocus = info
+            organisation_info.error = getString(R.string.error_invalid_info)
+            cancelFocus = organisation_info
         }
     
         // Check if the name is valid

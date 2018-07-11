@@ -88,7 +88,7 @@ class EntityGenerator {
                 makeMember(MemberRole.DONOR, UserGen.CURRENT),
                 makeMember(MemberRole.SUBSCRIBER, UserGen.VERIFIED),
                 makeMember(MemberRole.SUBSCRIBER, UserGen.VERIFIED)
-            )
+            ).toMutableList()
         )
     }
     

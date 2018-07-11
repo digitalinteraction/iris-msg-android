@@ -71,10 +71,10 @@ class MemberListFragment : Fragment(), Injectable {
                 .get(OrganisationViewModel::class.java)
                 .init(organisationId)
         
-        viewModel.organisation.observe(this, Observer { org ->
-            if (org == null) return@Observer
+        viewModel.members.observe(this, Observer { members ->
+            if (members == null) return@Observer
             
-            recyclerAdapter.members = org.members.filter { member ->
+            recyclerAdapter.members = members.filter { member ->
                 member.role == memberRole && member.isActive()
             }
             
