@@ -35,7 +35,7 @@ class EditOrganisationActivity : AppCompatActivity(), HasSupportFragmentInjector
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Seup the view
+        // Setup the view
         setContentView(R.layout.activity_edit_organisation)
         setSupportActionBar(toolbar)
         

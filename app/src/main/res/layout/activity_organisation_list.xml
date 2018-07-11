@@ -2,7 +2,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.OrganisationListActivity">
@@ -20,7 +20,7 @@
             android:layout_height="?android:attr/actionBarSize"
             android:layout_weight="1"
             android:background="@color/colorPrimary"
-            app:title="@string/title_activity_organisation_list"/>
+            app:title="@string/title_activity_organisation_list" />
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs_layout"
@@ -45,8 +45,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_add_black_24dp"
         android:tint="@color/white"
-        app:elevation="12dp" />
+        app:elevation="12dp"
+        app:srcCompat="@drawable/ic_add_black_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

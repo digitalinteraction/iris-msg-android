@@ -13,12 +13,7 @@ import javax.inject.Singleton
 @Component(modules = [
     AndroidInjectionModule::class,
     AppModule::class,
-    OrganisationListActivityModule::class,
-    EmptyMainActivityModule::class,
-    OnboardActivityModule::class,
-    LoginActivityModule::class,
-    EditOrganisationActivityModule::class,
-    OrganisationDetailActivityModule::class
+    ActivityBuildersModule::class
 ])
 @Suppress("unused")
 interface AppComponent {

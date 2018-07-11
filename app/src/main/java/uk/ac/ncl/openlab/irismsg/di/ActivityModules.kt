@@ -7,53 +7,68 @@ import uk.ac.ncl.openlab.irismsg.activity.*
 
 @Module
 @Suppress("unused")
-abstract class EmptyMainActivityModule {
+abstract class ActivityBuildersModule {
     
     @ContributesAndroidInjector(modules = [ FragmentBuildersModule::class ])
-    abstract fun contributeMainActivity(): EmptyMainActivity
-}
-
-
-@Module
-@Suppress("unused")
-abstract class LoginActivityModule {
+    abstract fun contributeEmptyMainActivity(): EmptyMainActivity
     
     @ContributesAndroidInjector(modules = [ FragmentBuildersModule::class ])
-    abstract fun contributeMainActivity(): LoginActivity
-}
-
-
-@Module
-@Suppress("unused")
-abstract class OnboardActivityModule {
+    abstract fun contributeLoginActivity(): LoginActivity
     
     @ContributesAndroidInjector(modules = [ FragmentBuildersModule::class ])
-    abstract fun contributeMainActivity(): OnboardActivity
-}
-
-
-@Module
-@Suppress("unused")
-abstract class OrganisationListActivityModule {
+    abstract fun contributeOnboardActivity(): OnboardActivity
     
     @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
-    abstract fun contributeMainActivity(): OrganisationListActivity
-}
-
-
-@Module
-@Suppress("unused")
-abstract class EditOrganisationActivityModule {
+    abstract fun contributeOrganisationListActivity(): OrganisationListActivity
     
     @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
-    abstract fun contributeMainActivity(): EditOrganisationActivity
-}
-
-
-@Module
-@Suppress("unused")
-abstract class OrganisationDetailActivityModule {
-
+    abstract fun contributeEditOrganisationActivity(): EditOrganisationActivity
+    
     @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
-    abstract fun contributeMainActivity(): OrganisationDetailActivity
+    abstract fun contributeOrganisationDetailActivity(): OrganisationDetailActivity
 }
+
+
+//@Module
+//@Suppress("unused")
+//abstract class LoginActivityModule {
+//
+//    @ContributesAndroidInjector(modules = [ FragmentBuildersModule::class ])
+//    abstract fun contributeMainActivity(): LoginActivity
+//}
+
+
+//@Module
+//@Suppress("unused")
+//abstract class OnboardActivityModule {
+//
+//    @ContributesAndroidInjector(modules = [ FragmentBuildersModule::class ])
+//    abstract fun contributeMainActivity(): OnboardActivity
+//}
+
+
+//@Module
+//@Suppress("unused")
+//abstract class OrganisationListActivityModule {
+//
+//    @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
+//    abstract fun contributeMainActivity(): OrganisationListActivity
+//}
+
+
+//@Module
+//@Suppress("unused")
+//abstract class EditOrganisationActivityModule {
+//
+//    @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
+//    abstract fun contributeMainActivity(): EditOrganisationActivity
+//}
+
+
+//@Module
+//@Suppress("unused")
+//abstract class OrganisationDetailActivityModule {
+//
+//    @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
+//    abstract fun contributeMainActivity(): OrganisationDetailActivity
+//}

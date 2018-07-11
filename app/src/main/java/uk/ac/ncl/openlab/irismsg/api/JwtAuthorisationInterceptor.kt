@@ -16,7 +16,7 @@ class JwtAuthorisationInterceptor (private val ctx: Context) : Interceptor {
         val builder = request.newBuilder()
         
         // If set, add the jwt bearer header
-        jwt?.let { jwt ->
+        if (jwt != null) {
             builder.addHeader("Authorization", "Bearer $jwt")
         }
         

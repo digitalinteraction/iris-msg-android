@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import dagger.android.DispatchingAndroidInjector
@@ -25,7 +24,7 @@ import javax.inject.Inject
  */
 class OrganisationListActivity : AppCompatActivity(),
         HasSupportFragmentInjector,
-        OrganisationListFragment.OnListFragmentInteractionListener {
+        OrganisationListFragment.Listener {
     
     private lateinit var pagerAdapter: OrganisationListPagerAdapter
     
@@ -86,7 +85,7 @@ class OrganisationListActivity : AppCompatActivity(),
         if (intent != null) startActivity(intent)
     
         // If they clicked logout, perform the logout
-        if (item?.itemId == R.id.action_logout) {
+        if (item.itemId == R.id.action_logout) {
             
             // Un-store the jwt and current user
             JsonWebToken.save(applicationContext, null)
@@ -100,10 +99,10 @@ class OrganisationListActivity : AppCompatActivity(),
         return super.onOptionsItemSelected(item)
     }
     
-    override fun onListFragmentInteraction(organisation: OrganisationEntity) {
+    override fun onOrganisationSelected(organisation: OrganisationEntity) {
          startActivity(
              Intent(this, OrganisationDetailActivity::class.java)
-                     .putExtra(OrganisationDetailActivity.ORGANISATION_ID_KEY, organisation.id)
+                     .putExtra(OrganisationDetailActivity.ARG_ORGANISATION_ID, organisation.id)
          )
     }
 }

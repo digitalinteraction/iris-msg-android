@@ -11,6 +11,8 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -24,6 +26,9 @@ import kotlinx.android.synthetic.main.activity_organisation_detail.*
 import kotlinx.android.synthetic.main.fragment_organisation_detail.view.*
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
+import uk.ac.ncl.openlab.irismsg.common.MemberRole
+import uk.ac.ncl.openlab.irismsg.repo.OrganisationRepository
+import uk.ac.ncl.openlab.irismsg.ui.MemberListFragment
 import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationViewModel
 import javax.inject.Inject
 
@@ -33,7 +38,7 @@ import javax.inject.Inject
  * TODO - Setup the fab
  * TODO - Add a dialog to the destroy click
  */
-class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInjector {
+class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInjector, MemberListFragment.Listener {
     
     // Dagger injection point
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
@@ -45,8 +50,9 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     @Inject lateinit var irisService: IrisMsgService
+    @Inject lateinit var orgRepo: OrganisationRepository
     
-    private var mSectionsPagerAdapter : SectionsPagerAdapter? = null
+    private var pagerAdapter : PagerAdapter? = null
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,11 +60,10 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         // Setup the view
         setContentView(R.layout.activity_organisation_detail)
         setSupportActionBar(toolbar)
-        // supportActionBar?.setDisplayHomeAsUpEnabled(true)
         
         
         // Get the passed org id or fail
-        organisationId = intent.extras.getString(ORGANISATION_ID_KEY)
+        organisationId = intent.extras.getString(ARG_ORGANISATION_ID)
                 ?: throw RuntimeException("OrganisationDetailActivity not passed an Organisation id")
         
         
@@ -79,10 +84,24 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         })
         
         // TODO - Setup the tabs
-        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
-        container.adapter = mSectionsPagerAdapter
-        container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
-        tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
+        pagerAdapter = PagerAdapter(supportFragmentManager)
+        tabs_pager.adapter = pagerAdapter
+        tabs_pager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
+        tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+    
+            override fun onTabSelected(tab : TabLayout.Tab) {
+                tabs_pager.currentItem = tab.position
+                val fabIcon = when (tab.position) {
+                    0 -> R.drawable.ic_send_black_24dp
+                    else -> R.drawable.ic_add_black_24dp
+                }
+                fab.setImageDrawable(ContextCompat.getDrawable(applicationContext, fabIcon))
+            }
+    
+            override fun onTabUnselected(tab : TabLayout.Tab) {}
+    
+            override fun onTabReselected(tab : TabLayout.Tab) {}
+        })
     
     
         // TODO - Setup the fab
@@ -100,12 +119,17 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     
     override fun onOptionsItemSelected(item : MenuItem) : Boolean {
         
-        if (item.itemId== R.id.action_delete_organisation) {
+        if (item.itemId == R.id.action_delete_organisation) {
             
             // Destroy the organisation
             irisService.destroyOrganisation(organisationId).enqueue(ApiCallback({ res ->
-                if (res.success) finish()
-                else Snackbar.make(toolbar, res.messages.joinToString(), Snackbar.LENGTH_LONG).show()
+                if (res.success) {
+                    orgRepo.organisationDestroyed(organisationId)
+                    finish()
+                }
+                else {
+                    Snackbar.make(toolbar, res.messages.joinToString(), Snackbar.LENGTH_LONG).show()
+                }
             }, { _ ->
                 TODO("Handle orgs.destroy api failure")
             }))
@@ -116,26 +140,25 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         return super.onOptionsItemSelected(item)
     }
     
-    companion object {
-        const val ORGANISATION_ID_KEY = "organisation_id"
+    override fun onDeleteMember(memberId : String) {
+        Log.d("delete", memberId)
     }
     
+    companion object {
+        const val ARG_ORGANISATION_ID = "organisation_id"
+    }
     
-    /**
-     * A [FragmentPagerAdapter] that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    inner class SectionsPagerAdapter(fm : FragmentManager) : FragmentPagerAdapter(fm) {
+    inner class PagerAdapter(fm : FragmentManager) : FragmentPagerAdapter(fm) {
         
-        override fun getItem(position : Int)
-                = PlaceholderFragment.newInstance(position + 1)
+        override fun getItem(position : Int) = when (position) {
+            1 -> MemberListFragment.newInstance(MemberRole.DONOR, organisationId)
+            2 -> MemberListFragment.newInstance(MemberRole.SUBSCRIBER, organisationId)
+            else -> PlaceholderFragment.newInstance(position + 1)
+        }
     
         override fun getCount() = 3
     }
     
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     class PlaceholderFragment : Fragment() {
         
         override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
@@ -147,16 +170,10 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         }
         
         companion object {
-            /**
-             * The fragment argument representing the section number for this
-             * fragment.
-             */
-            private val ARG_SECTION_NUMBER = "section_number"
+            /** The fragment argument representing the section number for this fragment. */
+            private const val ARG_SECTION_NUMBER = "section_number"
             
-            /**
-             * Returns a new instance of this fragment for the given section
-             * number.
-             */
+            /** Returns a new instance of this fragment for the given section number. */
             fun newInstance(sectionNumber : Int) : PlaceholderFragment {
                 val fragment = PlaceholderFragment()
                 val args = Bundle()

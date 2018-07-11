@@ -41,7 +41,7 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         // Create an adapter to serve the pages
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
-        container.adapter = mSectionsPagerAdapter
+        tabs_pager.adapter = mSectionsPagerAdapter
         
         // Listen for login clicks
         login_button.setOnClickListener { _ ->

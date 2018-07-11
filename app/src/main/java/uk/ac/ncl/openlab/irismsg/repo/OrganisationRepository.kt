@@ -19,7 +19,7 @@ class OrganisationRepository @Inject constructor() {
     @Inject
     lateinit var irisService: IrisMsgService
     
-    var orgsCache: MutableList<OrganisationEntity> = mutableListOf()
+    private var orgsCache: MutableList<OrganisationEntity> = mutableListOf()
     
     private fun loadOrgsInto (target: MutableLiveData<OrgList>) : MutableLiveData<OrgList> {
         
@@ -68,6 +68,11 @@ class OrganisationRepository @Inject constructor() {
     /** Notify the in-memory cache that an Organisation was created */
     fun organisationCreated (org: OrganisationEntity) {
         orgsCache.add(org)
+    }
+    
+    /** Notify the in-memory cache that an Organisation was deleted */
+    fun organisationDestroyed (id: String) {
+        orgsCache.removeAll { it.id == id }
     }
     
     /** Get a specific organisation */

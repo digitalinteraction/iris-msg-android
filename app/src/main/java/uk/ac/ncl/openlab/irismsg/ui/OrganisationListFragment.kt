@@ -7,7 +7,6 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,31 +26,60 @@ import javax.inject.Inject
  */
 class OrganisationListFragment : Fragment(), Injectable {
     
-    private var listener: OnListFragmentInteractionListener? = null
+    private var listener: Listener? = null
     private lateinit var adapter: OrganisationRecyclerViewAdapter
-    private lateinit var role: MemberRole
     private lateinit var viewModel: OrganisationListViewModel
     
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    
+    private val memberRole: MemberRole
+        get () = arguments?.getSerializable(ARG_MEMBER_ROLE) as MemberRole
+    
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is Listener) { listener = context }
+    }
+    
+    override fun onCreate(savedInstanceState : Bundle?) {
+        super.onCreate(savedInstanceState)
+        adapter = OrganisationRecyclerViewAdapter(listener)
+    }
+    
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?): View? {
+        return inflater.inflate(
+            R.layout.fragment_organisation_list,
+            container,
+            false
+        )
+    }
+    
+    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        
+        // Set the adapter
+        org_list.layoutManager = LinearLayoutManager(context)
+        org_list.adapter = adapter
+    
+        // Listen for refresh events
+        swipe_refresh.setOnRefreshListener {
+            swipe_refresh.isRefreshing = true
+            viewModel.reload()
+        }
+    }
     
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         
         // Get a ViewModel to manage the data
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
+        viewModel = ViewModelProviders.of(activity!!, viewModelFactory)
                 .get(OrganisationListViewModel::class.java)
                 .init()
-        
-        // Parse our arguments
-        arguments?.let {
-            role = it.get(ARG_ROLE) as MemberRole
-        }
         
         // Grab the user's id from our jwt
         val userId = JsonWebToken.load(context!!)?.getUserId() ?: return
         
         // Listen for organisations
-        swipe_refresh.isRefreshing = true
         viewModel.organisations.observe(this, Observer { orgs ->
             
             // Stop the refresh animation
@@ -61,8 +89,8 @@ class OrganisationListFragment : Fragment(), Injectable {
             // TODO: Handle this error
             if (orgs == null) return@Observer
             
-            // Filter the organisations based on our role
-            adapter.organisations = when (role) {
+            // Filter the organisations based on our memberRole
+            adapter.organisations = when (memberRole) {
                 MemberRole.COORDINATOR -> orgs.filter { it.isCoordinator(userId) }
                 else -> orgs.filter { !it.isCoordinator(userId) }
             }
@@ -70,12 +98,6 @@ class OrganisationListFragment : Fragment(), Injectable {
             // Tell the recycler to reload
             adapter.notifyDataSetChanged()
         })
-    
-        // Listen for refresh events
-        swipe_refresh.setOnRefreshListener {
-            swipe_refresh.isRefreshing = true
-            viewModel.reload()
-        }
     }
     
     override fun onResume() {
@@ -84,58 +106,24 @@ class OrganisationListFragment : Fragment(), Injectable {
         viewModel.reloadFromCache()
     }
     
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(
-            R.layout.fragment_organisation_list, container, false
-        )
-
-        adapter = OrganisationRecyclerViewAdapter(listener)
-        
-        val recycler = view.findViewById<RecyclerView>(R.id.org_list_recycler)
-        
-        // Set the adapter
-        recycler.layoutManager = LinearLayoutManager(context)
-        recycler.adapter = adapter
-        
-        return view
-    }
-    
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnListFragmentInteractionListener) { listener = context }
-    }
-    
     override fun onDetach() {
         super.onDetach()
         listener = null
     }
     
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson
-     * [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onListFragmentInteraction(organisation: OrganisationEntity)
-    }
-    
     companion object {
         
-        const val ARG_ROLE = "role"
+        const val ARG_MEMBER_ROLE = "memberRole"
         
         @JvmStatic
-        fun newInstance(role: MemberRole) = OrganisationListFragment()
-                .apply { arguments = Bundle().apply {
-                    putSerializable(ARG_ROLE, role)
-                } }
+        fun newInstance(role: MemberRole) = OrganisationListFragment().apply {
+            arguments = Bundle().apply {
+                putSerializable(ARG_MEMBER_ROLE, role)
+            }
+        }
+    }
+    
+    interface Listener {
+        fun onOrganisationSelected(organisation: OrganisationEntity)
     }
 }
