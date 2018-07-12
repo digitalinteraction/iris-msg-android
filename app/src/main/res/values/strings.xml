@@ -13,7 +13,7 @@
     <string name="more_text_format">%1$d…</string>
     <string name="action_login">Get Started</string>
 
-    <string name="action_delete_organisation">Remove organisation</string>
+    <string name="action_delete_organisation">Delete organisation</string>
 
 
     <!-- Organisation List Activity -->
@@ -76,6 +76,15 @@
     <string name="action_delete">Remove</string>
     <string name="action_confirm">OK</string>
     <string name="action_cancel">Cancel</string>
+
+    <string name="prompt_message">Message</string>
+    <string name="body_send_message_bottom">
+        Send a message to your organisation through it\'s donors.
+        \n\nDonors will receive a notification where they have the option to forward the message on to subscribers.
+        \n\nIf a donor cannot donate, another donor will be asked instead.
+    </string>
+    <string name="message_char_count">%1$d/%2$d</string>
+    <string name="message_sent">Message sent!</string>
 
 
     <!-- Preferences -->

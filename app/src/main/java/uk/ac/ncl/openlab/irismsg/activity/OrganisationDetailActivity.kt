@@ -30,10 +30,14 @@ import kotlinx.android.synthetic.main.activity_organisation_detail.*
 import kotlinx.android.synthetic.main.fragment_organisation_detail.view.*
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.CreateMemberRequest
+import uk.ac.ncl.openlab.irismsg.api.CreateMessageRequest
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
+import uk.ac.ncl.openlab.irismsg.common.EventBus
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
+import uk.ac.ncl.openlab.irismsg.common.ViewsUtil
 import uk.ac.ncl.openlab.irismsg.repo.OrganisationRepository
 import uk.ac.ncl.openlab.irismsg.ui.MemberListFragment
+import uk.ac.ncl.openlab.irismsg.ui.SendMessageFragment
 import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationViewModel
 import java.util.*
 import javax.inject.Inject
@@ -44,7 +48,7 @@ import javax.inject.Inject
  * TODO - Setup the fab
  * TODO - Add a dialog to the destroy click
  */
-class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInjector, MemberListFragment.Listener {
+class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInjector, MemberListFragment.Listener, SendMessageFragment.Listener {
     
     // Dagger injection point
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
@@ -57,6 +61,10 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     @Inject lateinit var irisService: IrisMsgService
     @Inject lateinit var orgRepo: OrganisationRepository
+    @Inject lateinit var viewsUtil : ViewsUtil
+    @Inject lateinit var events: EventBus
+    
+    private var composedMessage = ""
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,6 +104,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         tabs_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
     
             override fun onTabSelected(tab : TabLayout.Tab) {
+                viewsUtil.unFocus(currentFocus)
                 fab.setImageDrawable(ContextCompat.getDrawable(applicationContext, when (tab.position) {
                     0 -> R.drawable.ic_send_black_24dp
                     else -> R.drawable.ic_add_black_24dp
@@ -162,6 +171,10 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 .show()
     }
     
+    override fun onMessageChange(message : String) {
+        composedMessage = message
+    }
+    
     private fun performDeleteOrganisation () {
     
         // Destroy the organisation
@@ -223,7 +236,26 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     }
     
     private fun onSendMessage () {
-        // TODO ...
+        if (composedMessage == "") return
+        
+        val body = CreateMessageRequest(composedMessage, organisationId)
+        irisService.createMessage(body).enqueue(ApiCallback({ res ->
+            if (res.success) {
+                events.emit(SendMessageFragment.EVENT_RESET)
+                viewsUtil.unFocus(currentFocus)
+            }
+            
+            Snackbar.make(
+                main_content,
+                when (res.success) {
+                    true -> getString(R.string.message_sent)
+                    else -> res.messages.joinToString()
+                },
+                Snackbar.LENGTH_LONG
+            ).show()
+        }, { _ ->
+            TODO("Handle messages.create error")
+        }))
     }
     
     private fun onAddMember (role: MemberRole) {
@@ -325,6 +357,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         override fun getCount() = 3
         
         override fun getItem(position : Int) = when (position) {
+            0 -> SendMessageFragment.newInstance()
             1 -> MemberListFragment.newInstance(MemberRole.DONOR, organisationId)
             2 -> MemberListFragment.newInstance(MemberRole.SUBSCRIBER, organisationId)
             else -> PlaceholderFragment.newInstance(position + 1)
