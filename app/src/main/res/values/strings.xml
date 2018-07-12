@@ -93,4 +93,11 @@
     <string name="pref_api_host">Api Location</string>
     <string name="pref_api_host_info">The url of where the api is</string>
 
+
+    <!-- Notifications -->
+    <string name="title_new_donations_notif">New donations!</string>
+    <string name="body_new_donations_notif">Your organisations need your help</string>
+    <string name="title_new_donations_channel">New Donations</string>
+    <string name="info_new_donations_channel">New Donations</string>
+
 </resources>

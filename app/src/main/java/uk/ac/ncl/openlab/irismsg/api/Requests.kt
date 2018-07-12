@@ -21,7 +21,7 @@ data class CheckLoginRequest(
 )
 
 data class UpdateFcmRequest(
-    val fcmToken: String
+    val newToken: String
 )
 
 data class CreateOrganisationRequest(
