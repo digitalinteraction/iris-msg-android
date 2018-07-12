@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.fragment_organisation_item.view.*
 import kotlinx.android.synthetic.main.fragment_organisation_list.*
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.R
-import uk.ac.ncl.openlab.irismsg.api.JsonWebToken
+import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 import uk.ac.ncl.openlab.irismsg.di.Injectable
 
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
@@ -34,6 +34,7 @@ class OrganisationListFragment : Fragment(), Injectable {
     private lateinit var viewModel: OrganisationListViewModel
     
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var jwtService: JwtService
     
     private val memberRole: MemberRole
         get () = arguments?.getSerializable(ARG_MEMBER_ROLE) as MemberRole
@@ -80,7 +81,7 @@ class OrganisationListFragment : Fragment(), Injectable {
                 .init()
         
         // Grab the user's id from our jwt
-        val userId = JsonWebToken.load(context!!)?.getUserId() ?: return
+        val userId = jwtService.getUserId() ?: return
         
         // Listen for organisations
         viewModel.organisations.observe(this, Observer { orgs ->

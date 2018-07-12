@@ -3,7 +3,6 @@ package uk.ac.ncl.openlab.irismsg.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
@@ -16,7 +15,7 @@ import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_organisation_list.*
 import uk.ac.ncl.openlab.irismsg.ui.OrganisationListFragment
 import uk.ac.ncl.openlab.irismsg.R
-import uk.ac.ncl.openlab.irismsg.api.JsonWebToken
+import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 import uk.ac.ncl.openlab.irismsg.model.UserEntity
@@ -31,8 +30,8 @@ class OrganisationListActivity : AppCompatActivity(),
     
     private lateinit var pagerAdapter: PagerAdapter
     
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
+    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
+    @Inject lateinit var jwtService: JwtService
     
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
@@ -78,8 +77,12 @@ class OrganisationListActivity : AppCompatActivity(),
     
         // Create an intent based on the id
         val intent = when (item.itemId) {
-            R.id.action_even_more -> Intent(Intent.ACTION_VIEW, Uri.parse("http://irismsg.io"))
-            R.id.action_open_lab  -> Intent(Intent.ACTION_VIEW, Uri.parse("http://openlab.ncl.ac.uk"))
+            R.id.action_even_more -> Intent(
+                Intent.ACTION_VIEW, Uri.parse("http://irismsg.io")
+            )
+            R.id.action_open_lab  -> Intent(
+                Intent.ACTION_VIEW, Uri.parse("http://openlab.ncl.ac.uk")
+            )
             else -> null
         }
         
@@ -90,7 +93,7 @@ class OrganisationListActivity : AppCompatActivity(),
         if (item.itemId == R.id.action_logout) {
             
             // Un-store the jwt and current user
-            JsonWebToken.save(applicationContext, null)
+            jwtService.save(null)
             UserEntity.current = null
             
             // Go to the onboarding activity

@@ -109,7 +109,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     
     
         // Setup fab
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener { _ ->
             when (tabs_pager.currentItem) {
                 0 -> onSendMessage()
                 1 -> onAddMember(MemberRole.DONOR)
@@ -193,9 +193,21 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
             if (res.success) {
                 
                 // Update the organisation ViewModel
+                val member = viewModel.organisation.value?.members?.find { it.id == memberId }
+                        ?: return@ApiCallback
+                
                 viewModel.organisation.value = viewModel.organisation.value?.apply {
                     members.removeAll { member -> member.id == memberId }
                 }
+                
+                // Tell the user
+                // TODO: Update to use phone number
+                Snackbar.make(
+                    main_content,
+                    getString(R.string.member_deleted, member.userId),
+                    Snackbar.LENGTH_LONG
+                )
+                
             } else {
                 
                 // Present any errors
@@ -215,7 +227,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     }
     
     private fun onAddMember (role: MemberRole) {
-        val organisation = viewModel.organisation.value ?: return
+        viewModel.organisation.value ?: return
         
         val title = getString(R.string.title_add_member, role.humanized.toLowerCase())
         
@@ -262,14 +274,17 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         performAddMember(
             role,
             number.nationalNumber.toString(),
-            util.getRegionCodeForNumber(number)
+            util.getRegionCodeForNumber(number),
+            util.format(number, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL)
         )
         
         // Dismiss the dialog
         dialog.dismiss()
     }
     
-    private fun performAddMember (role: MemberRole, phoneNumber: String, countryCode: String) {
+    private fun performAddMember (
+        role: MemberRole, phoneNumber: String, countryCode: String, formatted: String
+    ) {
         
         // Make the request
         val body = CreateMemberRequest(role, phoneNumber, countryCode)
@@ -279,7 +294,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 // Let the user know it was successful
                 Snackbar.make(
                     findViewById<View>(R.id.main_content),
-                    getString(R.string.member_created, phoneNumber),
+                    getString(R.string.member_created, formatted),
                     Snackbar.LENGTH_LONG
                 ).show()
                 

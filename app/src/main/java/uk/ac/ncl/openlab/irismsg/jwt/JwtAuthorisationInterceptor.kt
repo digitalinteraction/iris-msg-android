@@ -1,18 +1,18 @@
-package uk.ac.ncl.openlab.irismsg.api
+package uk.ac.ncl.openlab.irismsg.jwt
 
-import android.content.Context
 import okhttp3.Interceptor
 import okhttp3.Response
+import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 
 /**
  * An okhttp request interceptor to add JWT Auth headers based on the current JsonWebToken
  */
-class JwtAuthorisationInterceptor (private val ctx: Context) : Interceptor {
+class JwtAuthorisationInterceptor (private val jwtService: JwtService) : Interceptor {
     override fun intercept(chain : Interceptor.Chain) : Response {
         
         // Create a cloned builder for the modified request
         val request = chain.request()
-        val jwt = JsonWebToken.load(ctx)
+        val jwt = jwtService.current
         val builder = request.newBuilder()
         
         // If set, add the jwt bearer header

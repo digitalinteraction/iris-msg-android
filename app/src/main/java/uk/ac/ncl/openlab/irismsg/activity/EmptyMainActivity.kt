@@ -9,7 +9,7 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
-import uk.ac.ncl.openlab.irismsg.api.JsonWebToken
+import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 import uk.ac.ncl.openlab.irismsg.model.UserEntity
 import javax.inject.Inject
 
@@ -24,12 +24,13 @@ class EmptyMainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     
     @Inject lateinit var irisService : IrisMsgService
+    @Inject lateinit var jwtService: JwtService
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // See if there is a current user
-        val jwt = JsonWebToken.load(this)
+        val jwt = jwtService.current
 
         // If there isn't, push them to onboarding
         if (jwt == null) {

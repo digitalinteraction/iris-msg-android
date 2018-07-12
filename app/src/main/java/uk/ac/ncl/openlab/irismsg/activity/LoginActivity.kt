@@ -1,8 +1,5 @@
 package uk.ac.ncl.openlab.irismsg.activity
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -11,7 +8,6 @@ import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
@@ -21,6 +17,7 @@ import kotlinx.android.synthetic.main.activity_login.*
 import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.api.*
 import uk.ac.ncl.openlab.irismsg.common.ViewsUtil
+import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 import uk.ac.ncl.openlab.irismsg.model.UserAuthEntity
 import uk.ac.ncl.openlab.irismsg.model.UserEntity
 import java.util.*
@@ -38,6 +35,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     @Inject lateinit var irisService: IrisMsgService
     @Inject lateinit var viewsUtil: ViewsUtil
+    @Inject lateinit var jwtService: JwtService
     
     private var currentState: State = State.REQUEST
     
@@ -218,7 +216,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     private fun finishLogin (userAuth: UserAuthEntity) {
         
         // Save the token & update the current user
-        JsonWebToken.save(applicationContext, userAuth.token)
+        jwtService.save(userAuth.token)
         UserEntity.current = userAuth.user
         
         // Move to the organisation list activity

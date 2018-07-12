@@ -132,7 +132,7 @@ class MemberListFragment : Fragment(), Injectable {
         
         override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
             members[pos].let { member ->
-                holder.phoneNumberView.text = member.id // TODO: Fix for phoneNumber
+                holder.phoneNumberView.text = member.userId // TODO: Fix for phoneNumber
                 holder.deleteButton.tag = member
                 holder.deleteButton.setOnClickListener(onDeleteListener)
             }
