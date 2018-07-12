@@ -29,7 +29,7 @@ class FirebaseService : FirebaseMessagingService() {
                 .setSmallIcon(R.drawable.notification_icon_background)
                 .setContentTitle(getString(R.string.title_new_donations_notif))
                 .setContentText(getString(R.string.body_new_donations_notif))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setCategory(NotificationCompat.CATEGORY_EVENT)
                 .build()

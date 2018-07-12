@@ -58,7 +58,7 @@ class IrisMsgApp : Application(), HasActivityInjector {
         val channel = NotificationChannel(
             FirebaseService.CHANNEL_DONATIONS,
             getString(R.string.title_new_donations_channel),
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_HIGH
         )
     
         channel.description = getString(R.string.info_new_donations_channel)
