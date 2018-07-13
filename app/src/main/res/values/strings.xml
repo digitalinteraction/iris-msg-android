@@ -47,6 +47,9 @@
     <string name="api_unknown_error">An unknown error occurred, please try again.</string>
 
 
+    <!-- Onboard Activity -->
+    <string name="body_permissions_required">Sorry, you cannot use this app unless you accept the permissions</string>
+
     <!-- Add Organisation -->
     <string name="add_organisation_info">
         An organisation is a group of donors and subscribers that you use to send messages through.

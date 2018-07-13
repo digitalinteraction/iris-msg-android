@@ -4,12 +4,15 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -53,18 +56,56 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
             val perms = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
             
             if (perms != PackageManager.PERMISSION_GRANTED) {
-                TODO("Request permissions")
-                // https://developer.android.com/reference/android/support/v4/app/ActivityCompat#requestPermissions(android.app.Activity,%20java.lang.String[],%20int)
-                
+    
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(
+                        arrayOf(Manifest.permission.SEND_SMS),
+                        PERMS_REQUEST_CODE
+                    )
+                } else {
+                    TODO("Request old permissions?")
+                }
+            } else {
+    
+                startActivityForResult(
+                    Intent(this, LoginActivity::class.java),
+                    LoginActivity.REQUEST_LOGIN
+                )
             }
-            
-            
+        }
+        
+    }
+    
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults : IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        
+        if (requestCode != PERMS_REQUEST_CODE) return
+        
+        var hasPermissions = false
+        
+        permissions.forEachIndexed { index, perm ->
+            hasPermissions = hasPermissions.or(
+                perm == Manifest.permission.SEND_SMS
+                        && grantResults[index] == PackageManager.PERMISSION_GRANTED
+            )
+        }
+        
+        if (hasPermissions) {
             startActivityForResult(
                 Intent(this, LoginActivity::class.java),
                 LoginActivity.REQUEST_LOGIN
             )
+        } else {
+            Snackbar.make(
+                main_content,
+                R.string.body_permissions_required,
+                Snackbar.LENGTH_LONG
+            ).show()
         }
         
+        Log.d("req", requestCode.toString())
+        Log.d("req", permissions.toString())
     }
     
     override fun onActivityResult(requestCode : Int, resultCode : Int, data : Intent?) {
@@ -147,5 +188,9 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 return fragment
             }
         }
+    }
+    
+    companion object {
+        private const val PERMS_REQUEST_CODE = 1
     }
 }
