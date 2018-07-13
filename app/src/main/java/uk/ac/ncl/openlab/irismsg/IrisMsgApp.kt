@@ -1,18 +1,15 @@
 package uk.ac.ncl.openlab.irismsg
 
-import android.app.Activity
-import android.app.Application
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.app.*
+import android.content.BroadcastReceiver
 import android.os.Build
 import android.util.Log
 import com.google.firebase.iid.FirebaseInstanceId
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
+import dagger.android.*
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.api.UpdateFcmRequest
-import uk.ac.ncl.openlab.irismsg.services.FirebaseService
+import uk.ac.ncl.openlab.irismsg.service.FirebaseService
 import uk.ac.ncl.openlab.irismsg.di.AppInjector
 import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 import javax.inject.Inject
@@ -20,9 +17,12 @@ import javax.inject.Inject
 /**
  * The Android application, injectable onto objects via Dagger
  */
-class IrisMsgApp : Application(), HasActivityInjector {
+class IrisMsgApp : Application(), HasActivityInjector, HasBroadcastReceiverInjector, HasServiceInjector {
     
-    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
+    @Inject lateinit var activityInjector: DispatchingAndroidInjector<Activity>
+    @Inject lateinit var receiverinjector: DispatchingAndroidInjector<BroadcastReceiver>
+    @Inject lateinit var serviceInjector: DispatchingAndroidInjector<Service>
+    
     @Inject lateinit var irisService: IrisMsgService
     @Inject lateinit var jwtService: JwtService
     
@@ -67,5 +67,7 @@ class IrisMsgApp : Application(), HasActivityInjector {
                 .createNotificationChannel(channel)
     }
     
-    override fun activityInjector() = dispatchingAndroidInjector
+    override fun activityInjector () = activityInjector
+    override fun broadcastReceiverInjector () = receiverinjector
+    override fun serviceInjector () = serviceInjector
 }

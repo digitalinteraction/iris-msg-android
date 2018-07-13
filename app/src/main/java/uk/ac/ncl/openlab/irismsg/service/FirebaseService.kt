@@ -1,13 +1,23 @@
-package uk.ac.ncl.openlab.irismsg.services
+package uk.ac.ncl.openlab.irismsg.service
 
+import android.app.Service
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasServiceInjector
 import uk.ac.ncl.openlab.irismsg.R
+import javax.inject.Inject
 
-class FirebaseService : FirebaseMessagingService() {
+class FirebaseService : FirebaseMessagingService(), HasServiceInjector {
+    
+    @Inject lateinit var injector: DispatchingAndroidInjector<Service>
+    override fun serviceInjector() : AndroidInjector<Service> = injector
+    
+    
     
     override fun onNewToken(newToken: String) {
         Log.d("fcm", newToken)

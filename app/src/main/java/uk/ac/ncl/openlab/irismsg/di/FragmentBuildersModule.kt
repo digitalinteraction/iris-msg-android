@@ -11,11 +11,11 @@ import uk.ac.ncl.openlab.irismsg.ui.SendMessageFragment
 abstract class FragmentBuildersModule {
     
     @ContributesAndroidInjector
-    abstract fun contributeOrganisationListFragment(): OrganisationListFragment
+    abstract fun contributeOrganisationListFragment () : OrganisationListFragment
     
     @ContributesAndroidInjector
-    abstract fun contributeMemberListFragment(): MemberListFragment
+    abstract fun contributeMemberListFragment () : MemberListFragment
     
     @ContributesAndroidInjector
-    abstract fun contributeSendMessageFragment(): SendMessageFragment
+    abstract fun contributeSendMessageFragment () : SendMessageFragment
 }

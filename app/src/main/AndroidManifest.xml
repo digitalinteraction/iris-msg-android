@@ -61,7 +61,7 @@
 
 
 
-        <service android:name=".services.FirebaseService">
+        <service android:name=".service.FirebaseService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

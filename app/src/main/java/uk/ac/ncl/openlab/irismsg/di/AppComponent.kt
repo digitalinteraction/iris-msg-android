@@ -13,7 +13,9 @@ import javax.inject.Singleton
 @Component(modules = [
     AndroidInjectionModule::class,
     AppModule::class,
-    ActivityBuildersModule::class
+    ActivityBuildersModule::class,
+    ServiceBuildersModule::class,
+    ReceiverBuildersModule::class
 ])
 @Suppress("unused")
 interface AppComponent {
@@ -21,12 +23,12 @@ interface AppComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun application(application: Application): Builder
+        fun application (application: Application) : Builder
         
-        fun build(): AppComponent
+        fun build (): AppComponent
     }
     
-    fun inject(irisApp: IrisMsgApp)
+    fun inject (irisApp: IrisMsgApp)
     
-    fun getMoshi() : Moshi
+    fun getMoshi () : Moshi
 }

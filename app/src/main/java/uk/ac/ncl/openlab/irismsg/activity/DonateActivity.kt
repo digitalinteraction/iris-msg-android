@@ -11,7 +11,6 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.telephony.SmsManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +19,6 @@ import android.widget.TextView
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_donate.*
-import kotlinx.android.synthetic.main.activity_organisation_list.*
 import kotlinx.android.synthetic.main.fragment_donation_item.view.*
 import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
@@ -116,26 +114,8 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
             }
         }
         
-        val sentIntent = Intent(this, SmsSentReceiver::class.java)
-        val deliveredIntent = Intent(this, SmsDeliveredReceiver::class.java)
-        
-        val sentPending = PendingIntent.getBroadcast(
-            applicationContext, 1, sentIntent, 0
-        )
-        
-        val deliveredPending = PendingIntent.getBroadcast(
-            applicationContext, 2, deliveredIntent, 0
-        )
-        
-        updates.filter { it.state == MessageAttemptState.PENDING }.forEach { update ->
-            SmsManager.getDefault().sendTextMessage(
-                update.phoneNumber,
-                null,
-                update.message,
-                sentPending,
-                deliveredPending
-            )
-        }
+        updates.filter { it.state == MessageAttemptState.PENDING }
+                .forEach { sendSms(it) }
         
         val toUpdate = updates.filter { it.state != MessageAttemptState.PENDING }
                 .map { it.forApi() }
@@ -146,25 +126,54 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 viewModel.reload()
                 Snackbar.make(
                     main_content,
-                    R.string.body_donations_sent,
+                    getString(R.string.body_donations_sent),
                     Snackbar.LENGTH_LONG
-                )
+                ).show()
             } else {
                 Snackbar.make(
                     main_content,
                     res.messages.joinToString(),
                     Snackbar.LENGTH_LONG
-                )
+                ).show()
             }
         }, { _ ->
             TODO("Handle messages.attempts.update error")
         }))
         
-        // LINK: https://developer.android.com/reference/android/telephony/SmsManager.html#sendTextMessage(java.lang.String,%20java.lang.String,%20java.lang.String,%20android.app.PendingIntent,%20android.app.PendingIntent)
+    }
+    
+    private fun sendSms (message: PotentialAttemptUpdate) {
         
-        Log.d("updates", pendingMessages.toString())
+        val sentIntent = Intent(this, SmsSentReceiver::class.java)
+                .putExtra(SmsSentReceiver.EXTRAS_ATTEMPT_ID, message.attemptId)
         
-//        SmsManager.getDefault().sendTextMessage()
+        val deliveredIntent = Intent(this, SmsDeliveredReceiver::class.java)
+                .putExtra(SmsDeliveredReceiver.EXTRAS_ATTEMPT_ID, message.attemptId)
+        
+        // Create a pending intent to trigger the sent receiver
+        val sentPending = PendingIntent.getBroadcast(
+            applicationContext,
+            SmsSentReceiver.REQUEST_API_UPDATE,
+            sentIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+    
+        // Create a pending intent to trigger the broadcast receiver
+        val deliveredPending = PendingIntent.getBroadcast(
+            applicationContext,
+            SmsDeliveredReceiver.REQUEST_API_UPDATE,
+            deliveredIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        
+        // Send the sms
+        SmsManager.getDefault().sendTextMessage(
+            message.phoneNumber,
+            null,
+            message.content,
+            sentPending,
+            deliveredPending
+        )
     }
     
     private fun enterState (state: State) {
@@ -192,7 +201,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     data class PotentialAttemptUpdate (
         val attemptId: String,
         val state: MessageAttemptState,
-        val message: String,
+        val content: String,
         val phoneNumber: String
     ) {
         fun forApi () = MessageAttemptUpdate(attemptId, state)

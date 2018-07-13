@@ -10,25 +10,25 @@ import uk.ac.ncl.openlab.irismsg.activity.*
 abstract class ActivityBuildersModule {
     
     @ContributesAndroidInjector(modules = [ FragmentBuildersModule::class ])
-    abstract fun contributeEmptyMainActivity(): EmptyMainActivity
+    abstract fun contributeEmptyMainActivity () : EmptyMainActivity
     
     @ContributesAndroidInjector(modules = [ FragmentBuildersModule::class ])
-    abstract fun contributeLoginActivity(): LoginActivity
+    abstract fun contributeLoginActivity () : LoginActivity
     
     @ContributesAndroidInjector(modules = [ FragmentBuildersModule::class ])
-    abstract fun contributeOnboardActivity(): OnboardActivity
+    abstract fun contributeOnboardActivity () : OnboardActivity
     
     @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
-    abstract fun contributeOrganisationListActivity(): OrganisationListActivity
+    abstract fun contributeOrganisationListActivity () : OrganisationListActivity
     
     @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
-    abstract fun contributeEditOrganisationActivity(): EditOrganisationActivity
+    abstract fun contributeEditOrganisationActivity () : EditOrganisationActivity
     
     @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
-    abstract fun contributeOrganisationDetailActivity(): OrganisationDetailActivity
+    abstract fun contributeOrganisationDetailActivity () : OrganisationDetailActivity
     
     @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
-    abstract fun contributeDonateActivity(): DonateActivity
+    abstract fun contributeDonateActivity () : DonateActivity
 }
 
 
