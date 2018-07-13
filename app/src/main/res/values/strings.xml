@@ -15,6 +15,7 @@
 
     <string name="action_delete_organisation">Delete organisation</string>
 
+    <string name="quotify">"%1$s"</string>
 
     <!-- Organisation List Activity -->
     <string name="tab_coordinator">Organisations</string>
@@ -85,6 +86,14 @@
     </string>
     <string name="message_char_count">%1$d/%2$d</string>
     <string name="message_sent">Message sent!</string>
+
+
+    <!-- Donate Activity -->
+    <string name="title_donate_activity">Donate Sms</string>
+    <string name="action_donate">Donate</string>
+    <string name="body_no_donations">You don\'t have any pending donations</string>
+    <string name="label_fraction">%1$d/%2$d</string>
+    <string name="body_donations_sent">Your donations have been sent, thank you!</string>
 
 
     <!-- Preferences -->

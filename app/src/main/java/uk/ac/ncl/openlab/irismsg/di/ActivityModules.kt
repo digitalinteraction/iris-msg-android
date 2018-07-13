@@ -26,6 +26,9 @@ abstract class ActivityBuildersModule {
     
     @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
     abstract fun contributeOrganisationDetailActivity(): OrganisationDetailActivity
+    
+    @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
+    abstract fun contributeDonateActivity(): DonateActivity
 }
 
 

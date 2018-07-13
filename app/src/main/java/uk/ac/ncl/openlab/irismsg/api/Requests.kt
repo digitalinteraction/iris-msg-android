@@ -4,7 +4,7 @@ import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.common.MessageAttemptState
 
 
-data class MessageAttemptUpdate(
+class MessageAttemptUpdate(
     val attemptId: String,
     val newState: MessageAttemptState
 )

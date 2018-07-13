@@ -12,7 +12,7 @@ import dagger.android.HasActivityInjector
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.api.UpdateFcmRequest
-import uk.ac.ncl.openlab.irismsg.common.FirebaseService
+import uk.ac.ncl.openlab.irismsg.services.FirebaseService
 import uk.ac.ncl.openlab.irismsg.di.AppInjector
 import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 import javax.inject.Inject
@@ -58,7 +58,7 @@ class IrisMsgApp : Application(), HasActivityInjector {
         val channel = NotificationChannel(
             FirebaseService.CHANNEL_DONATIONS,
             getString(R.string.title_new_donations_channel),
-            NotificationManager.IMPORTANCE_HIGH
+            NotificationManager.IMPORTANCE_DEFAULT
         )
     
         channel.description = getString(R.string.info_new_donations_channel)

@@ -1,4 +1,4 @@
-package uk.ac.ncl.openlab.irismsg.common
+package uk.ac.ncl.openlab.irismsg.services
 
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
@@ -26,10 +26,10 @@ class FirebaseService : FirebaseMessagingService() {
     private fun displayNewDonationsNotification (message: RemoteMessage) {
         
         val notification = NotificationCompat.Builder(this, CHANNEL_DONATIONS)
-                .setSmallIcon(R.drawable.notification_icon_background)
-                .setContentTitle(getString(R.string.title_new_donations_notif))
-                .setContentText(getString(R.string.body_new_donations_notif))
-                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                .setContentTitle(message.notification?.title ?: getString(R.string.title_new_donations_notif))
+                .setContentText(message.notification?.body ?: getString(R.string.body_new_donations_notif))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setCategory(NotificationCompat.CATEGORY_EVENT)
                 .build()

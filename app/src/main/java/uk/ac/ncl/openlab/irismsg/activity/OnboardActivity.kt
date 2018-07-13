@@ -1,12 +1,15 @@
 package uk.ac.ncl.openlab.irismsg.activity
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -45,6 +48,17 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         // Listen for login clicks
         login_button.setOnClickListener { _ ->
+            
+            // Check perms
+            val perms = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+            
+            if (perms != PackageManager.PERMISSION_GRANTED) {
+                TODO("Request permissions")
+                // https://developer.android.com/reference/android/support/v4/app/ActivityCompat#requestPermissions(android.app.Activity,%20java.lang.String[],%20int)
+                
+            }
+            
+            
             startActivityForResult(
                 Intent(this, LoginActivity::class.java),
                 LoginActivity.REQUEST_LOGIN

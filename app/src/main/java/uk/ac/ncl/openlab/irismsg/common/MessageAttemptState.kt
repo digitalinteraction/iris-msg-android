@@ -2,7 +2,7 @@ package uk.ac.ncl.openlab.irismsg.common
 
 enum class MessageAttemptState {
     PENDING,
-    REJECTEd,
+    REJECTED,
     FAILED,
     SUCCESS,
     NO_SERVICE,

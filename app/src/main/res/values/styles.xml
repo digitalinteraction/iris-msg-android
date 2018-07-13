@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -17,5 +17,23 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppTheme.TitleLabel" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTheme.BodyText" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="AppTheme.AltText" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/altText</item>
+        <item name="android:textStyle">normal</item>
+    </style>
 
 </resources>

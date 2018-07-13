@@ -39,14 +39,21 @@ class EntityGenerator {
     /** Make a date relative to today */
     private fun makeDate (type: DateGen) : Date {
         val cal = Calendar.getInstance()
+        
+        var size: Int? = null
     
         when (type) {
-            DateGen.FUTURE -> cal.set(Calendar.DAY_OF_YEAR, 7)
-            DateGen.PAST -> cal.set(Calendar.DAY_OF_YEAR, -7)
-            DateGen.DISTANT_FUTURE-> cal.set(Calendar.DAY_OF_YEAR, 100)
-            DateGen.DISTANT_PAST-> cal.set(Calendar.DAY_OF_YEAR, -100)
+            DateGen.FUTURE -> size = 7
+            DateGen.PAST -> size = -7
+            DateGen.DISTANT_FUTURE-> size = 100
+            DateGen.DISTANT_PAST-> size = -100
             else -> {}
         }
+        
+        if (size != null) cal.set(
+            Calendar.DAY_OF_YEAR,
+            cal.get(Calendar.DAY_OF_YEAR) + size
+        )
         
         return cal.time
     }

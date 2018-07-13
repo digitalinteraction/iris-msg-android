@@ -80,8 +80,11 @@ class OrganisationListActivity : AppCompatActivity(),
             R.id.action_even_more -> Intent(
                 Intent.ACTION_VIEW, Uri.parse("http://irismsg.io")
             )
-            R.id.action_open_lab  -> Intent(
+            R.id.action_open_lab -> Intent(
                 Intent.ACTION_VIEW, Uri.parse("http://openlab.ncl.ac.uk")
+            )
+            R.id.action_donate -> Intent(
+                this, DonateActivity::class.java
             )
             else -> null
         }

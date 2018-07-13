@@ -32,8 +32,8 @@ enum class AppMode {
     LIVE, MOCK
 }
 
-//private val currentMode: AppMode = AppMode.MOCK
-private val currentMode: AppMode = AppMode.LIVE
+private val currentMode: AppMode = AppMode.MOCK
+//private val currentMode: AppMode = AppMode.LIVE
 
 @Module(includes = [
     ViewModelModule::class

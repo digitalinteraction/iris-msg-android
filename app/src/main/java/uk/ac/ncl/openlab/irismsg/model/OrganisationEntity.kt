@@ -24,4 +24,28 @@ data class OrganisationEntity(
                 && member.userId == userId
                 && member.isActive()
     }
+    
+    fun membershipFor (userId: String) = members.filter { member ->
+        member.userId == userId
+                && member.isActive()
+    }
+    
+    fun primaryMembership (userId: String) : MemberEntity? {
+        val roles = mutableMapOf<MemberRole, MemberEntity>()
+        members.forEach { member ->
+            if (member.userId == userId && member.isActive()) {
+                roles[member.role] = member
+            }
+        }
+        
+        val roleOrder = listOf(
+            MemberRole.COORDINATOR, MemberRole.DONOR, MemberRole.SUBSCRIBER
+        )
+        
+        for (role in roleOrder) {
+            if (roles[role] != null) return roles[role]
+        }
+        
+        return null
+    }
 }

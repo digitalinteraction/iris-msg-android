@@ -8,9 +8,11 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_organisation_item.view.*
 import kotlinx.android.synthetic.main.fragment_organisation_list.*
@@ -98,9 +100,6 @@ class OrganisationListFragment : Fragment(), Injectable {
                 MemberRole.COORDINATOR -> orgs.filter { it.isCoordinator(userId) }
                 else -> orgs.filter { !it.isCoordinator(userId) }
             }
-            
-            // Tell the recycler to reload
-            adapter.notifyDataSetChanged()
         })
     }
     
@@ -131,7 +130,9 @@ class OrganisationListFragment : Fragment(), Injectable {
         : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
         
         private val onClickListener: View.OnClickListener
+        
         var organisations: List<OrganisationEntity> = listOf()
+            set (newValue) { field = newValue; notifyDataSetChanged() }
         
         init {
             onClickListener = View.OnClickListener { view ->
@@ -151,6 +152,9 @@ class OrganisationListFragment : Fragment(), Injectable {
             organisations[pos].let { org ->
                 holder.nameView.text = org.name
                 holder.infoView.text = org.shortInfo
+                jwtService.getUserId()?.let { userId ->
+                    holder.rolesView.text = org.primaryMembership(userId)?.role?.humanized ?: ""
+                }
                 holder.view.tag = org
                 holder.view.setOnClickListener(onClickListener)
             }
@@ -159,6 +163,7 @@ class OrganisationListFragment : Fragment(), Injectable {
         inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             val nameView: TextView = view.name
             val infoView: TextView = view.organisation_info
+            val rolesView: TextView = view.roles
         }
     }
     

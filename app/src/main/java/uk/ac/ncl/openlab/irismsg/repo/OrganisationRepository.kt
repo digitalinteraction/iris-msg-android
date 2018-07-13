@@ -14,10 +14,7 @@ typealias OrgList = List<OrganisationEntity>
  * TODO - Error handling
  */
 @Singleton
-class OrganisationRepository @Inject constructor() {
-    
-    @Inject
-    lateinit var irisService: IrisMsgService
+class OrganisationRepository @Inject constructor(val irisService: IrisMsgService) {
     
     private var orgsCache: MutableList<OrganisationEntity> = mutableListOf()
     
@@ -49,19 +46,19 @@ class OrganisationRepository @Inject constructor() {
     }
     
     /** Fetch all organisations the user has access to and place into a LiveData */
-    fun getOrganisations () : MutableLiveData<List<OrganisationEntity>> {
+    fun getOrganisations () : MutableLiveData<OrgList> {
         val data = MutableLiveData<OrgList>()
         data.value = orgsCache
         return loadOrgsInto(data)
     }
     
     /** Re-fetch organisations into a LiveData */
-    fun reloadOrganisations (data: MutableLiveData<List<OrganisationEntity>>) {
+    fun reloadOrganisations (data: MutableLiveData<OrgList>) {
         loadOrgsInto(data)
     }
     
     /** Re-fetch organisations from the cache */
-    fun reloadOrganisationsFromCache (data: MutableLiveData<List<OrganisationEntity>>) {
+    fun reloadOrganisationsFromCache (data: MutableLiveData<OrgList>) {
         data.value = orgsCache
     }
     
