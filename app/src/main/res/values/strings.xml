@@ -50,6 +50,7 @@
     <!-- Onboard Activity -->
     <string name="body_permissions_required">Sorry, you cannot use this app unless you accept the permissions</string>
 
+
     <!-- Add Organisation -->
     <string name="add_organisation_info">
         An organisation is a group of donors and subscribers that you use to send messages through.
@@ -97,6 +98,10 @@
     <string name="body_no_donations">You don\'t have any pending donations</string>
     <string name="label_fraction">%1$d/%2$d</string>
     <string name="body_donations_sent">Your donations have been sent, thank you!</string>
+
+
+    <!-- Accept Role -->
+    <string name="title_activity_accept_role">Accept Invitation</string>
 
 
     <!-- Preferences -->

@@ -14,10 +14,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- Activities -->
+
         <activity
             android:name=".activity.OrganisationListActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".activity.LoginActivity"
             android:label="@string/title_activity_login"
@@ -27,24 +30,27 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uk.ac.ncl.openlab.irismsg.activity.OnboardActivity" />
         </activity>
+
         <activity
             android:name=".activity.EmptyMainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".activity.OnboardActivity"
             android:label="@string/title_activity_onboard"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".activity.EditOrganisationActivity"
             android:label="@string/title_activity_add_organisation"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".activity.OrganisationDetailActivity"
             android:label="@string/title_activity_organisation_detail"
@@ -54,12 +60,38 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uk.ac.ncl.openlab.irismsg.activity.OrganisationListActivity" />
         </activity>
+
+        <activity
+            android:name=".activity.AcceptRoleActivity"
+            android:label="@string/title_activity_accept_role"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="api.dev.irismsg.io"
+                    android:pathPattern="/invite/.*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="irismsg"
+                    android:host="invite" />
+            </intent-filter>
+
+        </activity>
+
         <activity
             android:name=".activity.DonateActivity"
             android:label="@string/title_donate_activity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
 
-
+        <!-- Services -->
 
         <service android:name=".service.FirebaseService">
             <intent-filter>
@@ -68,19 +100,19 @@
             </intent-filter>
         </service>
 
-
+        <!-- Broadcast Receivers -->
 
         <receiver android:name=".receiver.SmsSentReceiver">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".receiver.SmsDeliveredReceiver">
             <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_DELIVERED"/>
+                <action android:name="android.provider.Telephony.SMS_DELIVERED" />
             </intent-filter>
         </receiver>
 
     </application>
+
 </manifest>
