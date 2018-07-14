@@ -5,10 +5,10 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.telephony.SmsManager
 import android.view.LayoutInflater
@@ -36,18 +36,18 @@ import javax.inject.Inject
 
 class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
-    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-    @Inject lateinit var viewsUtil: ViewsUtil
-    @Inject lateinit var irisService: IrisMsgService
+    @Inject lateinit var dispatchingAndroidInjector : DispatchingAndroidInjector<Fragment>
+    @Inject lateinit var viewModelFactory : ViewModelProvider.Factory
+    @Inject lateinit var viewsUtil : ViewsUtil
+    @Inject lateinit var irisService : IrisMsgService
     
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
-    private lateinit var viewModel: PendingMessageListViewModel
-    private var currentState: State = State.INITIAL
+    private lateinit var viewModel : PendingMessageListViewModel
+    private var currentState : State = State.INITIAL
     private val recyclerAdapter = RecyclerAdapter()
     
-    private var toSend: MutableMap<String, Int> = mutableMapOf()
+    private var toSend : MutableMap<String, Int> = mutableMapOf()
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,7 +94,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         })
     }
     
-    private fun performDonations (pendingMessages: List<PendingMessageEntity>, counts: Map<String, Int>) {
+    private fun performDonations(pendingMessages : List<PendingMessageEntity>, counts : Map<String, Int>) {
         enterState(State.WORKING)
         
         val updates = mutableListOf<PotentialAttemptUpdate>()
@@ -110,7 +110,8 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
                     else MessageAttemptState.REJECTED,
                     message.content,
                     attempt.phoneNumber
-                ))
+                )
+                )
             }
         }
         
@@ -142,7 +143,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
     }
     
-    private fun sendSms (message: PotentialAttemptUpdate) {
+    private fun sendSms(message : PotentialAttemptUpdate) {
         
         val sentIntent = Intent(this, SmsSentReceiver::class.java)
                 .putExtra(SmsSentReceiver.EXTRAS_ATTEMPT_ID, message.attemptId)
@@ -157,7 +158,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
             sentIntent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-    
+        
         // Create a pending intent to trigger the broadcast receiver
         val deliveredPending = PendingIntent.getBroadcast(
             applicationContext,
@@ -176,7 +177,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         )
     }
     
-    private fun enterState (state: State) {
+    private fun enterState(state : State) {
         
         // Transition out
         viewsUtil.toggleElem(when (currentState) {
@@ -184,7 +185,8 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
             State.HAS_DONATIONS -> donations
             State.WORKING -> api_progress
             else -> null
-        }, false)
+        }, false
+        )
         
         // Set state
         currentState = state
@@ -195,16 +197,17 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
             State.HAS_DONATIONS -> donations
             State.WORKING -> api_progress
             else -> null
-        }, true)
+        }, true
+        )
     }
     
-    data class PotentialAttemptUpdate (
-        val attemptId: String,
-        val state: MessageAttemptState,
-        val content: String,
-        val phoneNumber: String
+    data class PotentialAttemptUpdate(
+        val attemptId : String,
+        val state : MessageAttemptState,
+        val content : String,
+        val phoneNumber : String
     ) {
-        fun forApi () = MessageAttemptUpdate(attemptId, state)
+        fun forApi() = MessageAttemptUpdate(attemptId, state)
     }
     
     enum class State {
@@ -213,18 +216,20 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     inner class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
         
-        var donations: List<PendingMessageEntity> = listOf()
-            set (newValue) { field = newValue; notifyDataSetChanged() }
+        var donations : List<PendingMessageEntity> = listOf()
+            set (newValue) {
+                field = newValue; notifyDataSetChanged()
+            }
         
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : ViewHolder {
+        override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : ViewHolder {
             val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.fragment_donation_item, parent, false)
             return ViewHolder(view)
         }
-    
+        
         override fun getItemCount() : Int = donations.size
-    
-        override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
+        
+        override fun onBindViewHolder(holder : ViewHolder, pos : Int) {
             donations[pos].let { donation ->
                 holder.orgView.text = donation.organisationId
                 holder.dateView.text = DateUtils.timeSince(donation.createdAt, true)
@@ -233,34 +238,35 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 holder.seekView.progress = toSend[donation.id]!!
                 holder.seekView.max = donation.attempts.size
                 holder.seekView.tag = donation
-    
+                
                 updateCountLabel(holder.countView, donation.attempts.size, donation.attempts.size)
                 
                 holder.seekView.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                    override fun onProgressChanged(bar: SeekBar, value: Int, flag: Boolean) {
+                    override fun onProgressChanged(bar : SeekBar, value : Int, flag : Boolean) {
                         (bar.tag as? PendingMessageEntity)?.let { donation ->
                             toSend[donation.id] = value
                             updateCountLabel(holder.countView, value, donation.attempts.size)
                         }
                     }
-                    override fun onStartTrackingTouch(bar: SeekBar?) {}
-                    override fun onStopTrackingTouch(bar: SeekBar?) {}
+                    
+                    override fun onStartTrackingTouch(bar : SeekBar?) {}
+                    override fun onStopTrackingTouch(bar : SeekBar?) {}
                 })
             }
         }
         
-        private fun updateCountLabel (countLabel: TextView, current: Int, max: Int) {
+        private fun updateCountLabel(countLabel : TextView, current : Int, max : Int) {
             countLabel.text = getString(
                 R.string.label_fraction, current, max
             )
         }
         
-        inner class ViewHolder (val view: View) : RecyclerView.ViewHolder(view) {
-            val orgView: TextView = view.organisation
-            val dateView: TextView = view.date
-            val messageView: TextView = view.message
-            val seekView: SeekBar = view.seeker
-            val countView: TextView = view.counter
+        inner class ViewHolder(val view : View) : RecyclerView.ViewHolder(view) {
+            val orgView : TextView = view.organisation
+            val dateView : TextView = view.date
+            val messageView : TextView = view.message
+            val seekView : SeekBar = view.seeker
+            val countView : TextView = view.counter
         }
     }
 }

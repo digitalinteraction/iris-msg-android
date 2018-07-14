@@ -4,7 +4,9 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import uk.ac.ncl.openlab.irismsg.activity.*
 
-
+/**
+ * A Dagger module to provide Activities
+ */
 @Module
 @Suppress("unused")
 abstract class ActivityBuildersModule {
@@ -30,48 +32,3 @@ abstract class ActivityBuildersModule {
     @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
     abstract fun contributeDonateActivity () : DonateActivity
 }
-
-
-//@Module
-//@Suppress("unused")
-//abstract class LoginActivityModule {
-//
-//    @ContributesAndroidInjector(modules = [ FragmentBuildersModule::class ])
-//    abstract fun contributeMainActivity(): LoginActivity
-//}
-
-
-//@Module
-//@Suppress("unused")
-//abstract class OnboardActivityModule {
-//
-//    @ContributesAndroidInjector(modules = [ FragmentBuildersModule::class ])
-//    abstract fun contributeMainActivity(): OnboardActivity
-//}
-
-
-//@Module
-//@Suppress("unused")
-//abstract class OrganisationListActivityModule {
-//
-//    @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
-//    abstract fun contributeMainActivity(): OrganisationListActivity
-//}
-
-
-//@Module
-//@Suppress("unused")
-//abstract class EditOrganisationActivityModule {
-//
-//    @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
-//    abstract fun contributeMainActivity(): EditOrganisationActivity
-//}
-
-
-//@Module
-//@Suppress("unused")
-//abstract class OrganisationDetailActivityModule {
-//
-//    @ContributesAndroidInjector(modules = [FragmentBuildersModule::class])
-//    abstract fun contributeMainActivity(): OrganisationDetailActivity
-//}

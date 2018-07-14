@@ -1,10 +1,12 @@
 package uk.ac.ncl.openlab.irismsg.viewmodel
 
-import android.arch.lifecycle.*
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Transformations
+import android.arch.lifecycle.ViewModel
 import uk.ac.ncl.openlab.irismsg.model.MemberEntity
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 import uk.ac.ncl.openlab.irismsg.repo.OrganisationRepository
-import java.lang.reflect.Member
 import javax.inject.Inject
 
 /**

@@ -18,8 +18,11 @@ class AppJwtService (val app: Application) : JwtService {
         }
     }
     
+    
+    /** Fetch shared preferences from our context */
     private fun getPrefs () = ctx.getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)
     
+    /** Save/Delete a token using our context */
     override fun save (rawToken: String?) : JWT? {
         current = if (rawToken != null) JWT(rawToken) else null
         

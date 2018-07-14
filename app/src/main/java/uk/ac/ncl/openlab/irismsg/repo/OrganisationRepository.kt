@@ -11,13 +11,14 @@ typealias OrgList = List<OrganisationEntity>
 
 /**
  * A repository responsible for organisation entities
- * TODO - Error handling
  */
 @Singleton
 class OrganisationRepository @Inject constructor(val irisService: IrisMsgService) {
     
     private var orgsCache: MutableList<OrganisationEntity> = mutableListOf()
     
+    
+    /** Load a list of Organisations into a LiveData from the api */
     private fun loadOrgsInto (target: MutableLiveData<OrgList>) : MutableLiveData<OrgList> {
         
         // Fetch organisations, put it into the live data & cache them
@@ -31,6 +32,7 @@ class OrganisationRepository @Inject constructor(val irisService: IrisMsgService
         return target
     }
     
+    /** Load a single Organisations into a LiveData from the api */
     private fun loadSingleOrgInto(target: MutableLiveData<OrganisationEntity>, id: String) {
         
         // Fetch the organisation, put it into the live data and cache it

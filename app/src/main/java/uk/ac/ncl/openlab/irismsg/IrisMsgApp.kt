@@ -5,13 +5,16 @@ import android.content.BroadcastReceiver
 import android.os.Build
 import android.util.Log
 import com.google.firebase.iid.FirebaseInstanceId
-import dagger.android.*
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasActivityInjector
+import dagger.android.HasBroadcastReceiverInjector
+import dagger.android.HasServiceInjector
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.api.UpdateFcmRequest
-import uk.ac.ncl.openlab.irismsg.service.FirebaseService
 import uk.ac.ncl.openlab.irismsg.di.AppInjector
 import uk.ac.ncl.openlab.irismsg.jwt.JwtService
+import uk.ac.ncl.openlab.irismsg.service.FirebaseService
 import javax.inject.Inject
 
 /**

@@ -2,7 +2,6 @@ package uk.ac.ncl.openlab.irismsg.api
 
 import retrofit2.mock.Calls
 import uk.ac.ncl.openlab.irismsg.common.ApiCall
-import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.*
 
 /**

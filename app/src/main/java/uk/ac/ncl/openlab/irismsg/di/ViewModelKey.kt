@@ -4,6 +4,10 @@ import android.arch.lifecycle.ViewModel
 import dagger.MapKey
 import kotlin.reflect.KClass
 
+
+/**
+ * An annotation for generating ViewModel keys for Dagger
+ */
 @MustBeDocumented
 @Target(
     AnnotationTarget.FUNCTION,

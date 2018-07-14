@@ -11,6 +11,10 @@ import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationListViewModel
 import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationViewModel
 import uk.ac.ncl.openlab.irismsg.viewmodel.PendingMessageListViewModel
 
+
+/**
+ * A Dagger module to provide View Models
+ */
 @Module
 @Suppress("unused")
 abstract class ViewModelModule {
@@ -32,20 +36,4 @@ abstract class ViewModelModule {
     
     @Binds
     abstract fun bindViewModelFactory (factory: IrisViewModelFactory): ViewModelProvider.Factory
-    
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(UserViewModel::class)
-//    abstract fun bindUserViewModel(userViewModel: UserViewModel): ViewModel
-
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(SearchViewModel::class)
-//    abstract fun bindSearchViewModel(searchViewModel: SearchViewModel): ViewModel
-
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(RepoViewModel::class)
-//    abstract fun bindRepoViewModel(repoViewModel: RepoViewModel): ViewModel
-
 }

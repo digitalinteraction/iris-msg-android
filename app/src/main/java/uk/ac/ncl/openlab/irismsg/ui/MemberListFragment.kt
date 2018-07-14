@@ -22,6 +22,10 @@ import uk.ac.ncl.openlab.irismsg.model.MemberEntity
 import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationViewModel
 import javax.inject.Inject
 
+
+/**
+ * Displays a list of Members
+ */
 class MemberListFragment : Fragment(), Injectable {
     
     private var listener: Listener? = null

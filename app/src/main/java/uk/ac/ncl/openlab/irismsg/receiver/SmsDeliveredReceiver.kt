@@ -9,6 +9,11 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasBroadcastReceiverInjector
 import javax.inject.Inject
 
+
+/**
+ * A BroadcastReceiver to respond to sms delivered messages
+ * TODO - WIP
+ */
 class SmsDeliveredReceiver : BroadcastReceiver(), HasBroadcastReceiverInjector {
     
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<BroadcastReceiver>

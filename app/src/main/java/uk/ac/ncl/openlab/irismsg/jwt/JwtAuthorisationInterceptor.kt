@@ -2,7 +2,6 @@ package uk.ac.ncl.openlab.irismsg.jwt
 
 import okhttp3.Interceptor
 import okhttp3.Response
-import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 
 /**
  * An okhttp request interceptor to add JWT Auth headers based on the current JsonWebToken

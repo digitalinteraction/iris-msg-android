@@ -6,7 +6,6 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import uk.ac.ncl.openlab.irismsg.IrisMsgApp
-import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import javax.inject.Singleton
 
 @Singleton

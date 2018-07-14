@@ -12,17 +12,18 @@ import dagger.android.HasServiceInjector
 import uk.ac.ncl.openlab.irismsg.R
 import javax.inject.Inject
 
+
+/**
+ * A service to respond to push notifications
+ */
 class FirebaseService : FirebaseMessagingService(), HasServiceInjector {
     
+    // Dagger injection point
     @Inject lateinit var injector: DispatchingAndroidInjector<Service>
     override fun serviceInjector() : AndroidInjector<Service> = injector
     
     
-    
-    override fun onNewToken(newToken: String) {
-        Log.d("fcm", newToken)
-    }
-    
+    /** Handle receiving fcm */
     override fun onMessageReceived(message: RemoteMessage) {
         Log.d("msg", message.toString())
         
@@ -30,9 +31,9 @@ class FirebaseService : FirebaseMessagingService(), HasServiceInjector {
             TYPE_NEW_DONATIONS -> displayNewDonationsNotification(message)
             else -> Log.e("fcm", "unknown type ${message.data[FCM_TYPE_KEY]}")
         }
-        
     }
     
+    /** Display a new donations message */
     private fun displayNewDonationsNotification (message: RemoteMessage) {
         
         val notification = NotificationCompat.Builder(this, CHANNEL_DONATIONS)

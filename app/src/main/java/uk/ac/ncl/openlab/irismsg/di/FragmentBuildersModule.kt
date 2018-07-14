@@ -6,6 +6,9 @@ import uk.ac.ncl.openlab.irismsg.ui.MemberListFragment
 import uk.ac.ncl.openlab.irismsg.ui.OrganisationListFragment
 import uk.ac.ncl.openlab.irismsg.ui.SendMessageFragment
 
+/**
+ * A Dagger module to provide Fragments
+ */
 @Suppress("unused")
 @Module
 abstract class FragmentBuildersModule {

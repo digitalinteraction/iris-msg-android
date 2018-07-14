@@ -1,15 +1,10 @@
 package uk.ac.ncl.openlab.irismsg.receiver
 
 import android.app.Activity
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.provider.Telephony.Sms
 import android.util.Log
-import dagger.android.AndroidInjector
 import dagger.android.DaggerBroadcastReceiver
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasBroadcastReceiverInjector
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.api.MessageAttemptUpdate
@@ -17,11 +12,15 @@ import uk.ac.ncl.openlab.irismsg.api.UpdateMessageAttemptsRequest
 import uk.ac.ncl.openlab.irismsg.common.MessageAttemptState
 import javax.inject.Inject
 
-class SmsSentReceiver: DaggerBroadcastReceiver() {
+
+/**
+ * A BroadcastReceiver to respond to sms sent messages
+ */
+class SmsSentReceiver : DaggerBroadcastReceiver() {
     
-    @Inject lateinit var irisService: IrisMsgService
+    @Inject lateinit var irisService : IrisMsgService
     
-    override fun onReceive(context : Context, intent: Intent) {
+    override fun onReceive(context : Context, intent : Intent) {
         super.onReceive(context, intent)
         
         // Get the attempt id

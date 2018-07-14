@@ -2,7 +2,6 @@ package uk.ac.ncl.openlab.irismsg.viewmodel
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton

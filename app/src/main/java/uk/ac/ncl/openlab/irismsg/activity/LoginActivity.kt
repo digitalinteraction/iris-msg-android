@@ -15,7 +15,10 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_login.*
 import uk.ac.ncl.openlab.irismsg.R
-import uk.ac.ncl.openlab.irismsg.api.*
+import uk.ac.ncl.openlab.irismsg.api.ApiCallback
+import uk.ac.ncl.openlab.irismsg.api.CheckLoginRequest
+import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
+import uk.ac.ncl.openlab.irismsg.api.RequestLoginRequest
 import uk.ac.ncl.openlab.irismsg.common.ViewsUtil
 import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 import uk.ac.ncl.openlab.irismsg.model.UserAuthEntity
