@@ -25,8 +25,8 @@ enum class AppMode {
     LIVE, MOCK
 }
 
-private val currentMode: AppMode = AppMode.MOCK
-//private val currentMode: AppMode = AppMode.LIVE
+//private val currentMode: AppMode = AppMode.MOCK
+private val currentMode: AppMode = AppMode.LIVE
 
 /**
  * A Dagger Module to provide custom types

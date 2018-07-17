@@ -32,7 +32,7 @@ class EmptyMainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
 //        startActivity(Intent(
 //            Intent.ACTION_VIEW,
-//            Uri.parse("https://api.dev.irismsg.io/invite/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZW0iOiI1YjRkZTU4MWNjN2NjYTAwMTA3NzRiYzUiLCJvcmciOiI1YjMyNGU4ZWMzNjUzZjAwMTBmODFiMWYiLCJpYXQiOjE1MzE4MzE2ODF9.NtcocUSNHwxQIwXZVMW35HlP_gIUr3JrsfBxrqLzbl0")
+//            Uri.parse("https://go.irismsg.io/J16kbm")
 //        ))
 //        finish()
         

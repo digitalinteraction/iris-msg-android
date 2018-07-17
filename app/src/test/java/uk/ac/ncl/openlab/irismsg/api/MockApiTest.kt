@@ -149,23 +149,23 @@ class MockApiTest {
     }
     
     
-    // MockApi#acceptMember
+    // MockApi#acceptInvite
     
-    @Test fun acceptMember_isSuccessful () {
-        assertSuccess(api.acceptMember("1"))
+    @Test fun acceptInvite_isSuccessful () {
+        assertSuccess(api.acceptInvite("some.fake.jwt"))
     }
-    @Test fun acceptMember_isUserAuth() {
-        assertData(api.acceptMember("1"))
+    @Test fun acceptInvite_isUserAuth() {
+        assertData(api.acceptInvite("some.fake.jwt"))
     }
     
     
     // MockApi#showInvite
     
     @Test fun showInvite_isSuccessful () {
-        assertSuccess(api.showInvite("some.bad.jwt"))
+        assertSuccess(api.showInvite("some.fake.jwt"))
     }
     @Test fun showInvite_isMemberInvite() {
-        assertData(api.showInvite("some.bad.jwt"))
+        assertData(api.showInvite("some.fake.jwt"))
     }
     
     

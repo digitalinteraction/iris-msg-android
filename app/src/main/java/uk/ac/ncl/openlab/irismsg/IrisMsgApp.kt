@@ -40,7 +40,7 @@ class IrisMsgApp : Application(), HasActivityInjector, HasBroadcastReceiverInjec
     }
     
     
-    private fun updateFcm () {
+    fun updateFcm () {
         jwtService.current ?: return
         
         FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
@@ -61,7 +61,7 @@ class IrisMsgApp : Application(), HasActivityInjector, HasBroadcastReceiverInjec
         val channel = NotificationChannel(
             FirebaseService.CHANNEL_DONATIONS,
             getString(R.string.title_new_donations_channel),
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_HIGH
         )
     
         channel.description = getString(R.string.info_new_donations_channel)

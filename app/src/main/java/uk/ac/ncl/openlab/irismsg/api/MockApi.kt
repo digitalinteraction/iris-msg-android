@@ -65,7 +65,7 @@ class MockIrisMsgService : IrisMsgService {
     override fun destroyMember(memberId: String, organisationId: String): ApiCall<Any> {
         return success()
     }
-    override fun acceptMember(memberId: String): ApiCall<UserAuthEntity> {
+    override fun acceptInvite(token: String): ApiCall<UserAuthEntity> {
         return success(generator.makeUserAuth())
     }
     

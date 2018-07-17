@@ -1,5 +1,7 @@
 package uk.ac.ncl.openlab.irismsg.activity
 
+import android.app.Application
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -9,12 +11,14 @@ import android.view.View
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_accept_role.*
+import uk.ac.ncl.openlab.irismsg.IrisMsgApp
 import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.common.ViewsUtil
 import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 import uk.ac.ncl.openlab.irismsg.model.MemberInviteEntity
+import uk.ac.ncl.openlab.irismsg.model.UserEntity
 import javax.inject.Inject
 
 class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
@@ -23,9 +27,11 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
     @Inject lateinit var jwtService: JwtService
     @Inject lateinit var irisService: IrisMsgService
     @Inject lateinit var viewsUtil: ViewsUtil
+    @Inject lateinit var app: Application
     
     private lateinit var inviteToken: String
     private var invite: MemberInviteEntity? = null
+    private var currentState: State = State.NONE
     
     override fun supportFragmentInjector() = fragmentInjector
     
@@ -57,7 +63,7 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         
         // Animate in the progress spinner
-        viewsUtil.toggleElem(api_progress, true)
+        enterState(State.WORKING)
         
         
         // Setup accept button click listener
@@ -75,7 +81,7 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 val org = res.data.organisation
                 
                 // Show the accept form & set fields based on the response
-                viewsUtil.toggleElem(accept_form, true)
+                enterState(State.VIEWING)
                 role_info.text = getString(R.string.body_donor_role_info, org.name)
                 
                 org_name.text = org.name
@@ -84,6 +90,7 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
             } else {
                 
                 // Show the api error(s)
+                enterState(State.ERROR)
                 viewsUtil.showApiErrors(api_error, res.messages)
             }
             Log.d("showInvite", res.data.toString())
@@ -94,6 +101,48 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
     
     private fun acceptInvite (token: String) {
+        enterState(State.WORKING)
+        
+        irisService.acceptInvite(token).enqueue(ApiCallback({ res ->
     
+            if (res.success && res.data != null) {
+                jwtService.save(res.data.token)
+                UserEntity.current = res.data.user
+                
+                (app as? IrisMsgApp)?.updateFcm()
+                
+                startActivity(Intent(this, OrganisationListActivity::class.java))
+                finish()
+            } else {
+                enterState(State.ERROR)
+                viewsUtil.showApiErrors(api_error, res.messages)
+            }
+        }, { _ ->
+            TODO("Handle members.acceptInvite error")
+        }))
+    }
+    
+    private fun enterState (state: State) {
+        
+        // Toggle out the old element
+        viewsUtil.toggleElem(when (currentState) {
+            State.VIEWING -> accept_form
+            State.WORKING -> api_progress
+            else -> null
+        }, false)
+        
+        // Set the state
+        currentState = state
+    
+        // Toggle in the new element
+        viewsUtil.toggleElem(when (state) {
+            State.VIEWING -> accept_form
+            State.WORKING -> api_progress
+            else -> null
+        }, true)
+    }
+    
+    enum class State {
+        VIEWING, WORKING, ERROR, NONE
     }
 }
