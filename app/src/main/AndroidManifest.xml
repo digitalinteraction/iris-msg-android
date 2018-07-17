@@ -81,7 +81,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="irismsg"
-                    android:host="invite" />
+                    android:host="invite"/>
             </intent-filter>
 
         </activity>

@@ -18,17 +18,17 @@ class MockApiTest {
         api = MockIrisMsgService()
     }
     
-    fun <T> assertSuccess (call: ApiCall<T>) {
+    private fun <T> assertSuccess (call: ApiCall<T>) {
         val body = call.execute().body()
         assertTrue(body?.success ?: false)
     }
     
-    fun <T> assertFail (call: ApiCall<T>) {
+    private fun <T> assertFail (call: ApiCall<T>) {
         val body = call.execute().body()
         assertFalse(body?.success ?: true)
     }
     
-    fun <T> assertData(call: ApiCall<T>) {
+    private fun <T> assertData(call: ApiCall<T>) {
         val body = call.execute().body()
         assertNotNull(body?.data)
     }
@@ -156,6 +156,16 @@ class MockApiTest {
     }
     @Test fun acceptMember_isUserAuth() {
         assertData(api.acceptMember("1"))
+    }
+    
+    
+    // MockApi#showInvite
+    
+    @Test fun showInvite_isSuccessful () {
+        assertSuccess(api.showInvite("some.bad.jwt"))
+    }
+    @Test fun showInvite_isMemberInvite() {
+        assertData(api.showInvite("some.bad.jwt"))
     }
     
     

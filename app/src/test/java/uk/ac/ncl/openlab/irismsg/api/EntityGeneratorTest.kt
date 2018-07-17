@@ -132,4 +132,18 @@ class EntityGeneratorTest {
         val message = generator.makePendingMessage("1", "Hey!")
         assertEquals(5, message.attempts.size)
     }
+    
+    
+    @Test fun makeMemberInvite_hasAnOrganisation () {
+        val invite = generator.makeMemberInvite()
+        assertNotNull(invite.organisation)
+    }
+    @Test fun makeMemberInvite_hasAMember() {
+        val invite = generator.makeMemberInvite()
+        assertNotNull(invite.member)
+    }
+    @Test fun makeMemberInvite_hasAUser() {
+        val invite = generator.makeMemberInvite()
+        assertNotNull(invite.user)
+    }
 }

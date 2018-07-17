@@ -1,6 +1,7 @@
 package uk.ac.ncl.openlab.irismsg.activity
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
@@ -28,7 +29,13 @@ class EmptyMainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        
+//        startActivity(Intent(
+//            Intent.ACTION_VIEW,
+//            Uri.parse("https://api.dev.irismsg.io/invite/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZW0iOiI1YjRkZTU4MWNjN2NjYTAwMTA3NzRiYzUiLCJvcmciOiI1YjMyNGU4ZWMzNjUzZjAwMTBmODFiMWYiLCJpYXQiOjE1MzE4MzE2ODF9.NtcocUSNHwxQIwXZVMW35HlP_gIUr3JrsfBxrqLzbl0")
+//        ))
+//        finish()
+        
         // See if there is a current user
         val jwt = jwtService.current
 
@@ -36,7 +43,7 @@ class EmptyMainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         if (jwt == null) {
             pushOnboard()
         } else {
-            
+
             // If there is a token, fetch the current user
             irisService.getSelf().enqueue(ApiCallback({ res ->
                 UserEntity.current = res.data

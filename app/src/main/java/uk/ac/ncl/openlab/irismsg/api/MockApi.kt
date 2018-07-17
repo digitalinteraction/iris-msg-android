@@ -69,6 +69,10 @@ class MockIrisMsgService : IrisMsgService {
         return success(generator.makeUserAuth())
     }
     
+    override fun showInvite(token : String) : ApiCall<MemberInviteEntity> {
+        return success(generator.makeMemberInvite())
+    }
+    
     
     override fun createMessage(body: CreateMessageRequest): ApiCall<MessageEntity> {
         return success(generator.makeMessage(body.orgId))

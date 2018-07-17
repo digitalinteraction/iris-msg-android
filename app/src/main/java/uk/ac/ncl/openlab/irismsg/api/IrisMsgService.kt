@@ -56,6 +56,9 @@ interface IrisMsgService {
     @POST("/organisations/accept/{mem_id}")
     fun acceptMember (@Path("mem_id") memberId: String) : ApiCall<UserAuthEntity>
     
+    @GET("/invite/{token}")
+    fun showInvite(@Path("token") token: String) : ApiCall<MemberInviteEntity>
+    
     //
     // Messages Endpoints
     //

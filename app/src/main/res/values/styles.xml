@@ -36,4 +36,13 @@
         <item name="android:textStyle">normal</item>
     </style>
 
+    <style name="AppTheme.ErrorText" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/danger</item>
+    </style>
+
+    <style name="AppTheme.PrimaryButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:layout_margin">-4dp</item>
+    </style>
+
 </resources>

@@ -40,7 +40,7 @@ class OrganisationListActivity : AppCompatActivity(),
         
         // Setup view
         setContentView(R.layout.activity_organisation_list)
-        setSupportActionBar(organisation_list_toolbar)
+        setSupportActionBar(toolbar)
         
         
         // Setup tabs
@@ -74,7 +74,7 @@ class OrganisationListActivity : AppCompatActivity(),
     }
     
     override fun onOptionsItemSelected(item : MenuItem) : Boolean {
-    
+        
         // Create an intent based on the id
         val intent = when (item.itemId) {
             R.id.action_even_more -> Intent(
@@ -108,10 +108,13 @@ class OrganisationListActivity : AppCompatActivity(),
     }
     
     override fun onOrganisationSelected(organisation: OrganisationEntity) {
-         startActivity(
-             Intent(this, OrganisationDetailActivity::class.java)
-                     .putExtra(OrganisationDetailActivity.ARG_ORGANISATION_ID, organisation.id)
-         )
+        val currentUser = jwtService.getUserId()
+        if (currentUser != null && organisation.isCoordinator(currentUser)) {
+            startActivity(
+                Intent(this, OrganisationDetailActivity::class.java)
+                        .putExtra(OrganisationDetailActivity.ARG_ORGANISATION_ID, organisation.id)
+            )
+        }
     }
     
     inner class PagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {

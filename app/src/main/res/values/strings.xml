@@ -102,6 +102,11 @@
 
     <!-- Accept Role -->
     <string name="title_activity_accept_role">Accept Invitation</string>
+    <string name="body_donor_role_info">
+        You have been invited to donate to %1$s on irismsg.io. This means you can donate your spare sms to forward messages for this organisation.
+        \n\nWhen this organisation sends a message you will receive a notification to contribute towards delivering it. It will contain a suggested donation based on the number of donors the organisation has.
+    </string>
+    <string name="action_accept_donor_invite">Become a donor</string>
 
 
     <!-- Preferences -->

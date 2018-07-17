@@ -150,4 +150,13 @@ class EntityGenerator {
             phoneNumber = "+447880123456"
         )
     }
+    
+    fun makeMemberInvite () : MemberInviteEntity {
+        val org = makeOrganisation(OrganisationGen.DONOR)
+        return MemberInviteEntity(
+            organisation = org,
+            member = org.members.find { it.role === MemberRole.DONOR }!!,
+            user = makeUser(UserGen.CURRENT)
+        )
+    }
 }
