@@ -50,8 +50,7 @@
                     style="?android:attr/progressBarStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/app_content_padding"
-                    android:visibility="gone" />
+                    android:layout_marginBottom="@dimen/app_content_padding" />
 
                 <TextView
                     android:id="@+id/no_donations"
@@ -61,26 +60,24 @@
                     android:text="@string/body_no_donations"
                     android:textAlignment="center"
                     android:textSize="18sp"
-                    android:textStyle="italic"
-                    android:visibility="gone" />
+                    android:textStyle="italic" />
 
                 <RelativeLayout
                     android:id="@+id/donations"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
-                    <android.support.v7.widget.RecyclerView
-                        xmlns:android="http://schemas.android.com/apk/res/android"
+                    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
                         xmlns:app="http://schemas.android.com/apk/res-auto"
                         xmlns:tools="http://schemas.android.com/tools"
                         android:id="@+id/donation_list"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="@dimen/app_content_padding"
+                        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                         tools:context=".ui.DonateActivity"
-                        tools:listItem="@layout/activity_donate"
-                        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+                        tools:listItem="@layout/activity_donate" />
 
                     <Button
                         android:id="@+id/donate_button"

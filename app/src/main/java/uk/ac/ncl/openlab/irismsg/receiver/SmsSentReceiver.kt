@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import dagger.android.DaggerBroadcastReceiver
+import uk.ac.ncl.openlab.irismsg.activity.DonateActivity
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.api.MessageAttemptUpdate
 import uk.ac.ncl.openlab.irismsg.api.UpdateMessageAttemptsRequest
+import uk.ac.ncl.openlab.irismsg.common.EventBus
 import uk.ac.ncl.openlab.irismsg.common.MessageAttemptState
 import javax.inject.Inject
 
@@ -19,6 +21,7 @@ import javax.inject.Inject
 class SmsSentReceiver : DaggerBroadcastReceiver() {
     
     @Inject lateinit var irisService : IrisMsgService
+    @Inject lateinit var events : EventBus
     
     override fun onReceive(context : Context, intent : Intent) {
         super.onReceive(context, intent)
@@ -38,10 +41,11 @@ class SmsSentReceiver : DaggerBroadcastReceiver() {
         val update = MessageAttemptUpdate(attemptId, newState)
         val body = UpdateMessageAttemptsRequest(listOf(update))
         irisService.updateMessageAttempts(body).enqueue(ApiCallback({ res ->
-            Log.d("SmsSentReceiver", "Updated ~ ${res.success}")
             
-            if (res.messages.isNotEmpty()) {
-                Log.d("SmsSentReceiver/Error", res.messages.joinToString())
+            if (res.success) {
+                events.emit(DonateActivity.EVENT_SMS_SENT)
+            } else {
+                Log.e("SmsSentReceiver", res.messages.joinToString())
             }
             
         }, { _ ->

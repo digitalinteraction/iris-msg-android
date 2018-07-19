@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.*
 import android.widget.EditText
 import com.google.i18n.phonenumbers.PhoneNumberUtil
@@ -246,7 +247,8 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 },
                 Snackbar.LENGTH_LONG
             ).show()
-        }, { _ ->
+        }, { err ->
+            Log.e("api.messages.create", err.toString())
             TODO("Handle messages.create error")
         }))
     }

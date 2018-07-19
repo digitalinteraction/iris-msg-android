@@ -2,9 +2,10 @@ package uk.ac.ncl.openlab.irismsg.activity
 
 import android.app.Application
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.View
@@ -15,6 +16,7 @@ import uk.ac.ncl.openlab.irismsg.IrisMsgApp
 import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
+import uk.ac.ncl.openlab.irismsg.common.PermissionsManager
 import uk.ac.ncl.openlab.irismsg.common.ViewsUtil
 import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 import uk.ac.ncl.openlab.irismsg.model.MemberInviteEntity
@@ -28,6 +30,7 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
     @Inject lateinit var irisService: IrisMsgService
     @Inject lateinit var viewsUtil: ViewsUtil
     @Inject lateinit var app: Application
+    @Inject lateinit var perms: PermissionsManager
     
     private lateinit var inviteToken: String
     private var invite: MemberInviteEntity? = null
@@ -45,7 +48,7 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         
         // Fail for invalid uris
-        if (uri.pathSegments.size != 2 || uri.pathSegments[0] != "invite") {
+        if (uri.pathSegments.size == 0) {
             TODO("Handle invalid uri error")
         }
         
@@ -55,7 +58,7 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         
         // Store the token
-        inviteToken = uri.pathSegments[1]
+        inviteToken = uri.pathSegments.last()
     
         
         // Hide ui elements for now
@@ -67,7 +70,11 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         
         // Setup accept button click listener
-        accept_button.setOnClickListener { acceptInvite(inviteToken) }
+        accept_button.setOnClickListener { _ ->
+            perms.request(this, perms.defaultPermissions, PERMS_REQUEST_CODE) {
+                acceptInvite(inviteToken)
+            }
+        }
         
         
         // Fetch the role to accept
@@ -98,6 +105,30 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
         }, { _ ->
             TODO("Handle members.showInvite error")
         }))
+    }
+    
+    override fun onRequestPermissionsResult(
+        requestCode : Int, permissions : Array<out String>, grantResults : IntArray) {
+        
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    
+        if (requestCode != PERMS_REQUEST_CODE) return
+        
+        val hasPermission = perms.checkResult(
+            perms.defaultPermissions,
+            permissions,
+            grantResults
+        )
+        
+        if (hasPermission) {
+            acceptInvite(inviteToken)
+        } else {
+            Snackbar.make(
+                main_content,
+                getString(R.string.body_permissions_required),
+                Snackbar.LENGTH_LONG
+            )
+        }
     }
     
     private fun acceptInvite (token: String) {
@@ -144,5 +175,9 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     enum class State {
         VIEWING, WORKING, ERROR, NONE
+    }
+    
+    companion object {
+        const val PERMS_REQUEST_CODE = 1
     }
 }

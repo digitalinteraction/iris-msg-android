@@ -9,11 +9,9 @@ import dagger.Provides
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import uk.ac.ncl.openlab.irismsg.api.EntityGenerator
-import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
-import uk.ac.ncl.openlab.irismsg.api.MemberRoleJsonAdapter
-import uk.ac.ncl.openlab.irismsg.api.MockIrisMsgService
+import uk.ac.ncl.openlab.irismsg.api.*
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
+import uk.ac.ncl.openlab.irismsg.common.MessageAttemptState
 import uk.ac.ncl.openlab.irismsg.jwt.AppJwtService
 import uk.ac.ncl.openlab.irismsg.jwt.JwtAuthorisationInterceptor
 import uk.ac.ncl.openlab.irismsg.jwt.JwtService
@@ -41,7 +39,8 @@ class AppModule {
     fun provideMoshi () : Moshi {
         return Moshi.Builder()
                 .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
-                .add(MemberRole::class.java, MemberRoleJsonAdapter())
+                .add(MemberRole::class.java, EnumJsonAdapter {MemberRole.valueOf(it) })
+                .add(MessageAttemptState::class.java, EnumJsonAdapter { MessageAttemptState.valueOf(it) })
                 .add(KotlinJsonAdapterFactory())
                 .build()
     }

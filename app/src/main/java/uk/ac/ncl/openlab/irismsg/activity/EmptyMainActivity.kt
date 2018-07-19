@@ -30,12 +30,6 @@ class EmptyMainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-//        startActivity(Intent(
-//            Intent.ACTION_VIEW,
-//            Uri.parse("https://go.irismsg.io/J16kbm")
-//        ))
-//        finish()
-        
         // See if there is a current user
         val jwt = jwtService.current
 

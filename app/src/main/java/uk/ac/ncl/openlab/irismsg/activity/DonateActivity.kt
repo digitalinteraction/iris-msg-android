@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.telephony.SmsManager
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
@@ -33,6 +34,11 @@ import uk.ac.ncl.openlab.irismsg.receiver.SmsDeliveredReceiver
 import uk.ac.ncl.openlab.irismsg.receiver.SmsSentReceiver
 import uk.ac.ncl.openlab.irismsg.viewmodel.PendingMessageListViewModel
 import javax.inject.Inject
+import android.support.v4.app.NavUtils
+import uk.ac.ncl.openlab.irismsg.common.EventBus
+import java.util.*
+import kotlin.concurrent.schedule
+
 
 class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
@@ -40,6 +46,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     @Inject lateinit var viewModelFactory : ViewModelProvider.Factory
     @Inject lateinit var viewsUtil : ViewsUtil
     @Inject lateinit var irisService : IrisMsgService
+    @Inject lateinit var events : EventBus
     
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
@@ -48,6 +55,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     private val recyclerAdapter = RecyclerAdapter()
     
     private var toSend : MutableMap<String, Int> = mutableMapOf()
+    private var sendCounter: Int = -1
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,9 +85,11 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         donation_list.adapter = recyclerAdapter
         
         // Enter initial state
-        listOf(no_donations, donations, api_progress).forEach { it.visibility = View.GONE }
+        listOf<View>(no_donations, donations, api_progress, no_donations).forEach { it.visibility = View.GONE }
         
         // Observer donations
+        enterState(State.WORKING)
+        
         viewModel.messages.observe(this, Observer { messages ->
             swipe_refresh.isRefreshing = false
             
@@ -92,6 +102,53 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 recyclerAdapter.donations = listOf()
             }
         })
+    }
+    
+    override fun onStart() {
+        super.onStart()
+    
+        events.on(EVENT_SMS_SENT, EventBus.Listener { _ ->
+            if (sendCounter <= 0) return@Listener
+            
+            sendCounter--
+            
+            if (sendCounter > 0) return@Listener
+            
+            sendCounter = -1
+            
+            enterState(State.WORKING)
+            viewModel.reload()
+        })
+    }
+    
+    override fun onStop() {
+        super.onStop()
+        
+        events.clear(EVENT_SMS_SENT)
+    }
+    
+    override fun onOptionsItemSelected(item : MenuItem) : Boolean {
+    
+        return when (item.itemId) {
+            android.R.id.home -> navigateUpwards()
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+    
+    override fun onBackPressed() {
+        navigateUpwards()
+    }
+    
+    private fun navigateUpwards () : Boolean {
+        
+        val intent = NavUtils.getParentActivityIntent(this)
+                ?: return false
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        startActivity(intent)
+        finish()
+        
+        return true
     }
     
     private fun performDonations(pendingMessages : List<PendingMessageEntity>, counts : Map<String, Int>) {
@@ -110,27 +167,38 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
                     else MessageAttemptState.REJECTED,
                     message.content,
                     attempt.phoneNumber
-                )
-                )
+                ))
             }
         }
-        
-        updates.filter { it.state == MessageAttemptState.PENDING }
-                .forEach { sendSms(it) }
         
         val toUpdate = updates.filter { it.state != MessageAttemptState.PENDING }
                 .map { it.forApi() }
         
+        val toSend = updates.filter { it.state == MessageAttemptState.PENDING }
+        
+        toSend.forEach { sendSms(it) }
+        sendCounter = toSend.size
+    
+        enterState(State.WORKING)
+        
         val body = UpdateMessageAttemptsRequest(toUpdate)
         irisService.updateMessageAttempts(body).enqueue(ApiCallback({ res ->
             if (res.success) {
-                viewModel.reload()
+                
+                Timer().schedule(5000) {
+                    if (sendCounter <= 0) return@schedule
+                    viewModel.reload()
+                    sendCounter = -1
+                }
+                
                 Snackbar.make(
                     main_content,
                     getString(R.string.body_donations_sent),
                     Snackbar.LENGTH_LONG
                 ).show()
             } else {
+                enterState(State.HAS_DONATIONS)
+                
                 Snackbar.make(
                     main_content,
                     res.messages.joinToString(),
@@ -145,26 +213,28 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     private fun sendSms(message : PotentialAttemptUpdate) {
         
+        // Create an intent to receive sms sent broadcasts
         val sentIntent = Intent(this, SmsSentReceiver::class.java)
                 .putExtra(SmsSentReceiver.EXTRAS_ATTEMPT_ID, message.attemptId)
-        
+    
+        // Create an intent to receive sms delivered broadcasts
         val deliveredIntent = Intent(this, SmsDeliveredReceiver::class.java)
                 .putExtra(SmsDeliveredReceiver.EXTRAS_ATTEMPT_ID, message.attemptId)
         
         // Create a pending intent to trigger the sent receiver
         val sentPending = PendingIntent.getBroadcast(
             applicationContext,
-            SmsSentReceiver.REQUEST_API_UPDATE,
+            message.attemptId.hashCode(),
             sentIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            0
         )
         
         // Create a pending intent to trigger the broadcast receiver
         val deliveredPending = PendingIntent.getBroadcast(
             applicationContext,
-            SmsDeliveredReceiver.REQUEST_API_UPDATE,
+            message.attemptId.hashCode(),
             deliveredIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            0
         )
         
         // Send the sms
@@ -268,5 +338,9 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
             val seekView : SeekBar = view.seeker
             val countView : TextView = view.counter
         }
+    }
+    
+    companion object {
+        const val EVENT_SMS_SENT = "sms_was_sent"
     }
 }

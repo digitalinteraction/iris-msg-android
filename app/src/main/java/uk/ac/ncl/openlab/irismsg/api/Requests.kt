@@ -5,7 +5,7 @@ import uk.ac.ncl.openlab.irismsg.common.MessageAttemptState
 
 
 class MessageAttemptUpdate(
-    val attemptId: String,
+    val attempt: String,
     val newState: MessageAttemptState
 )
 

@@ -30,7 +30,7 @@ class FirebaseService : FirebaseMessagingService(), HasServiceInjector {
     /** Handle receiving fcm */
     override fun onMessageReceived(message: RemoteMessage) {
         Log.d("msg", message.toString())
-        
+
         when (message.data[FCM_TYPE_KEY]) {
             TYPE_NEW_DONATIONS -> displayNewDonationsNotification(message)
             else -> Log.e("fcm", "unknown type ${message.data[FCM_TYPE_KEY]}")
@@ -39,15 +39,12 @@ class FirebaseService : FirebaseMessagingService(), HasServiceInjector {
     
     /** Display a new donations message */
     private fun displayNewDonationsNotification (message: RemoteMessage) {
-        
-        val pendingIntent = PendingIntent.getActivities(
+
+        val pendingIntent = PendingIntent.getActivity(
             this,
             0,
-            arrayOf(
-                Intent(this, OrganisationListActivity::class.java),
-                Intent(this, DonateActivity::class.java)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            ),
+            Intent(this, DonateActivity::class.java)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         
@@ -56,11 +53,14 @@ class FirebaseService : FirebaseMessagingService(), HasServiceInjector {
                 .setContentTitle(message.notification?.title ?: getString(R.string.title_new_donations_notif))
                 .setContentText(message.notification?.body ?: getString(R.string.body_new_donations_notif))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_EVENT)
                 .setContentIntent(pendingIntent)
+                .setGroup(TYPE_NEW_DONATIONS)
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
                 .build()
-        
+
         NotificationManagerCompat.from(this)
                 .notify(NEW_DONATION_NOTIFICATION, notification)
     }

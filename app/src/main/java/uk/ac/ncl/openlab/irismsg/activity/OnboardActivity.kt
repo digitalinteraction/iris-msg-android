@@ -19,6 +19,7 @@ import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_onboard.*
 import kotlinx.android.synthetic.main.fragment_onboard.view.*
 import uk.ac.ncl.openlab.irismsg.R
+import uk.ac.ncl.openlab.irismsg.common.PermissionsManager
 import javax.inject.Inject
 
 /**
@@ -32,6 +33,7 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
+    @Inject lateinit var perms: PermissionsManager
     private var mSectionsPagerAdapter : SectionsPagerAdapter? = null
     
     override fun onCreate(savedInstanceState : Bundle?) {
@@ -47,47 +49,52 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         // Listen for login clicks
         login_button.setOnClickListener { _ ->
-            
-            // Check perms
-            val perms = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
-            
-            if (perms != PackageManager.PERMISSION_GRANTED) {
     
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    requestPermissions(
-                        arrayOf(Manifest.permission.SEND_SMS),
-                        PERMS_REQUEST_CODE
-                    )
-                } else {
-                    TODO("Request old permissions?")
-                }
-            } else {
-    
+            perms.request(this, perms.defaultPermissions, PERMS_REQUEST_CODE) {
                 startActivityForResult(
                     Intent(this, LoginActivity::class.java),
                     LoginActivity.REQUEST_LOGIN
                 )
             }
+            
+//            // Check perms
+//            val perms = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+//
+//            if (perms != PackageManager.PERMISSION_GRANTED) {
+//
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    requestPermissions(
+//                        arrayOf(Manifest.permission.SEND_SMS),
+//                        PERMS_REQUEST_CODE
+//                    )
+//                } else {
+//                    TODO("Request old permissions?")
+//                }
+//            } else {
+//
+//                startActivityForResult(
+//                    Intent(this, LoginActivity::class.java),
+//                    LoginActivity.REQUEST_LOGIN
+//                )
+//            }
         }
         
     }
     
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults : IntArray) {
+        
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         
         if (requestCode != PERMS_REQUEST_CODE) return
         
-        var hasPermissions = false
+        val hasPermission = perms.checkResult(
+            perms.defaultPermissions,
+            permissions,
+            grantResults
+        )
         
-        permissions.forEachIndexed { index, perm ->
-            hasPermissions = hasPermissions.or(
-                perm == Manifest.permission.SEND_SMS
-                        && grantResults[index] == PackageManager.PERMISSION_GRANTED
-            )
-        }
-        
-        if (hasPermissions) {
+        if (hasPermission) {
             startActivityForResult(
                 Intent(this, LoginActivity::class.java),
                 LoginActivity.REQUEST_LOGIN
@@ -99,9 +106,6 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 Snackbar.LENGTH_LONG
             ).show()
         }
-        
-        Log.d("req", requestCode.toString())
-        Log.d("req", permissions.toString())
     }
     
     override fun onActivityResult(requestCode : Int, resultCode : Int, data : Intent?) {

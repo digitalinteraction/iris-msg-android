@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
@@ -161,7 +162,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
             } else {
                 enterState(State.CHECK)
             }
-        }, { _ ->
+        }, { err ->
             enterState(State.REQUEST)
             viewsUtil.showApiError(api_error, getString(R.string.api_unknown_error))
         }))
@@ -229,9 +230,15 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
     
     private fun parsePhoneNumber (phoneNumberStr: String) : Phonenumber.PhoneNumber? {
-        val util = PhoneNumberUtil.getInstance()
-        val number = util.parse(phoneNumberStr, Locale.getDefault().country) ?: return null
-        return if (util.isValidNumber(number)) number else null
+        try {
+            val util = PhoneNumberUtil.getInstance()
+            val locale = Locale.getDefault().country
+            val number = util.parse(phoneNumberStr, locale) ?: return null
+            return if (util.isValidNumber(number)) number else null
+        } catch (e: Exception) {
+            Log.d("#parsePhoneNumber", e.toString())
+            return null
+        }
     }
     
     private fun isValidVerificationCode(codeStr : String) : Boolean {
