@@ -162,7 +162,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
             } else {
                 enterState(State.CHECK)
             }
-        }, { err ->
+        }, { _ ->
             enterState(State.REQUEST)
             viewsUtil.showApiError(api_error, getString(R.string.api_unknown_error))
         }))

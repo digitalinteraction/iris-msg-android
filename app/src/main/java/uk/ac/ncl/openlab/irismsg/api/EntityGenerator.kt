@@ -123,13 +123,13 @@ class EntityGenerator {
         )
     }
     
-    fun makePendingMessage (organisationId: String, content: String) : PendingMessageEntity {
+    fun makePendingMessage (content: String) : PendingMessageEntity {
         return PendingMessageEntity(
             id = makeId(),
             createdAt = makeDate(DateGen.PAST),
             updatedAt = makeDate(DateGen.PAST),
             content = content,
-            organisationId = organisationId,
+            organisation = makeOrganisation(OrganisationGen.DONOR),
             authorId = currentUserId,
             attempts = listOf(
                 makePendingMessageAttempt(),

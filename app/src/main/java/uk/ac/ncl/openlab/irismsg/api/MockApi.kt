@@ -79,9 +79,9 @@ class MockIrisMsgService : IrisMsgService {
     }
     override fun listPendingMessages() : ApiCall<List<PendingMessageEntity>> {
         return success(listOf(
-            generator.makePendingMessage("1", "Hello there"),
-            generator.makePendingMessage("2", "General Kenobi"),
-            generator.makePendingMessage("2", "You are a bold one")
+            generator.makePendingMessage("Hello there"),
+            generator.makePendingMessage("General Kenobi"),
+            generator.makePendingMessage("You are a bold one")
         ))
     }
     override fun updateMessageAttempts(body: UpdateMessageAttemptsRequest): ApiCall<Any> {

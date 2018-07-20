@@ -301,7 +301,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         override fun onBindViewHolder(holder : ViewHolder, pos : Int) {
             donations[pos].let { donation ->
-                holder.orgView.text = donation.organisationId
+                holder.orgView.text = donation.organisation.name
                 holder.dateView.text = DateUtils.timeSince(donation.createdAt, true)
                 holder.messageView.text = donation.content
                 
