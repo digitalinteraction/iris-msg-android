@@ -8,7 +8,7 @@ android {
     defaultConfig {
         applicationId "uk.ac.ncl.openlab.irismsg"
         versionCode 1
-        versionName "1.0-alpha.1"
+        versionName "1.0-alpha.2"
 
         minSdkVersion 16
         targetSdkVersion 27
