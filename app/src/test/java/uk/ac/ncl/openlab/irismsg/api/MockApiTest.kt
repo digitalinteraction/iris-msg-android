@@ -116,6 +116,13 @@ class MockApiTest {
     }
     
     
+    // MockApi#listOrganisationMembers
+    
+    @Test fun listOrganisationMembers_isSuccessful () {
+        assertSuccess(api.listOrganisationMembers("1"))
+    }
+    
+    
     // MockApi#createMember
     
     @Test fun createMember_isSuccessful () {

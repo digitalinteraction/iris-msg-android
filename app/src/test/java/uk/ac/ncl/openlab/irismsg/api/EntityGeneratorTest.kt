@@ -125,11 +125,11 @@ class EntityGeneratorTest {
     
     
     @Test fun makePendingMessage_isAnEntity () {
-        val message = generator.makePendingMessage("1", "Hey!")
+        val message = generator.makePendingMessage("Hey!")
         assertEntity(message)
     }
     @Test fun makePendingMessage_hasAttempts () {
-        val message = generator.makePendingMessage("1", "Hey!")
+        val message = generator.makePendingMessage("Hey!")
         assertEquals(5, message.attempts.size)
     }
     
@@ -145,5 +145,18 @@ class EntityGeneratorTest {
     @Test fun makeMemberInvite_hasAUser() {
         val invite = generator.makeMemberInvite()
         assertNotNull(invite.user)
+    }
+    
+    @Test fun makeOrganisationMember_isAnEntity () {
+        val orgMem = generator.makeOrganisationMember(MemberRole.DONOR, UserGen.CURRENT)
+        assertEntity(orgMem)
+    }
+    @Test fun makeOrganisationMember_createsForACurrentUser () {
+        val orgMem = generator.makeOrganisationMember(MemberRole.DONOR, UserGen.CURRENT)
+        assertEquals(orgMem.userId, EntityGenerator.currentUserId)
+    }
+    @Test fun makeOrganisationMember_createsForAnyUser () {
+        val orgMem = generator.makeOrganisationMember(MemberRole.DONOR, UserGen.VERIFIED)
+        assertNotEquals(orgMem.userId, EntityGenerator.currentUserId)
     }
 }

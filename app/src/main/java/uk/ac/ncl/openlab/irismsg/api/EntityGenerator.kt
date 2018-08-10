@@ -159,4 +159,16 @@ class EntityGenerator {
             user = makeUser(UserGen.CURRENT)
         )
     }
+    
+    fun makeOrganisationMember (role: MemberRole, type: UserGen) : OrganisationMemberEntity {
+        return OrganisationMemberEntity(
+            id = makeId(),
+            createdAt = makeDate(DateGen.PAST),
+            updatedAt = makeDate(DateGen.PAST),
+            role = role,
+            userId = if (type === UserGen.CURRENT) EntityGenerator.currentUserId else makeId(),
+            phoneNumber = "07880123456",
+            locale = "en"
+        )
+    }
 }

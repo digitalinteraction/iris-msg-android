@@ -2,7 +2,6 @@ package uk.ac.ncl.openlab.irismsg.api
 
 import retrofit2.http.*
 import uk.ac.ncl.openlab.irismsg.common.ApiCall
-import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.*
 
 /**
@@ -41,6 +40,9 @@ interface IrisMsgService {
     
     @DELETE("/organisations/{org_id}")
     fun destroyOrganisation (@Path("org_id") id: String) : ApiCall<Any>
+    
+    @GET("/organisations/{org_id}/members")
+    fun listOrganisationMembers (@Path("org_id") id: String) : ApiCall<List<OrganisationMemberEntity>>
     
     //
     // Members Endpoints

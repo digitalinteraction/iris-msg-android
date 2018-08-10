@@ -29,9 +29,11 @@ import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.common.EventBus
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.common.ViewsUtil
+import uk.ac.ncl.openlab.irismsg.model.OrganisationMemberEntity
 import uk.ac.ncl.openlab.irismsg.repo.OrganisationRepository
 import uk.ac.ncl.openlab.irismsg.ui.MemberListFragment
 import uk.ac.ncl.openlab.irismsg.ui.SendMessageFragment
+import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationMembersViewModel
 import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationViewModel
 import java.util.*
 import javax.inject.Inject
@@ -48,7 +50,8 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
-    private lateinit var viewModel: OrganisationViewModel
+    private lateinit var orgViewModel: OrganisationViewModel
+    private lateinit var membersViewModel: OrganisationMembersViewModel
     private lateinit var organisationId: String
     private lateinit var pagerAdapter : PagerAdapter
     
@@ -73,14 +76,20 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 ?: throw RuntimeException("OrganisationDetailActivity not passed an Organisation id")
         
         
-        // Create a ViewModel to handle the api entity
-        viewModel = ViewModelProviders.of(this, viewModelFactory)
+        // Create a ViewModel to handle the Organisations
+        orgViewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(OrganisationViewModel::class.java)
+                .init(organisationId)
+    
+    
+        // Create a ViewModel to handle the OrganisationMembers
+        membersViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(OrganisationMembersViewModel::class.java)
                 .init(organisationId)
         
         
         // Listen to changes for our ViewModel (ie it loading)
-        viewModel.organisation.observe(this, Observer { org ->
+        orgViewModel.organisation.observe(this, Observer { org ->
             if (org != null) {
                 supportActionBar?.title = org.name
                 organisation_info.text = org.info
@@ -147,7 +156,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     }
     
     override fun onDeleteMember(memberId: String, role: MemberRole) {
-        viewModel.organisation.value ?: return
+        orgViewModel.organisation.value ?: return
         
         // Format the title of the alert
         val title = getString(
@@ -200,18 +209,21 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
             if (res.success) {
                 
                 // Update the organisation ViewModel
-                val member = viewModel.organisation.value?.members?.find { it.id == memberId }
+                val member = orgViewModel.organisation.value?.members?.find { it.id == memberId }
                         ?: return@ApiCallback
                 
-                viewModel.organisation.value = viewModel.organisation.value?.apply {
+                orgViewModel.organisation.value = orgViewModel.organisation.value?.apply {
                     members.removeAll { member -> member.id == memberId }
+                }
+    
+                membersViewModel.members.value = membersViewModel.members.value?.filter {
+                    it.id != memberId
                 }
                 
                 // Tell the user
-                // TODO: Update to use phone number
                 Snackbar.make(
                     main_content,
-                    getString(R.string.member_deleted, member.userId),
+                    getString(R.string.member_deleted, "Member"),
                     Snackbar.LENGTH_LONG
                 )
                 
@@ -254,7 +266,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     }
     
     private fun onAddMember (role: MemberRole) {
-        viewModel.organisation.value ?: return
+        orgViewModel.organisation.value ?: return
         
         val title = getString(R.string.title_add_member, role.humanized.toLowerCase())
         
@@ -321,14 +333,16 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 // Let the user know it was successful
                 Snackbar.make(
                     findViewById<View>(R.id.main_content),
-                    getString(R.string.member_created, formatted),
+                    getString(R.string.member_created, "Member"),
                     Snackbar.LENGTH_LONG
                 ).show()
                 
                 // Add the member to the organisation (w/ data binding)
-                viewModel.organisation.value = viewModel.organisation.value?.apply {
+                orgViewModel.organisation.value = orgViewModel.organisation.value?.apply {
                     members.add(res.data)
                 }
+                
+                membersViewModel.reload()
             } else {
                 
                 // Show the user the error

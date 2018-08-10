@@ -1,5 +1,6 @@
 package uk.ac.ncl.openlab.irismsg.activity
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -15,6 +16,7 @@ import com.google.i18n.phonenumbers.Phonenumber
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_login.*
+import uk.ac.ncl.openlab.irismsg.IrisMsgApp
 import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.CheckLoginRequest
@@ -36,7 +38,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
-    
+    @Inject lateinit var app: Application
     @Inject lateinit var irisService: IrisMsgService
     @Inject lateinit var viewsUtil: ViewsUtil
     @Inject lateinit var jwtService: JwtService
@@ -222,6 +224,9 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         // Save the token & update the current user
         jwtService.save(userAuth.token)
         UserEntity.current = userAuth.user
+        
+        // Update the user's fcm
+        (app as? IrisMsgApp)?.updateFcm()
         
         // Move to the organisation list activity
         startActivity(Intent(this, OrganisationListActivity::class.java))

@@ -6,10 +6,7 @@ import android.arch.lifecycle.ViewModelProvider
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import uk.ac.ncl.openlab.irismsg.viewmodel.IrisViewModelFactory
-import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationListViewModel
-import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationViewModel
-import uk.ac.ncl.openlab.irismsg.viewmodel.PendingMessageListViewModel
+import uk.ac.ncl.openlab.irismsg.viewmodel.*
 
 
 /**
@@ -28,6 +25,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(OrganisationViewModel::class)
     abstract fun bindOrganisationViewModel (organisationViewModel: OrganisationViewModel) : ViewModel
+    
+    @Binds
+    @IntoMap
+    @ViewModelKey(OrganisationMembersViewModel::class)
+    abstract fun bindOrganisationMembersViewModel (organisationMembersViewModel: OrganisationMembersViewModel) : ViewModel
     
     @Binds
     @IntoMap

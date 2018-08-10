@@ -56,27 +56,6 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
                     LoginActivity.REQUEST_LOGIN
                 )
             }
-            
-//            // Check perms
-//            val perms = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
-//
-//            if (perms != PackageManager.PERMISSION_GRANTED) {
-//
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                    requestPermissions(
-//                        arrayOf(Manifest.permission.SEND_SMS),
-//                        PERMS_REQUEST_CODE
-//                    )
-//                } else {
-//                    TODO("Request old permissions?")
-//                }
-//            } else {
-//
-//                startActivityForResult(
-//                    Intent(this, LoginActivity::class.java),
-//                    LoginActivity.REQUEST_LOGIN
-//                )
-//            }
         }
         
     }

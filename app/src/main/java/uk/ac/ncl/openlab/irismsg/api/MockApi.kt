@@ -2,6 +2,7 @@ package uk.ac.ncl.openlab.irismsg.api
 
 import retrofit2.mock.Calls
 import uk.ac.ncl.openlab.irismsg.common.ApiCall
+import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.*
 
 /**
@@ -56,6 +57,15 @@ class MockIrisMsgService : IrisMsgService {
     }
     override fun destroyOrganisation(id: String): ApiCall<Any> {
         return success()
+    }
+    
+    override fun listOrganisationMembers(id: String) : ApiCall<List<OrganisationMemberEntity>> {
+        return success(listOf(
+            generator.makeOrganisationMember(MemberRole.COORDINATOR, UserGen.CURRENT),
+            generator.makeOrganisationMember(MemberRole.DONOR, UserGen.CURRENT),
+            generator.makeOrganisationMember(MemberRole.SUBSCRIBER, UserGen.VERIFIED),
+            generator.makeOrganisationMember(MemberRole.SUBSCRIBER, UserGen.VERIFIED)
+        ))
     }
     
     

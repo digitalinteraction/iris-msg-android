@@ -18,8 +18,9 @@ import kotlinx.android.synthetic.main.fragment_member_list.*
 import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.di.Injectable
-import uk.ac.ncl.openlab.irismsg.model.MemberEntity
-import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationViewModel
+import uk.ac.ncl.openlab.irismsg.model.OrganisationMemberEntity
+import uk.ac.ncl.openlab.irismsg.model.UserEntity
+import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationMembersViewModel
 import javax.inject.Inject
 
 
@@ -30,7 +31,7 @@ class MemberListFragment : Fragment(), Injectable {
     
     private var listener: Listener? = null
     private lateinit var recyclerAdapter: RecyclerAdapter
-    private lateinit var viewModel : OrganisationViewModel
+    private lateinit var viewModel : OrganisationMembersViewModel
     
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     
@@ -65,6 +66,11 @@ class MemberListFragment : Fragment(), Injectable {
         
         member_list.layoutManager = LinearLayoutManager(context)
         member_list.adapter = recyclerAdapter
+        
+        swipe_refresh.setOnRefreshListener {
+            swipe_refresh.isRefreshing = true
+            viewModel.reload()
+        }
     }
     
     override fun onActivityCreated(savedInstanceState : Bundle?) {
@@ -72,16 +78,20 @@ class MemberListFragment : Fragment(), Injectable {
         
         // Get a view model for the members
         viewModel = ViewModelProviders.of(activity!!, viewModelFactory)
-                .get(OrganisationViewModel::class.java)
+                .get(OrganisationMembersViewModel::class.java)
                 .init(organisationId)
         
         // Observe members changes and re-render accordingly
         viewModel.members.observe(this, Observer { members ->
+    
+            // Stop the refresh animation
+            swipe_refresh.isRefreshing = false
+            
             if (members == null) return@Observer
             
             // Get the active members in our role
             recyclerAdapter.members = members.filter { member ->
-                member.role == memberRole && member.isActive()
+                member.role == memberRole
             }
             
             // Reload the recycler
@@ -115,11 +125,11 @@ class MemberListFragment : Fragment(), Injectable {
         : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
     
         private val onDeleteListener : View.OnClickListener
-        var members: List<MemberEntity> = listOf()
+        var members: List<OrganisationMemberEntity> = listOf()
         
         init {
             onDeleteListener = View.OnClickListener { button ->
-                (button.tag as MemberEntity).let { member ->
+                (button.tag as OrganisationMemberEntity).let { member ->
                     listener?.onDeleteMember(member.id, memberRole)
                 }
             }
@@ -136,7 +146,14 @@ class MemberListFragment : Fragment(), Injectable {
         
         override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
             members[pos].let { member ->
-                holder.phoneNumberView.text = member.userId // TODO: Fix for phoneNumber
+                if (member.userId == UserEntity.current?.id) {
+                    holder.phoneNumberView.text = getString(
+                        R.string.body_member_phone_number_self, member.phoneNumber
+                    )
+                } else {
+                    holder.phoneNumberView.text = member.phoneNumber
+                }
+                
                 holder.deleteButton.tag = member
                 holder.deleteButton.setOnClickListener(onDeleteListener)
             }

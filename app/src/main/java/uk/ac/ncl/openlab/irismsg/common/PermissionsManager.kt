@@ -36,7 +36,6 @@ class PermissionsManager @Inject constructor() {
     }
     
     fun checkResult (required: Array<String>, permissions: Array<out String>, grantResults: IntArray) : Boolean {
-        return required.all { permissions.contains(it) } &&
-                grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+        return grantResults.all { it == PackageManager.PERMISSION_GRANTED }
     }
 }

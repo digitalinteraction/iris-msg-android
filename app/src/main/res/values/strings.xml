@@ -75,7 +75,7 @@
     <string name="body_confirm_delete_member">Are you sure you want to remove this member from your organisation?</string>
     <string name="body_add_subscriber">Add a phone number to receive the messages you send to this organisation.</string>
     <string name="body_add_donor">Add a donor to this organisation, they are responsible for forwarding your  messages through this app.</string>
-    <string name="member_created">%1$s has been added!</string>
+    <string name="member_created">%1$s added!</string>
     <string name="member_deleted">%1$s was removed</string>
 
     <string name="action_delete">Remove</string>
@@ -90,6 +90,8 @@
     </string>
     <string name="message_char_count">%1$d/%2$d</string>
     <string name="message_sent">Message sent!</string>
+
+    <string name="body_member_phone_number_self">%1$s (me)</string>
 
 
     <!-- Donate Activity -->

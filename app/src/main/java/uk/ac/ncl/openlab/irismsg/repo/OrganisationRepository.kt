@@ -4,10 +4,12 @@ import android.arch.lifecycle.MutableLiveData
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
+import uk.ac.ncl.openlab.irismsg.model.OrganisationMemberEntity
 import javax.inject.Inject
 import javax.inject.Singleton
 
 typealias OrgList = List<OrganisationEntity>
+typealias OrgMemberList = List<OrganisationMemberEntity>
 
 /**
  * A repository responsible for organisation entities
@@ -18,7 +20,7 @@ class OrganisationRepository @Inject constructor(val irisService: IrisMsgService
     private var orgsCache: MutableList<OrganisationEntity> = mutableListOf()
     
     
-    /** Load a list of Organisations into a LiveData from the api */
+    /** Load a list of Organisations into a LiveData using the api */
     private fun loadOrgsInto (target: MutableLiveData<OrgList>) : MutableLiveData<OrgList> {
         
         // Fetch organisations, put it into the live data & cache them
@@ -26,14 +28,14 @@ class OrganisationRepository @Inject constructor(val irisService: IrisMsgService
             target.value = res.data
             orgsCache = res.data?.toMutableList() ?: mutableListOf()
         }, { _ ->
-            TODO("Handle this error")
+            TODO("Handle orgs.index error")
         }))
         
         return target
     }
     
-    /** Load a single Organisations into a LiveData from the api */
-    private fun loadSingleOrgInto(target: MutableLiveData<OrganisationEntity>, id: String) {
+    /** Load a single Organisations into a LiveData using the api */
+    private fun loadSingleOrgInto (target: MutableLiveData<OrganisationEntity>, id: String) {
         
         // Fetch the organisation, put it into the live data and cache it
         irisService.showOrganisation(id).enqueue(ApiCallback({ res ->
@@ -43,7 +45,17 @@ class OrganisationRepository @Inject constructor(val irisService: IrisMsgService
                 orgsCache.add(res.data)
             }
         }, { _ ->
-            TODO("Handle this error")
+            TODO("Handle orgs.show error")
+        }))
+    }
+    
+    /** Load an Organisation's members into a LiveData using the api */
+    private fun loadMembersInto (target: MutableLiveData<OrgMemberList>, id: String) {
+        
+        irisService.listOrganisationMembers(id).enqueue(ApiCallback({ res ->
+            target.value = res.data
+        }, { _ ->
+            TODO("Handle orgs.members error")
         }))
     }
     
@@ -64,6 +76,11 @@ class OrganisationRepository @Inject constructor(val irisService: IrisMsgService
         data.value = orgsCache
     }
     
+    /** Re-fetch members */
+    fun reloadMembers (data: MutableLiveData<OrgMemberList>, id: String) {
+        loadMembersInto(data, id)
+    }
+    
     /** Notify the in-memory cache that an Organisation was created */
     fun organisationCreated (org: OrganisationEntity) {
         orgsCache.add(org)
@@ -79,6 +96,13 @@ class OrganisationRepository @Inject constructor(val irisService: IrisMsgService
         val data = MutableLiveData<OrganisationEntity>()
         data.value = orgsCache.find { org -> org.id == id }
         if (data.value == null) loadSingleOrgInto(data, id)
+        return data
+    }
+    
+    /** Get the members of an Organisation */
+    fun getMembers (id: String) : MutableLiveData<OrgMemberList > {
+        val data = MutableLiveData<OrgMemberList>()
+        loadMembersInto(data, id)
         return data
     }
 }
