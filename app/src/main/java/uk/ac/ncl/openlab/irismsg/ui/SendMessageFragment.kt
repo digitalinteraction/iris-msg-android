@@ -75,7 +75,6 @@ class SendMessageFragment : Fragment(), Injectable {
     }
     
     private fun setCharLimitLabel (message: String) {
-        // TODO - Calculate limit based on string contents?
         char_limit.text = getString(
             R.string.message_char_count,
             message.length,

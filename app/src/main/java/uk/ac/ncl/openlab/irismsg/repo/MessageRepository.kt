@@ -1,6 +1,8 @@
 package uk.ac.ncl.openlab.irismsg.repo
 
+import android.app.Application
 import android.arch.lifecycle.MutableLiveData
+import android.widget.Toast
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.model.PendingMessageEntity
@@ -14,7 +16,7 @@ typealias PendingMsgList = List<PendingMessageEntity>
  * A Repository responsible for Message entities
  */
 @Singleton
-class MessageRepository @Inject constructor(val irisService: IrisMsgService) {
+class MessageRepository @Inject constructor(val irisService: IrisMsgService, val application: Application) {
     
     private var pendingMessageCache: MutableList<PendingMessageEntity> = mutableListOf()
     
@@ -27,7 +29,12 @@ class MessageRepository @Inject constructor(val irisService: IrisMsgService) {
             target.value = res.data
             pendingMessageCache = res.data?.toMutableList() ?: mutableListOf()
         }, { _ ->
-            TODO("Handle messages.attempts.index error")
+            target.value = null
+            Toast.makeText(
+                application.applicationContext,
+                "Cannot fetch donations, please try again",
+                Toast.LENGTH_LONG
+            ).show()
         }))
         
         return target

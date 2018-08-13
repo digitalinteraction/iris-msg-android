@@ -206,7 +206,13 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 ).show()
             }
         }, { _ ->
-            TODO("Handle messages.attempts.update error")
+            enterState(State.HAS_DONATIONS)
+    
+            Snackbar.make(
+                main_content,
+                "Failed to update messages, please try again",
+                Snackbar.LENGTH_LONG
+            ).show()
         }))
         
     }

@@ -24,8 +24,6 @@ import javax.inject.Inject
 
 /**
  * An Activity to onboard the user into the app
- * TODO - Check / Add permissions dialog on login tapped
- * TODO - Add / Implement actual pages
  */
 class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
     

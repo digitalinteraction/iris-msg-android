@@ -47,8 +47,8 @@ class IrisMsgApp : Application(), HasActivityInjector, HasBroadcastReceiverInjec
             Log.d("fcm", it.token)
             irisService.updateFcm(UpdateFcmRequest(it.token)).enqueue(ApiCallback({ _ ->
                 Log.d("fcm", "Token updated")
-            }, { _ ->
-                TODO("Handle users.update_fcm errors")
+            }, { e ->
+                Log.e("users.update_fcm", "Failed to update fcm: " + e.message)
             }))
         }
     }

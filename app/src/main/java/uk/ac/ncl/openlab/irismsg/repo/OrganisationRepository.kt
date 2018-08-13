@@ -1,6 +1,8 @@
 package uk.ac.ncl.openlab.irismsg.repo
 
+import android.app.Application
 import android.arch.lifecycle.MutableLiveData
+import android.widget.Toast
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
@@ -15,7 +17,7 @@ typealias OrgMemberList = List<OrganisationMemberEntity>
  * A repository responsible for organisation entities
  */
 @Singleton
-class OrganisationRepository @Inject constructor(val irisService: IrisMsgService) {
+class OrganisationRepository @Inject constructor(val irisService: IrisMsgService, val application: Application) {
     
     private var orgsCache: MutableList<OrganisationEntity> = mutableListOf()
     
@@ -28,7 +30,12 @@ class OrganisationRepository @Inject constructor(val irisService: IrisMsgService
             target.value = res.data
             orgsCache = res.data?.toMutableList() ?: mutableListOf()
         }, { _ ->
-            TODO("Handle orgs.index error")
+            target.value = null
+            Toast.makeText(
+                application.applicationContext,
+                "Failed to fetch organisations, please try again",
+                Toast.LENGTH_LONG
+            ).show()
         }))
         
         return target
@@ -45,7 +52,12 @@ class OrganisationRepository @Inject constructor(val irisService: IrisMsgService
                 orgsCache.add(res.data)
             }
         }, { _ ->
-            TODO("Handle orgs.show error")
+            target.value = null
+            Toast.makeText(
+                application.applicationContext,
+                "Failed to fetch organisation, please try again",
+                Toast.LENGTH_LONG
+            ).show()
         }))
     }
     
@@ -55,7 +67,12 @@ class OrganisationRepository @Inject constructor(val irisService: IrisMsgService
         irisService.listOrganisationMembers(id).enqueue(ApiCallback({ res ->
             target.value = res.data
         }, { _ ->
-            TODO("Handle orgs.members error")
+            target.value = null
+            Toast.makeText(
+                application.applicationContext,
+                "Failed to fetch members, please try again",
+                Toast.LENGTH_LONG
+            ).show()
         }))
     }
     

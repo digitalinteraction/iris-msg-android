@@ -12,7 +12,6 @@ import javax.inject.Inject
 
 /**
  * A BroadcastReceiver to respond to sms delivered messages
- * TODO - WIP
  */
 class SmsDeliveredReceiver : BroadcastReceiver(), HasBroadcastReceiverInjector {
     

@@ -13,6 +13,9 @@ interface IrisMsgService {
     // Auth Endpoints
     //
     
+    @GET("/health")
+    fun ping () : ApiCall<String>
+    
     @GET("/users/me")
     fun getSelf () : ApiCall<UserEntity>
     

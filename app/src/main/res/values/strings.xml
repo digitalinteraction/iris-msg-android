@@ -1,28 +1,32 @@
 <resources>
+    <!-- General -->
     <string name="app_name">Iris Msg</string>
-    <string name="title_activity_login">Getting Started</string>
-    <string name="title_activity_onboard">Welcome to Iris Msg</string>
-    <string name="title_activity_organisation_list">Iris Msg</string>
-    <string name="title_activity_add_organisation">Create Organisation</string>
+    <string name="quotify">"%1$s"</string>
+    <string name="body_no_results">Nothing to show</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="more_text_format">%1$d…</string>
 
+
+    <!-- Menu Actions -->
     <string name="action_even_more">More Info</string>
     <string name="action_open_lab">About Open Lab</string>
     <string name="action_logout">Log out</string>
-
-    <string name="section_format">Hello World from section: %1$d</string>
-    <string name="more_text_format">%1$d…</string>
     <string name="action_login">Get Started</string>
-
     <string name="action_delete_organisation">Delete organisation</string>
 
-    <string name="quotify">"%1$s"</string>
 
     <!-- Organisation List Activity -->
     <string name="tab_coordinator">Organisations</string>
     <string name="tab_donor">Donations</string>
 
 
+    <!-- Empty Main Activity -->
+    <string name="body_no_network">We cannot connect to IrisMsg right now, please check your network connection and try again.</string>
+    <string name="action_retry_network">Try again</string>
+
+
     <!-- Login Activity -->
+    <string name="title_activity_login">Getting Started</string>
     <string name="prompt_phone_number">Phone Number</string>
     <string name="prompt_country_code">Country Code</string>
     <string name="prompt_verification_code">Verification Code</string>
@@ -48,13 +52,17 @@
 
 
     <!-- Onboard Activity -->
+    <string name="title_activity_onboard">Welcome to Iris Msg</string>
     <string name="body_permissions_required">Sorry, you cannot use this app unless you accept the permissions</string>
 
 
+    <!-- Organisation List -->
+    <string name="title_activity_organisation_list">Iris Msg</string>
+
+
     <!-- Add Organisation -->
-    <string name="add_organisation_info">
-        An organisation is a group of donors and subscribers that you use to send messages through.
-    </string>
+    <string name="title_activity_add_organisation">Create Organisation</string>
+    <string name="add_organisation_info">An organisation is a group of donors and subscribers that you use to send messages through.</string>
     <string name="prompt_organisation_name">Name</string>
     <string name="prompt_organisation_info">Info</string>
     <string name="action_add_organisation">Create</string>
@@ -92,6 +100,11 @@
     <string name="message_sent">Message sent!</string>
 
     <string name="body_member_phone_number_self">%1$s (me)</string>
+
+    <string name="err_orgs_destroy">Failed to delete organisation, please try again</string>
+    <string name="err_members_destroy">Failed to remove member, please try again</string>
+    <string name="err_members_create">Failed to add member, please try again</string>
+    <string name="err_messages_create">Failed to create message, please try again</string>
 
 
     <!-- Donate Activity -->

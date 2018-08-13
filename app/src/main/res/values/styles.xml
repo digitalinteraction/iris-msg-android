@@ -41,6 +41,12 @@
         <item name="android:textColor">@color/danger</item>
     </style>
 
+    <style name="AppTheme.EmptyText" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/lightText</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
     <style name="AppTheme.PrimaryButton" parent="Widget.AppCompat.Button.Colored">
         <item name="android:layout_margin">-4dp</item>
     </style>

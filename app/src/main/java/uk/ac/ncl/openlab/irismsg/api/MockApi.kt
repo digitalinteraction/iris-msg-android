@@ -16,6 +16,10 @@ class MockIrisMsgService : IrisMsgService {
         return Calls.response(ApiResponse.success(data))
     }
     
+    override fun ping() : ApiCall<String> {
+        return success("ok")
+    }
+    
     override fun getSelf(): ApiCall<UserEntity> {
         return success(
             generator.makeUser(UserGen.CURRENT)

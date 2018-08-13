@@ -27,7 +27,7 @@ class PermissionsManager @Inject constructor() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 ctx.requestPermissions(missingPermissions, requestCode)
             } else {
-                TODO("Handle really old permissions ...")
+                // TODO("Handle really old permissions ...")
             }
             
         } else {

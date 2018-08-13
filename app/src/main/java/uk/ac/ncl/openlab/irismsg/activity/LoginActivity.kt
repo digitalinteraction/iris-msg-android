@@ -81,9 +81,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         terms_text_view.movementMethod = LinkMovementMethod.getInstance()
         
         // Reset the state
-        listOf(login_progress, request_form, check_form).forEach {
-            it.visibility = View.GONE
-        }
+        listOf(login_progress, request_form, check_form).forEach { it.visibility = View.GONE }
     
         // Enter the requesting state
         enterState(State.REQUEST)

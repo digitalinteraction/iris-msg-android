@@ -103,7 +103,8 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
             Log.d("showInvite", res.data.toString())
             
         }, { _ ->
-            TODO("Handle members.showInvite error")
+            enterState(State.ERROR)
+            viewsUtil.showApiError(api_error, "Failed to fetch invite")
         }))
     }
     
@@ -149,7 +150,8 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 viewsUtil.showApiErrors(api_error, res.messages)
             }
         }, { _ ->
-            TODO("Handle members.acceptInvite error")
+            enterState(State.ERROR)
+            viewsUtil.showApiError(api_error, "Failed to accept invite")
         }))
     }
     

@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.fragment_organisation_item.view.*
 import kotlinx.android.synthetic.main.fragment_organisation_list.*
 import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
+import uk.ac.ncl.openlab.irismsg.common.ViewsUtil
 import uk.ac.ncl.openlab.irismsg.di.Injectable
 import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
@@ -24,16 +25,17 @@ import javax.inject.Inject
 
 /**
  * A fragment representing a list of Organisations, filtered by a MemberRole
- * TODO: Handle loading errors?
  */
 class OrganisationListFragment : Fragment(), Injectable {
     
+    private var currentState = State.INITIAL
     private var listener: Listener? = null
     private lateinit var adapter: RecyclerAdapter
     private lateinit var viewModel: OrganisationListViewModel
     
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     @Inject lateinit var jwtService: JwtService
+    @Inject lateinit var viewsUtil: ViewsUtil
     
     private val memberRole: MemberRole
         get () = arguments?.getSerializable(ARG_MEMBER_ROLE) as MemberRole
@@ -66,9 +68,12 @@ class OrganisationListFragment : Fragment(), Injectable {
     
         // Listen for refresh events
         swipe_refresh.setOnRefreshListener {
-            swipe_refresh.isRefreshing = true
+            enterState(State.LOADING)
             viewModel.reload()
         }
+        
+        // Reset state
+        listOf(org_list, no_results).forEach { it.visibility = View.GONE }
     }
     
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -83,20 +88,21 @@ class OrganisationListFragment : Fragment(), Injectable {
         val userId = jwtService.getUserId() ?: return
         
         // Listen for organisations
+        enterState(State.LOADING)
         viewModel.organisations.observe(this, Observer { orgs ->
             
-            // Stop the refresh animation
-            swipe_refresh.isRefreshing = false
-            
             // Do nothing more if there are no organisations
-            // TODO: Handle this error
-            if (orgs == null) return@Observer
+            if (orgs == null) {
+                enterState(State.NO_RESULTS)
+                return@Observer
+            }
             
             // Filter the organisations based on our memberRole
-            adapter.organisations = when (memberRole) {
-                MemberRole.COORDINATOR -> orgs.filter { it.isCoordinator(userId) }
-                else -> orgs.filter { !it.isCoordinator(userId) }
-            }
+            adapter.organisations = orgs.filter { it.primaryMembership(userId)?.role == memberRole }
+            enterState(
+                if (adapter.organisations.isEmpty()) State.NO_RESULTS
+                else State.SHOWING
+            )
         })
     }
     
@@ -109,6 +115,26 @@ class OrganisationListFragment : Fragment(), Injectable {
     override fun onDetach() {
         super.onDetach()
         listener = null
+    }
+    
+    private fun enterState (newState: State) {
+        if (currentState === newState) return
+        
+        viewsUtil.toggleElem(when (currentState) {
+            State.NO_RESULTS -> no_results
+            State.SHOWING -> org_list
+            else -> null
+        }, false)
+        
+        currentState = newState
+    
+        swipe_refresh.isRefreshing = newState == State.LOADING
+    
+        viewsUtil.toggleElem(when (newState) {
+            State.NO_RESULTS -> no_results
+            State.SHOWING -> org_list
+            else -> null
+        }, true)
     }
     
     companion object {
@@ -166,5 +192,9 @@ class OrganisationListFragment : Fragment(), Injectable {
     
     interface Listener {
         fun onOrganisationSelected(organisation: OrganisationEntity)
+    }
+    
+    private enum class State {
+        INITIAL, LOADING, NO_RESULTS, SHOWING
     }
 }

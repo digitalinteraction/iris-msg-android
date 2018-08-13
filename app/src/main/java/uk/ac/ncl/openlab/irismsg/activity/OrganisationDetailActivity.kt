@@ -40,9 +40,6 @@ import javax.inject.Inject
 
 /**
  * An Activity to show an Organisation in detail
- * TODO - Setup the tabs
- * TODO - Setup the fab
- * TODO - Add a dialog to the destroy click
  */
 class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInjector, MemberListFragment.Listener, SendMessageFragment.Listener {
     
@@ -198,7 +195,11 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 ).show()
             }
         }, { _ ->
-            TODO("Handle orgs.destroy api failure")
+            Snackbar.make(
+                main_content,
+                R.string.err_orgs_destroy,
+                Snackbar.LENGTH_LONG
+            ).show()
         }))
     }
     
@@ -237,7 +238,11 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 ).show()
             }
         }, { _ ->
-            TODO("Handle orgs.members.destroy api failure")
+            Snackbar.make(
+                main_content,
+                R.string.err_members_destroy,
+                Snackbar.LENGTH_LONG
+            ).show()
         }))
     }
     
@@ -259,9 +264,12 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 },
                 Snackbar.LENGTH_LONG
             ).show()
-        }, { err ->
-            Log.e("api.messages.create", err.toString())
-            TODO("Handle messages.create error")
+        }, { _ ->
+            Snackbar.make(
+                main_content,
+                R.string.err_messages_create,
+                Snackbar.LENGTH_LONG
+            ).show()
         }))
     }
     
@@ -353,7 +361,11 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 ).show()
             }
         }, { _ ->
-            TODO("Handle orgs.members.create api failure")
+            Snackbar.make(
+                main_content,
+                R.string.err_members_create,
+                Snackbar.LENGTH_LONG
+            ).show()
         }))
     }
     
