@@ -185,12 +185,16 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         irisService.updateMessageAttempts(body).enqueue(ApiCallback({ res ->
             if (res.success) {
                 
-                Timer().schedule(5000) {
-                    if (sendCounter <= 0) return@schedule
-                    viewModel.reload()
-                    sendCounter = -1
+                if (sendCounter > 0) {
+                    Timer().schedule(7000) {
+                        if (sendCounter <= 0) return@schedule
+                        viewModel.reload()
+                        sendCounter = -1
+                    }
+                } else {
+                    enterState(State.NO_DONATIONS)
                 }
-                
+        
                 Snackbar.make(
                     main_content,
                     getString(R.string.body_donations_sent),
@@ -261,8 +265,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
             State.HAS_DONATIONS -> donations
             State.WORKING -> api_progress
             else -> null
-        }, false
-        )
+        }, false)
         
         // Set state
         currentState = state
@@ -273,8 +276,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
             State.HAS_DONATIONS -> donations
             State.WORKING -> api_progress
             else -> null
-        }, true
-        )
+        }, true)
     }
     
     data class PotentialAttemptUpdate(
