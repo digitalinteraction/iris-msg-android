@@ -1,18 +1,13 @@
 package uk.ac.ncl.openlab.irismsg.activity
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.*
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -125,9 +120,13 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
     inner class SectionsPagerAdapter(fm : FragmentManager) : FragmentPagerAdapter(fm) {
         
         override fun getItem(position : Int) : Fragment {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1)
+            return when (position) {
+                0 -> SlideFragment.newInstance(R.string.onboard_slide_1, R.drawable.ic_message_slide)
+                1 -> SlideFragment.newInstance(R.string.onboard_slide_2, R.drawable.ic_allocation_slide)
+                2 -> SlideFragment.newInstance(R.string.onboard_slide_3, R.drawable.ic_donation_slide)
+                3 -> SlideFragment.newInstance(R.string.onboard_slide_4, R.drawable.ic_delivered_slide)
+                else -> throw RuntimeException()
+            }
         }
         
         override fun getCount() = 4
@@ -136,14 +135,17 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
     /**
      * A placeholder fragment containing a simple view.
      */
-    class PlaceholderFragment : Fragment() {
+    class SlideFragment : Fragment() {
         
         override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
             savedInstanceState : Bundle?
         ) : View? {
-            val rootView = inflater.inflate(R.layout.fragment_onboard, container, false)
-            rootView.section_label.text = getString(R.string.section_format, arguments?.getInt(ARG_SECTION_NUMBER))
-            return rootView
+            val slide = inflater.inflate(R.layout.fragment_onboard, container, false)
+            
+            arguments?.getInt(ARG_IMAGE)?.apply { slide.image.setImageResource(this) }
+            arguments?.getInt(ARG_MESSAGE)?.apply { slide.message.text = getString(this) }
+            
+            return slide
         }
         
         companion object {
@@ -151,16 +153,19 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
              * The fragment argument representing the section number for this
              * fragment.
              */
-            private const val ARG_SECTION_NUMBER = "section_number"
+            private const val ARG_MESSAGE = "body"
+    
+            private const val ARG_IMAGE = "asset"
             
             /**
              * Returns a new instance of this fragment for the given section
              * number.
              */
-            fun newInstance(sectionNumber : Int) : PlaceholderFragment {
-                val fragment = PlaceholderFragment()
+            fun newInstance(message: Int, image: Int) : SlideFragment {
+                val fragment = SlideFragment()
                 val args = Bundle()
-                args.putInt(ARG_SECTION_NUMBER, sectionNumber)
+                args.putInt(ARG_MESSAGE, message)
+                args.putInt(ARG_IMAGE, image)
                 fragment.arguments = args
                 return fragment
             }

@@ -54,6 +54,10 @@
     <!-- Onboard Activity -->
     <string name="title_activity_onboard">Welcome to Iris Msg</string>
     <string name="body_permissions_required">Sorry, you cannot use this app unless you accept the permissions</string>
+    <string name="onboard_slide_1">Iris Msg is about getting your message out to your subscribers, using donors to forward it along.</string>
+    <string name="onboard_slide_2">Your message is distributed between your donors and we message them through their data plan.</string>
+    <string name="onboard_slide_3">Your donors can then choose to forward on your message, donating their sms to send the message.</string>
+    <string name="onboard_slide_4">Your donor\'s sms are used to send your message to your subscribers, arriving like any other text message.</string>
 
 
     <!-- Organisation List -->
