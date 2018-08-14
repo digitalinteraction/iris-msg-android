@@ -8,6 +8,7 @@
     <color name="white">#fafaff</color>
     <color name="black">#0a0a0a</color>
     <color name="border">#dbdbdb</color>
+    <color name="offWhite">#eaeaea</color>
 
     <color name="link">#3272dc</color>
     <color name="info">#209cee</color>
