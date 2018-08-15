@@ -8,7 +8,7 @@
     tools:context=".activity.OnboardActivity$SlideFragment"
     android:background="@drawable/ic_white_card"
     android:padding="16dp"
-    android:elevation="12dp" tools:targetApi="lollipop">
+    android:elevation="4dp" tools:targetApi="lollipop" >
 
     <ImageView
         android:id="@+id/image"
@@ -38,6 +38,7 @@
         android:layout_marginStart="16dp"
         android:textAllCaps="false"
         android:textAppearance="@style/AppTheme.EmptyText"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

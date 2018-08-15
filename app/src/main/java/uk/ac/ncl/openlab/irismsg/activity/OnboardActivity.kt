@@ -126,11 +126,12 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 1 -> SlideFragment.newInstance(R.string.onboard_slide_2, R.drawable.ic_allocation_slide)
                 2 -> SlideFragment.newInstance(R.string.onboard_slide_3, R.drawable.ic_donation_slide)
                 3 -> SlideFragment.newInstance(R.string.onboard_slide_4, R.drawable.ic_delivered_slide)
+                4 -> SlideFragment.newInstance(R.string.onboard_slide_5, R.drawable.ic_permissions_slide)
                 else -> throw RuntimeException()
             }
         }
         
-        override fun getCount() = 4
+        override fun getCount() = 5
     }
     
     /**
