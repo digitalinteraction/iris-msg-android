@@ -67,6 +67,11 @@ class MemberListFragment : Fragment(), Injectable {
         member_list.layoutManager = LinearLayoutManager(context)
         member_list.adapter = recyclerAdapter
         
+        info_text.text = getString(
+            if (memberRole === MemberRole.DONOR) R.string.body_donors_description
+            else R.string.body_subscribers_description
+        )
+        
         swipe_refresh.setOnRefreshListener {
             swipe_refresh.isRefreshing = true
             viewModel.reload()

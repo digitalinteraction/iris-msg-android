@@ -54,11 +54,11 @@
     <!-- Onboard Activity -->
     <string name="title_activity_onboard">Welcome to Iris Msg</string>
     <string name="body_permissions_required">Sorry, you cannot use this app unless you accept the permissions</string>
-    <string name="onboard_slide_1">Iris Msg is about getting your message out to your subscribers, using donors to forward it along.</string>
-    <string name="onboard_slide_2">Your message is distributed between donors and we contact them through their data plan.</string>
-    <string name="onboard_slide_3">Donors can then choose to donate their SMS to forward the message.</string>
+    <string name="onboard_slide_1">Iris Msg lets you get your message out when you don\'t have enough SMS credit.</string>
+    <string name="onboard_slide_2">Your message is distributed between your invited donors using their data plan.</string>
+    <string name="onboard_slide_3">Donors can then choose to donate their SMS to forward on the message.</string>
     <string name="onboard_slide_4">Subscribers receive the message like any other SMS.</string>
-    <string name="onboard_slide_5">To do this we need your permission to read information about your phone and send SMS on your behalf.</string>
+    <string name="onboard_slide_5">For this to work we do need your permission to send SMS on your behalf and see when they are sent.</string>
 
 
     <!-- Organisation List -->
@@ -105,6 +105,9 @@
     <string name="message_sent">Message sent!</string>
 
     <string name="body_member_phone_number_self">%1$s (me)</string>
+
+    <string name="body_donors_description">These are your donors, they choose to donate their SMS to forward your messages.</string>
+    <string name="body_subscribers_description">These are your subscribers who receive the messages you send to this organisation.</string>
 
     <string name="err_orgs_destroy">Failed to delete organisation, please try again</string>
     <string name="err_members_destroy">Failed to remove member, please try again</string>

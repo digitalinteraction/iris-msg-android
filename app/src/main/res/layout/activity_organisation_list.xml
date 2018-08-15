@@ -27,7 +27,7 @@
             android:id="@+id/tabs_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:tabIndicatorColor="@color/colorPrimaryLight"
+            app:tabIndicatorColor="@color/colorAccent"
             app:tabTextColor="@color/white" />
 
     </android.support.design.widget.AppBarLayout>
