@@ -83,6 +83,9 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         // Setup the recycler
         donation_list.adapter = recyclerAdapter
+    
+        // Make the recycler scrollable
+        donation_list.isNestedScrollingEnabled = false
         
         // Enter initial state
         listOf<View>(no_donations, donations, api_progress, no_donations).forEach { it.visibility = View.GONE }

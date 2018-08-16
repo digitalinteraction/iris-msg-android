@@ -127,7 +127,6 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         }
     }
     
-    
     override fun onCreateOptionsMenu(menu : Menu) : Boolean {
         menuInflater.inflate(R.menu.menu_organisation_detail, menu)
         return true
@@ -249,8 +248,13 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     private fun onSendMessage () {
         if (composedMessage == "") return
         
+        viewsUtil.unFocus(currentFocus)
+        fab.isEnabled = false
+        
         val body = CreateMessageRequest(composedMessage, organisationId)
         irisService.createMessage(body).enqueue(ApiCallback({ res ->
+            fab.isEnabled = true
+            
             if (res.success) {
                 events.emit(SendMessageFragment.EVENT_RESET)
                 viewsUtil.unFocus(currentFocus)
@@ -265,6 +269,8 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 Snackbar.LENGTH_LONG
             ).show()
         }, { _ ->
+            fab.isEnabled = true
+            
             Snackbar.make(
                 main_content,
                 R.string.err_messages_create,

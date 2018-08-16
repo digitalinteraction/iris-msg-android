@@ -79,7 +79,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/app_content_padding"
                     app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-                    android:nestedScrollingEnabled="false"
                     tools:context=".ui.DonateActivity"
                     tools:listItem="@layout/activity_donate"
                     tools:ignore="UnusedAttribute" />
