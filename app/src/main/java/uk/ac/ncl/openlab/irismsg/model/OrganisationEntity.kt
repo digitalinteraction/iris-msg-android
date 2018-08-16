@@ -19,8 +19,8 @@ data class OrganisationEntity(
         get () = info.substring(0, Math.min(info.length, shortInfoLength)) +
                 if (info.length > shortInfoLength) "..." else ""
     
-    fun isCoordinator (userId: String) : Boolean = members.any { member ->
-        member.role == MemberRole.COORDINATOR
+    fun isMember (userId: String, role: MemberRole): Boolean = members.any { member ->
+        member.role == role
                 && member.userId == userId
                 && member.isActive()
     }

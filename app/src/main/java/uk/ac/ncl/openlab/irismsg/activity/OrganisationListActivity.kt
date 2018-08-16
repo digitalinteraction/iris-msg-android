@@ -1,12 +1,16 @@
 package uk.ac.ncl.openlab.irismsg.activity
 
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -15,10 +19,13 @@ import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_organisation_list.*
 import uk.ac.ncl.openlab.irismsg.ui.OrganisationListFragment
 import uk.ac.ncl.openlab.irismsg.R
+import uk.ac.ncl.openlab.irismsg.api.ApiCallback
+import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
 import uk.ac.ncl.openlab.irismsg.model.UserEntity
+import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationListViewModel
 import javax.inject.Inject
 
 /**
@@ -29,9 +36,12 @@ class OrganisationListActivity : AppCompatActivity(),
         OrganisationListFragment.Listener {
     
     private lateinit var pagerAdapter: PagerAdapter
+    private lateinit var viewModel: OrganisationListViewModel
     
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var jwtService: JwtService
+    @Inject lateinit var irisService: IrisMsgService
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
@@ -41,6 +51,12 @@ class OrganisationListActivity : AppCompatActivity(),
         // Setup view
         setContentView(R.layout.activity_organisation_list)
         setSupportActionBar(toolbar)
+    
+        
+        // Get a ViewModel to handle organisations
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(OrganisationListViewModel::class.java)
+                .init()
         
         
         // Setup tabs
@@ -108,13 +124,68 @@ class OrganisationListActivity : AppCompatActivity(),
     }
     
     override fun onOrganisationSelected(organisation: OrganisationEntity) {
-        val currentUser = jwtService.getUserId()
-        if (currentUser != null && organisation.isCoordinator(currentUser)) {
+        val currentUser = jwtService.getUserId() ?: return
+        
+        // If they are a coordinator, open the detail view
+        if (organisation.isMember(currentUser, MemberRole.COORDINATOR)) {
             startActivity(
                 Intent(this, OrganisationDetailActivity::class.java)
                         .putExtra(OrganisationDetailActivity.ARG_ORGANISATION_ID, organisation.id)
             )
         }
+        
+        // If they are just a donor, prompt them to undonate
+        else if (organisation.isMember(currentUser, MemberRole.DONOR)) {
+            attemptUndonate(organisation)
+        }
+    }
+    
+    private fun attemptUndonate (organisation : OrganisationEntity) {
+        
+        // Confirm the action with a dialog
+        val dialog = AlertDialog.Builder(this)
+                .setTitle(R.string.title_undonate)
+                .setMessage(R.string.body_undonate)
+                .setPositiveButton(R.string.action_confirm) { _, _ -> performUndonate(organisation) }
+                .setNegativeButton(R.string.action_cancel, null)
+                .create()
+        
+        dialog.show()
+    }
+    
+    private fun performUndonate (organisation: OrganisationEntity) {
+        
+        // Get the current user or stop
+        val currentUser = jwtService.getUserId() ?: return
+        
+        // Get the member record or stop here
+        val member = organisation.members.find {
+                m -> m.isActive() && m.role === MemberRole.DONOR && m.userId == currentUser
+        } ?: return
+        
+        
+        // Delete the member record
+        irisService.destroyMember(member.id, organisation.id).enqueue(ApiCallback({ res ->
+            if (res.success) {
+                Snackbar.make(main_content,
+                    R.string.success_undonate,
+                    Snackbar.LENGTH_LONG
+                ).show()
+                viewModel.reload()
+            } else {
+                Snackbar.make(
+                    main_content,
+                    res.messages.joinToString(),
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
+        }, { _ ->
+            Snackbar.make(
+                main_content,
+                R.string.error_undonate,
+                Snackbar.LENGTH_LONG
+            ).show()
+        }))
     }
     
     inner class PagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {

@@ -63,6 +63,10 @@
 
     <!-- Organisation List -->
     <string name="title_activity_organisation_list">Iris Msg</string>
+    <string name="title_undonate">Stop Donation</string>
+    <string name="body_undonate">Are you sure you want to stop this donation? If you change your mind, you will have to be invited again.</string>
+    <string name="error_undonate">Failed to remove your donation, please try again</string>
+    <string name="success_undonate">Your donation has been stopped</string>
 
 
     <!-- Add Organisation -->
