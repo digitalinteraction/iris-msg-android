@@ -9,6 +9,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
+        android:fitsSystemWindows="true"
         android:layout_height="192dp"
         android:paddingTop="@dimen/appbar_padding_top"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -17,12 +18,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:contentScrim="?attr/colorPrimary"
-            app:toolbarId="@+id/toolbar">
+            app:toolbarId="@+id/toolbar"
+            app:expandedTitleMarginStart="48dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize" />
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin" />
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
@@ -37,13 +41,14 @@
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
+            app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior"
+            android:fillViewport="true" >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="@dimen/app_content_margin"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="@dimen/app_content_margin">
 
                 <ProgressBar
                     android:id="@+id/api_progress"
@@ -62,31 +67,30 @@
                     android:textSize="18sp"
                     android:textStyle="italic" />
 
-                <RelativeLayout
+                <LinearLayout
                     android:id="@+id/donations"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-                        xmlns:app="http://schemas.android.com/apk/res-auto"
-                        xmlns:tools="http://schemas.android.com/tools"
-                        android:id="@+id/donation_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="@dimen/app_content_padding"
-                        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-                        tools:context=".ui.DonateActivity"
-                        tools:listItem="@layout/activity_donate" />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/donation_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/app_content_padding"
+                    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                    android:nestedScrollingEnabled="false"
+                    tools:context=".ui.DonateActivity"
+                    tools:listItem="@layout/activity_donate"
+                    tools:ignore="UnusedAttribute" />
 
-                    <Button
-                        android:id="@+id/donate_button"
-                        style="@style/Widget.AppCompat.Button.Colored"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/donation_list"
-                        android:text="@string/action_donate" />
-                </RelativeLayout>
+                <Button
+                    android:id="@+id/donate_button"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_donate" />
+                </LinearLayout>
 
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
