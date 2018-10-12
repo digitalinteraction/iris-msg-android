@@ -16,6 +16,10 @@ import uk.ac.ncl.openlab.irismsg.di.AppInjector
 import uk.ac.ncl.openlab.irismsg.jwt.JwtService
 import uk.ac.ncl.openlab.irismsg.service.FirebaseService
 import javax.inject.Inject
+import io.fabric.sdk.android.Fabric
+import com.crashlytics.android.Crashlytics
+
+
 
 /**
  * The Android application, injectable onto objects via Dagger
@@ -37,6 +41,7 @@ class IrisMsgApp : Application(), HasActivityInjector, HasBroadcastReceiverInjec
         
         updateFcm()
         registerNotificationChannels()
+        setupCrashlytics()
     }
     
     
@@ -68,6 +73,14 @@ class IrisMsgApp : Application(), HasActivityInjector, HasBroadcastReceiverInjec
     
         getSystemService(NotificationManager::class.java)
                 .createNotificationChannel(channel)
+    }
+    
+    private fun setupCrashlytics () {
+        val fabric = Fabric.Builder(this)
+                .kits(Crashlytics())
+                .debuggable(true)  // Enables Crashlytics debugger
+                .build()
+        Fabric.with(fabric)
     }
     
     override fun activityInjector () = activityInjector

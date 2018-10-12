@@ -43,7 +43,6 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         // Listen for login clicks
         login_button.setOnClickListener { _ ->
-    
             perms.request(this, perms.defaultPermissions, PERMS_REQUEST_CODE) {
                 startActivityForResult(
                     Intent(this, LoginActivity::class.java),
