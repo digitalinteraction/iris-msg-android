@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.crashlytics.android.Crashlytics
 import dagger.android.DaggerBroadcastReceiver
 import uk.ac.ncl.openlab.irismsg.activity.DonateActivity
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
@@ -44,10 +45,10 @@ class SmsSentReceiver : DaggerBroadcastReceiver() {
             if (res.success) {
                 events.emit(DonateActivity.EVENT_SMS_SENT)
             } else {
-                Log.e("SmsSentReceiver", res.messages.joinToString())
+                Crashlytics.log(Log.ERROR, "SmsSentReceiver", res.messages.joinToString())
             }
         }, { e ->
-            Log.e("SmsSentReceiver", e.toString())
+            Crashlytics.logException(e)
         }))
         
     }
