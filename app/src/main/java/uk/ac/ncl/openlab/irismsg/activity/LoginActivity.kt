@@ -145,7 +145,10 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         // Either refocus the invalid field or perform the login request
         if (toRefocus != null) toRefocus.requestFocus()
-        else requestLoginCode(countryCodeStr, phoneNumberStr)
+        else {
+            label_sent.text = getString(R.string.login_code_sent, phone_number.text.toString())
+            requestLoginCode(countryCodeStr, phoneNumberStr)
+        }
     }
     
     private fun requestLoginCode (countryCode: String, phoneNumber: String) {

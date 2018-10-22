@@ -13,7 +13,11 @@ class MockIrisMsgService : IrisMsgService {
     private val generator = EntityGenerator()
     
     private fun <T> success (data: T? = null) : ApiCall<T> {
-        return Calls.response(ApiResponse.success(data))
+        // ...
+        
+//        return Calls.defer(ApiResponse.success(data))
+//        return Calls.response(ApiResponse.success(data))
+        return MockTemporalCall(ApiResponse.success(data))
     }
     
     override fun ping() : ApiCall<String> {

@@ -40,7 +40,7 @@
         We use your phone number to check who you are.
         You will receive a 6 digit code to ensure you entered the correct number.
     </string>
-    <string name="login_code_sent">Code sent</string>
+    <string name="login_code_sent">Code sent to %1$s</string>
     <string name="login_terms">
         By tapping you are agreeing to our
         <a href="http://irismsg.io/terms">terms of use</a>
@@ -98,6 +98,7 @@
     <string name="action_delete">Remove</string>
     <string name="action_confirm">OK</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_send">Send</string>
 
     <string name="prompt_message">Message</string>
     <string name="body_send_message_bottom">
@@ -125,6 +126,7 @@
     <string name="body_no_donations">You don\'t have any pending donations,\ngood work!</string>
     <string name="label_fraction">%1$d/%2$d</string>
     <string name="body_donations_sent">Your donations have been sent, thank you!</string>
+    <string name="body_donation_progress">Sending donations (%1$d left)</string>
 
 
     <!-- Accept Role -->

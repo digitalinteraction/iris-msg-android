@@ -22,6 +22,8 @@ class SendMessageFragment : Fragment(), Injectable {
     @Inject lateinit var irisService: IrisMsgService
     @Inject lateinit var events: EventBus
     
+    private var composedMessage: String = ""
+    
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is Listener) { listener = context }
@@ -48,6 +50,11 @@ class SendMessageFragment : Fragment(), Injectable {
                 setMessage(s.toString())
             }
         })
+        
+        send_button.setOnClickListener {
+            if (composedMessage == "") return@setOnClickListener
+            listener?.onSendMessage(composedMessage)
+        }
     
         setCharLimitLabel("")
     }
@@ -70,8 +77,8 @@ class SendMessageFragment : Fragment(), Injectable {
     }
     
     private fun setMessage (string: String) {
-        listener?.onMessageChange(string)
         setCharLimitLabel(string)
+        composedMessage = string
     }
     
     private fun setCharLimitLabel (message: String) {
@@ -83,7 +90,7 @@ class SendMessageFragment : Fragment(), Injectable {
     }
     
     interface Listener {
-        fun onMessageChange (message: String)
+        fun onSendMessage (message: String)
     }
     
     companion object {

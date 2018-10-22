@@ -23,7 +23,7 @@ class DateUtils {
             if (subComp > 0) comps.add("$subComp$letter")
         }
         
-        fun timeSince (date: Date, format: Boolean = false) : String {
+        fun timeSince (date: Date, format: Boolean = false, largestOnly: Boolean = false) : String {
             val target = date.time
             val now = Calendar.getInstance().time.time
             
@@ -38,6 +38,10 @@ class DateUtils {
             addUnit(diff, MILLI_IN_HOUR, comps, "h", MILLI_IN_DAY)
             addUnit(diff, MILLI_IN_MINUTE, comps, "m", MILLI_IN_HOUR)
             addUnit(diff, MILLI_IN_SECOND, comps, "s", MILLI_IN_MINUTE)
+            
+            if (largestOnly && comps.size > 0) {
+                comps.retainAll(listOf(comps.first()))
+            }
             
             val value = comps.joinToString(" ")
             

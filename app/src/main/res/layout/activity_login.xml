@@ -140,13 +140,14 @@
                             app:srcCompat="@drawable/ic_check_black_64dp" />
 
                         <TextView
-                            android:id="@+id/textView"
+                            android:id="@+id/label_sent"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="0"
                             android:text="@string/login_code_sent"
                             android:textAllCaps="false"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+                            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                            android:textSize="18sp" />
                     </LinearLayout>
 
                     <android.support.design.widget.TextInputLayout

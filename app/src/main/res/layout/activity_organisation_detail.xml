@@ -53,10 +53,11 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
+        android:layout_gravity="center|bottom"
         android:layout_margin="@dimen/fab_margin"
         android:tint="@color/white"
+        android:visibility="invisible"
         app:elevation="12dp"
-        app:srcCompat="@drawable/ic_send_black_24dp" />
+        app:srcCompat="@drawable/ic_add_black_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

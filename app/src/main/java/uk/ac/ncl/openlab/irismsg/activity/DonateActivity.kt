@@ -35,10 +35,11 @@ import uk.ac.ncl.openlab.irismsg.receiver.SmsSentReceiver
 import uk.ac.ncl.openlab.irismsg.viewmodel.PendingMessageListViewModel
 import javax.inject.Inject
 import android.support.v4.app.NavUtils
+import android.util.Log
+import uk.ac.ncl.openlab.irismsg.AppExecutors
 import uk.ac.ncl.openlab.irismsg.common.EventBus
 import java.util.*
 import kotlin.concurrent.schedule
-
 
 class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
@@ -47,6 +48,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     @Inject lateinit var viewsUtil : ViewsUtil
     @Inject lateinit var irisService : IrisMsgService
     @Inject lateinit var events : EventBus
+    @Inject lateinit var executors: AppExecutors
     
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
@@ -55,7 +57,9 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     private val recyclerAdapter = RecyclerAdapter()
     
     private var toSend : MutableMap<String, Int> = mutableMapOf()
-    private var sendCounter: Int = -1
+//    private var sendCounter: Int = -1
+    
+    private var donation: DonationProgress? = null
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,13 +92,14 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         donation_list.isNestedScrollingEnabled = false
         
         // Enter initial state
-        listOf<View>(no_donations, donations, api_progress, no_donations).forEach { it.visibility = View.GONE }
+        listOf<View>(no_donations, donations, api_progress, donation_progress).forEach { it.visibility = View.GONE }
         
         // Observer donations
         enterState(State.WORKING)
         
         viewModel.messages.observe(this, Observer { messages ->
             swipe_refresh.isRefreshing = false
+            Log.d("DonateActivity", messages.toString())
             
             if (messages != null && messages.isNotEmpty()) {
                 messages.forEach { toSend[it.id] = it.attempts.size }
@@ -111,16 +116,15 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         super.onStart()
     
         events.on(EVENT_SMS_SENT, EventBus.Listener { _ ->
-            if (sendCounter <= 0) return@Listener
             
-            sendCounter--
-            
-            if (sendCounter > 0) return@Listener
-            
-            sendCounter = -1
-            
-            enterState(State.WORKING)
-            viewModel.reload()
+            donation?.let { donation ->
+                setDonationSent(donation.sent + 1)
+                
+                if (this.donation != null) return@let
+    
+                enterState(State.WORKING)
+                viewModel.reload()
+            }
         })
     }
     
@@ -154,6 +158,28 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         return true
     }
     
+    private fun setDonationSent (sent: Int) {
+        val donation = this.donation ?: return
+        
+        donation.sent = sent
+
+        donating_message.text = getString(
+            R.string.body_donation_progress,
+            donation.total - sent
+        )
+        
+        donating_bar.progress = donation.sent
+
+        if (donation.sent >= donation.total) {
+            this.donation = null
+            Snackbar.make(
+                main_content,
+                getString(R.string.body_donations_sent),
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
+    }
+    
     private fun performDonations(pendingMessages : List<PendingMessageEntity>, counts : Map<String, Int>) {
         enterState(State.WORKING)
         
@@ -179,30 +205,28 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         val toSend = updates.filter { it.state == MessageAttemptState.PENDING }
         
+        // Start the donation
+        donation = DonationProgress(toSend.size)
+        donating_bar.max = toSend.size
+        setDonationSent(0)
+        
+        // Send each sms
+        enterState(State.DONATING)
         toSend.forEach { sendSms(it) }
-        sendCounter = toSend.size
-    
-        enterState(State.WORKING)
+        
+        // Reset the state after 15 seconds and there are still donations
+        Timer().schedule(15000) {
+            if (donation == null) return@schedule
+            executors.mainThread().execute {
+                donation = null
+                enterState(State.WORKING)
+                viewModel.reload()
+            }
+        }
         
         val body = UpdateMessageAttemptsRequest(toUpdate)
         irisService.updateMessageAttempts(body).enqueue(ApiCallback({ res ->
             if (res.success) {
-                
-                if (sendCounter > 0) {
-                    Timer().schedule(7000) {
-                        if (sendCounter <= 0) return@schedule
-                        viewModel.reload()
-                        sendCounter = -1
-                    }
-                } else {
-                    enterState(State.NO_DONATIONS)
-                }
-        
-                Snackbar.make(
-                    main_content,
-                    getString(R.string.body_donations_sent),
-                    Snackbar.LENGTH_LONG
-                ).show()
             } else {
                 enterState(State.HAS_DONATIONS)
                 
@@ -262,11 +286,14 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     private fun enterState(state : State) {
         
+        Log.d("DonateActivity", state.toString())
+        
         // Transition out
         viewsUtil.toggleElem(when (currentState) {
             State.NO_DONATIONS -> no_donations
             State.HAS_DONATIONS -> donations
             State.WORKING -> api_progress
+            State.DONATING -> donation_progress
             else -> null
         }, false)
         
@@ -278,6 +305,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
             State.NO_DONATIONS -> no_donations
             State.HAS_DONATIONS -> donations
             State.WORKING -> api_progress
+            State.DONATING -> donation_progress
             else -> null
         }, true)
     }
@@ -292,8 +320,10 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
     
     enum class State {
-        NO_DONATIONS, HAS_DONATIONS, WORKING, INITIAL
+        NO_DONATIONS, HAS_DONATIONS, WORKING, INITIAL, DONATING
     }
+    
+    data class DonationProgress (var total: Int, var sent: Int = 0)
     
     inner class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
         
@@ -313,7 +343,9 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         override fun onBindViewHolder(holder : ViewHolder, pos : Int) {
             donations[pos].let { donation ->
                 holder.orgView.text = donation.organisation.name
-                holder.dateView.text = DateUtils.timeSince(donation.createdAt, true)
+                holder.dateView.text = DateUtils.timeSince(
+                    donation.createdAt, true, true
+                )
                 holder.messageView.text = donation.content
                 
                 holder.seekView.progress = toSend[donation.id]!!

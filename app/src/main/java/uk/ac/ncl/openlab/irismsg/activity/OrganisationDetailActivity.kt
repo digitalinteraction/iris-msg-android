@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.DialogInterface
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
@@ -16,6 +17,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.*
 import android.widget.EditText
+import android.widget.LinearLayout
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -57,8 +59,6 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     @Inject lateinit var orgRepo: OrganisationRepository
     @Inject lateinit var viewsUtil : ViewsUtil
     @Inject lateinit var events: EventBus
-    
-    private var composedMessage = ""
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,10 +105,10 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     
             override fun onTabSelected(tab : TabLayout.Tab) {
                 viewsUtil.unFocus(currentFocus)
-                fab.setImageDrawable(ContextCompat.getDrawable(applicationContext, when (tab.position) {
-                    0 -> R.drawable.ic_send_black_24dp
-                    else -> R.drawable.ic_add_black_24dp
-                }))
+                when (tab.position) {
+                    0 -> fab.hide()
+                    1 -> fab.show()
+                }
             }
     
             override fun onTabUnselected(tab : TabLayout.Tab) {}
@@ -120,7 +120,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         // Setup fab
         fab.setOnClickListener { _ ->
             when (tabs_pager.currentItem) {
-                0 -> onSendMessage()
+//                0 -> onSendMessage()
                 1 -> onAddMember(MemberRole.DONOR)
                 2 -> onAddMember(MemberRole.SUBSCRIBER)
             }
@@ -168,10 +168,6 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 .setNegativeButton(R.string.action_cancel) { alert, _ -> alert.dismiss() }
                 .create()
                 .show()
-    }
-    
-    override fun onMessageChange(message : String) {
-        composedMessage = message
     }
     
     private fun performDeleteOrganisation () {
@@ -245,13 +241,13 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         }))
     }
     
-    private fun onSendMessage () {
-        if (composedMessage == "") return
+    override fun onSendMessage (message: String) {
+        if (message == "") return
         
         viewsUtil.unFocus(currentFocus)
         fab.isEnabled = false
         
-        val body = CreateMessageRequest(composedMessage, organisationId)
+        val body = CreateMessageRequest(message, organisationId)
         irisService.createMessage(body).enqueue(ApiCallback({ res ->
             fab.isEnabled = true
             

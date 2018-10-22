@@ -79,7 +79,9 @@ class OrganisationRepository @Inject constructor(val irisService: IrisMsgService
     /** Fetch all organisations the user has access to and place into a LiveData */
     fun getOrganisations () : MutableLiveData<OrgList> {
         val data = MutableLiveData<OrgList>()
-        data.value = orgsCache
+        if (orgsCache.size > 0) {
+            data.value = orgsCache
+        }
         return loadOrgsInto(data)
     }
     
@@ -111,8 +113,12 @@ class OrganisationRepository @Inject constructor(val irisService: IrisMsgService
     /** Get a specific organisation */
     fun getOrganisation (id: String) : MutableLiveData<OrganisationEntity> {
         val data = MutableLiveData<OrganisationEntity>()
-        data.value = orgsCache.find { org -> org.id == id }
-        if (data.value == null) loadSingleOrgInto(data, id)
+        
+        // Check the cache for the organisation, or manually fetch it
+        val cached = orgsCache.find { org -> org.id == id }
+        if (cached != null) data.value = cached
+        else loadSingleOrgInto(data, id)
+        
         return data
     }
     

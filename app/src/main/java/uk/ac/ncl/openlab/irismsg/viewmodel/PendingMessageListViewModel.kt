@@ -12,6 +12,7 @@ class PendingMessageListViewModel
     lateinit var messages: MutableLiveData<List<PendingMessageEntity>>
         private set
     
+    // Initialize ourself (we don't control the constructor)
     fun init () : PendingMessageListViewModel {
         if (!::messages.isInitialized) {
             messages = messageRepo.getPendingMessages()
@@ -21,9 +22,5 @@ class PendingMessageListViewModel
     
     fun reload () {
         messageRepo.reloadPendingMessages(messages)
-    }
-    
-    fun reloadFromCache () {
-        messageRepo.reloadPendingMessagesFromCache(messages)
     }
 }
