@@ -20,6 +20,8 @@ enum class OrganisationGen {
     COORDINATOR, DONOR
 }
 
+val locales = listOf("en", "es", "fr")
+
 /**
  * A util for generating entities for testing, uses an incremental id so every object is unique
  */
@@ -64,6 +66,7 @@ class EntityGenerator {
             createdAt = makeDate(DateGen.PAST),
             updatedAt = makeDate(DateGen.PAST),
             phoneNumber = "07880123456",
+            locale = "en",
             verifiedOn = if (type !== UserGen.UNVERIFIED) makeDate(DateGen.NOW) else null,
             fcmToken = if (type !== UserGen.UNVERIFIED) "abcdef-123456" else null
         )
@@ -90,6 +93,7 @@ class EntityGenerator {
             updatedAt = makeDate(DateGen.PAST),
             name = "Organisation $nameLetter",
             info = "Maecenas faucibus mollis interdum. Etiam porta sem malesuada magna mollis euismod.",
+            locale = locales[Random().nextInt(locales.size)],
             members = listOfNotNull(
                 makeMember(MemberRole.COORDINATOR, owningMember),
                 makeMember(MemberRole.DONOR, UserGen.CURRENT),

@@ -9,6 +9,7 @@ data class UserEntity(
     @Json(name = "createdAt") override val createdAt: Date,
     @Json(name = "updatedAt") override val updatedAt: Date,
     @Json(name = "phoneNumber") val phoneNumber: String,
+    @Json(name = "locale") @Nullable val locale: String,
     @Json(name = "verifiedOn") @Nullable val verifiedOn: Date?,
     @Json(name = "fcmToken") @Nullable val fcmToken: String?
 ) : ApiEntity {

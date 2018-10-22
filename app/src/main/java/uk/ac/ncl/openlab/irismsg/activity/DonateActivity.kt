@@ -38,6 +38,8 @@ import android.support.v4.app.NavUtils
 import android.util.Log
 import uk.ac.ncl.openlab.irismsg.AppExecutors
 import uk.ac.ncl.openlab.irismsg.common.EventBus
+import uk.ac.ncl.openlab.irismsg.jwt.JwtService
+import uk.ac.ncl.openlab.irismsg.model.UserEntity
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -49,6 +51,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     @Inject lateinit var irisService : IrisMsgService
     @Inject lateinit var events : EventBus
     @Inject lateinit var executors: AppExecutors
+    @Inject lateinit var jwt: JwtService
     
     override fun supportFragmentInjector() = dispatchingAndroidInjector
     
@@ -352,6 +355,12 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 holder.seekView.max = donation.attempts.size
                 holder.seekView.progress = toSend[donation.id]!!
                 holder.seekView.tag = donation
+    
+                holder.localeWarnView.visibility = when (donation.organisation.locale) {
+                    UserEntity.current?.locale -> View.INVISIBLE
+                    else -> View.VISIBLE
+                }
+                holder.localeWarnView.text = getString(R.string.warn_different_locale, donation.organisation.locale)
                 
                 updateCountLabel(holder.countView, toSend[donation.id]!!, donation.attempts.size)
                 
@@ -381,6 +390,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
             val messageView : TextView = view.message
             val seekView : SeekBar = view.seeker
             val countView : TextView = view.counter
+            var localeWarnView : TextView = view.label_locale_warning
         }
     }
     
