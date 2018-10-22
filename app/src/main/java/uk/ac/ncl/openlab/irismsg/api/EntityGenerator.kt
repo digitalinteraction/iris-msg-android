@@ -124,6 +124,8 @@ class EntityGenerator {
     }
     
     fun makePendingMessage (content: String) : PendingMessageEntity {
+        val range: Int = 5 + Random().nextInt(5)
+        
         return PendingMessageEntity(
             id = makeId(),
             createdAt = makeDate(DateGen.PAST),
@@ -136,8 +138,16 @@ class EntityGenerator {
                 makePendingMessageAttempt(),
                 makePendingMessageAttempt(),
                 makePendingMessageAttempt(),
+                makePendingMessageAttempt(),
+                makePendingMessageAttempt(),
+                makePendingMessageAttempt(),
+                makePendingMessageAttempt(),
+                makePendingMessageAttempt(),
+                makePendingMessageAttempt(),
+                makePendingMessageAttempt(),
+                makePendingMessageAttempt(),
                 makePendingMessageAttempt()
-            )
+            ).slice(IntRange(5, range))
         )
     }
     

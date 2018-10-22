@@ -102,6 +102,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
             Log.d("DonateActivity", messages.toString())
             
             if (messages != null && messages.isNotEmpty()) {
+                toSend = mutableMapOf()
                 messages.forEach { toSend[it.id] = it.attempts.size }
                 enterState(State.HAS_DONATIONS)
                 recyclerAdapter.donations = messages
@@ -347,12 +348,12 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
                     donation.createdAt, true, true
                 )
                 holder.messageView.text = donation.content
-                
-                holder.seekView.progress = toSend[donation.id]!!
+    
                 holder.seekView.max = donation.attempts.size
+                holder.seekView.progress = toSend[donation.id]!!
                 holder.seekView.tag = donation
                 
-                updateCountLabel(holder.countView, donation.attempts.size, donation.attempts.size)
+                updateCountLabel(holder.countView, toSend[donation.id]!!, donation.attempts.size)
                 
                 holder.seekView.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(bar : SeekBar, value : Int, flag : Boolean) {
