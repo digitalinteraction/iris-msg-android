@@ -128,6 +128,7 @@
     <string name="body_donations_sent">Your donations have been sent, thank you!</string>
     <string name="body_donation_progress">Sending donations (%1$d left)</string>
     <string name="warn_different_locale">Warning: Foreign SMS (%1$s), carrier charges may apply.</string>
+    <string name="body_donation_failed">Failed to donate messages, please try again</string>
 
 
     <!-- Accept Role -->

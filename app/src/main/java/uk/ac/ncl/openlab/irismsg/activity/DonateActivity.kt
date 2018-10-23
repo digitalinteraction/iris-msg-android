@@ -60,8 +60,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     private val recyclerAdapter = RecyclerAdapter()
     
     private var toSend : MutableMap<String, Int> = mutableMapOf()
-//    private var sendCounter: Int = -1
-    
+
     private var donation: DonationProgress? = null
     
     override fun onCreate(savedInstanceState : Bundle?) {
@@ -79,7 +78,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         // Listen for donate clicks
         donate_button.setOnClickListener { _ ->
             val pending = viewModel.messages.value ?: return@setOnClickListener
-            performDonations(pending, toSend)
+            attemptDonations(pending, toSend)
         }
         
         // Listen for refreshes
@@ -172,7 +171,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
             donation.total - sent
         )
         
-        donating_bar.progress = donation.sent
+        donating_bar.progress = donation.sent + 1
 
         if (donation.sent >= donation.total) {
             this.donation = null
@@ -184,7 +183,40 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         }
     }
     
-    private fun performDonations(pendingMessages : List<PendingMessageEntity>, counts : Map<String, Int>) {
+    private fun attemptDonations (pendingMessages : List<PendingMessageEntity>, counts: Map<String, Int>) {
+        
+        // Fetch messages again to only send ones we're still allocated
+        enterState(State.WORKING)
+        irisService.listPendingMessages().enqueue(ApiCallback({ res ->
+            if (!res.success) {
+                enterState(State.HAS_DONATIONS)
+                Snackbar.make(
+                    main_content,
+                    R.string.body_donation_failed,
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
+            val updatedCounts = HashMap<String, Int>()
+            res.data?.forEach { msg ->
+                updatedCounts[msg.id] = Math.min(
+                    counts[msg.id] ?: 0,
+                    msg.attempts.size
+                )
+            }
+            
+            performDonations(res.data!!, updatedCounts)
+            
+        }, { _ ->
+            enterState(State.HAS_DONATIONS)
+            Snackbar.make(
+                main_content,
+                R.string.body_donation_failed,
+                Snackbar.LENGTH_LONG
+            ).show()
+        }))
+    }
+    
+    private fun performDonations (pendingMessages : List<PendingMessageEntity>, counts : Map<String, Int>) {
         enterState(State.WORKING)
         
         val updates = mutableListOf<PotentialAttemptUpdate>()
@@ -209,29 +241,33 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         val toSend = updates.filter { it.state == MessageAttemptState.PENDING }
         
-        // Start the donation
-        donation = DonationProgress(toSend.size)
-        donating_bar.max = toSend.size
-        setDonationSent(0)
-        
-        // Send each sms
-        enterState(State.DONATING)
-        toSend.forEach { sendSms(it) }
-        
-        // Reset the state after 15 seconds and there are still donations
-        Timer().schedule(15000) {
-            if (donation == null) return@schedule
-            executors.mainThread().execute {
-                donation = null
-                enterState(State.WORKING)
-                viewModel.reload()
+        if (toSend.isNotEmpty()) {
+            
+            // Start the donation
+            donation = DonationProgress(toSend.size)
+            donating_bar.max = toSend.size
+            setDonationSent(0)
+    
+            // Send each sms
+            enterState(State.DONATING)
+            toSend.forEach { sendSms(it) }
+    
+            // Reset the state after 15 seconds and there are still donations
+            Timer().schedule(15000) {
+                if (donation == null) return@schedule
+                executors.mainThread().execute {
+                    donation = null
+                    enterState(State.WORKING)
+                    viewModel.reload()
+                }
             }
+        } else {
+            enterState(State.WORKING)
         }
         
         val body = UpdateMessageAttemptsRequest(toUpdate)
         irisService.updateMessageAttempts(body).enqueue(ApiCallback({ res ->
-            if (res.success) {
-            } else {
+            if (!res.success) {
                 enterState(State.HAS_DONATIONS)
                 
                 Snackbar.make(
@@ -239,13 +275,22 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
                     res.messages.joinToString(),
                     Snackbar.LENGTH_LONG
                 ).show()
+            } else if (toSend.isEmpty()) {
+                Snackbar.make(
+                    main_content,
+                    R.string.body_donations_sent,
+                    Snackbar.LENGTH_LONG
+                ).show()
+                
+                enterState(State.WORKING)
+                viewModel.reload()
             }
         }, { _ ->
             enterState(State.HAS_DONATIONS)
     
             Snackbar.make(
                 main_content,
-                "Failed to update messages, please try again",
+                R.string.body_donation_failed,
                 Snackbar.LENGTH_LONG
             ).show()
         }))
@@ -289,6 +334,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
     
     private fun enterState(state : State) {
+        if (state === currentState) return
         
         Log.d("DonateActivity", state.toString())
         

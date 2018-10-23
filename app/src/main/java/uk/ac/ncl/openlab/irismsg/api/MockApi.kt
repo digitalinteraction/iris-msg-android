@@ -4,7 +4,6 @@ import retrofit2.mock.Calls
 import uk.ac.ncl.openlab.irismsg.common.ApiCall
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.*
-import java.util.*
 
 /**
  * A fake implementation of the IrisMsg api using locally generated entities
@@ -12,6 +11,9 @@ import java.util.*
 class MockIrisMsgService : IrisMsgService {
     
     private val generator = EntityGenerator()
+    private val fixedMessages = listOf(
+        generator.makePendingMessage("Hello there"),
+        generator.makePendingMessage("General Kenobi"))
     
     private fun <T> success (data: T? = null) : ApiCall<T> {
         // ...
@@ -97,11 +99,10 @@ class MockIrisMsgService : IrisMsgService {
         return success(generator.makeMessage(body.orgId))
     }
     override fun listPendingMessages() : ApiCall<List<PendingMessageEntity>> {
-        return success(listOf(
-            generator.makePendingMessage("Hello there"),
-            generator.makePendingMessage("General Kenobi"),
-            generator.makePendingMessage("You are a bold one")
-        ))
+        // Note: Uses 2 static messages and generates the last one each request
+        val messages = ArrayList(fixedMessages)
+        messages.add(generator.makePendingMessage("You are a bold one"))
+        return success(messages)
     }
     override fun updateMessageAttempts(body: UpdateMessageAttemptsRequest): ApiCall<Any> {
         return success()
