@@ -180,7 +180,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
             donation.total - sent
         )
         
-        donating_bar.progress = donation.sent + 1
+        donating_bar.progress = donation.sent
 
         if (donation.sent >= donation.total) {
             this.donation = null
