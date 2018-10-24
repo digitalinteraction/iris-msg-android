@@ -43,6 +43,15 @@ import uk.ac.ncl.openlab.irismsg.model.UserEntity
 import java.util.*
 import kotlin.concurrent.schedule
 
+/**
+ * An activity to send SMS for the organisations you donate for
+ * Parent: OrganisationListActivity
+ * Links:
+ *   irismsg://donate
+ *   https://api.dev.irismsg.io/open/donate
+ *   https://api.irismsg.io/open/donate
+ *   fcm.action.DONATE
+ */
 class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     @Inject lateinit var dispatchingAndroidInjector : DispatchingAndroidInjector<Fragment>
@@ -187,7 +196,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         // Fetch messages again to only send ones we're still allocated
         enterState(State.WORKING)
-        irisService.listPendingMessages().enqueue(ApiCallback({ res ->
+        irisService.listPendingMessages().enqueue(ApiCallback { res ->
             if (!res.success) {
                 enterState(State.HAS_DONATIONS)
                 Snackbar.make(
@@ -206,14 +215,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
             
             performDonations(res.data!!, updatedCounts)
             
-        }, { _ ->
-            enterState(State.HAS_DONATIONS)
-            Snackbar.make(
-                main_content,
-                R.string.body_donation_failed,
-                Snackbar.LENGTH_LONG
-            ).show()
-        }))
+        })
     }
     
     private fun performDonations (pendingMessages : List<PendingMessageEntity>, counts : Map<String, Int>) {
@@ -266,7 +268,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
         }
         
         val body = UpdateMessageAttemptsRequest(toUpdate)
-        irisService.updateMessageAttempts(body).enqueue(ApiCallback({ res ->
+        irisService.updateMessageAttempts(body).enqueue(ApiCallback { res ->
             if (!res.success) {
                 enterState(State.HAS_DONATIONS)
                 
@@ -285,15 +287,7 @@ class DonateActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 enterState(State.WORKING)
                 viewModel.reload()
             }
-        }, { _ ->
-            enterState(State.HAS_DONATIONS)
-    
-            Snackbar.make(
-                main_content,
-                R.string.body_donation_failed,
-                Snackbar.LENGTH_LONG
-            ).show()
-        }))
+        })
         
     }
     

@@ -10,16 +10,15 @@ import uk.ac.ncl.openlab.irismsg.di.Injectable
  * - Also manually processes error bodies (because Retrofit doesn't)
  */
 class ApiCallback <T> (
-    private val successBlock : (res: ApiResponse<T>) -> Unit,
-    private val failedBlock : (err: Throwable) -> Unit
+    private val callback : (res: ApiResponse<T>) -> Unit
 ) : retrofit2.Callback<ApiResponse<T>>, Injectable {
     
-    override fun onResponse(call : Call<ApiResponse<T>>?, response : Response<ApiResponse<T>>?) {
+    override fun onResponse (call : Call<ApiResponse<T>>?, response : Response<ApiResponse<T>>?) {
         
         // If successful, call the block and stop
         val successBody = response?.body()
         if (successBody != null) {
-            return successBlock(successBody)
+            return callback(successBody)
         }
         
         // If there was an error, attempt to process it
@@ -34,9 +33,9 @@ class ApiCallback <T> (
                         .asJsonArray
                         .map { it.asString }
     
-                successBlock(ApiResponse.fail(messages))
+                callback(ApiResponse.fail(messages))
             } catch (err: Exception) {
-                failedBlock(err)
+                failWithError(err)
             }
         }
         
@@ -44,7 +43,12 @@ class ApiCallback <T> (
         throw RuntimeException("Unable to parse api response : $name")
     }
     
-    override fun onFailure(call : Call<ApiResponse<T>>?, t : Throwable?) {
-        failedBlock(t ?: RuntimeException("An unknown error occurred"))
+    override fun onFailure (call : Call<ApiResponse<T>>?, t : Throwable?) {
+        failWithError(t)
+    }
+    
+    private fun failWithError (t: Throwable?) {
+        val messages = listOf(t?.localizedMessage ?: "An unknown error occurred, please try again")
+        callback(ApiResponse.fail(messages))
     }
 }

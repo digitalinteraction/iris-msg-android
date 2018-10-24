@@ -23,6 +23,15 @@ import uk.ac.ncl.openlab.irismsg.model.MemberInviteEntity
 import uk.ac.ncl.openlab.irismsg.model.UserEntity
 import javax.inject.Inject
 
+/**
+ * An activity to deep link to and accept a role invitation
+ * Also manages app permissions, requesting them from the user
+ *
+ * Links:
+ *   irismsg://invite
+ *   https://api.dev.irismsg.io/open/invite/.*
+ *   https://api.irismsg.io/open/invite/.*
+ */
 class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     @Inject lateinit var fragmentInjector : DispatchingAndroidInjector<Fragment>
@@ -78,7 +87,7 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
         
         
         // Fetch the role to accept
-        irisService.showInvite(inviteToken).enqueue(ApiCallback({ res ->
+        irisService.showInvite(inviteToken).enqueue(ApiCallback { res ->
             invite = res.data
             
             // Hide the spinner
@@ -102,10 +111,7 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
             }
             Log.d("showInvite", res.data.toString())
             
-        }, { _ ->
-            enterState(State.ERROR)
-            viewsUtil.showApiError(api_error, "Failed to fetch invite")
-        }))
+        })
     }
     
     override fun onRequestPermissionsResult(
@@ -135,8 +141,8 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
     private fun acceptInvite (token: String) {
         enterState(State.WORKING)
         
-        irisService.acceptInvite(token).enqueue(ApiCallback({ res ->
-    
+        irisService.acceptInvite(token).enqueue(ApiCallback { res ->
+            
             if (res.success && res.data != null) {
                 jwtService.save(res.data.token)
                 UserEntity.current = res.data.user
@@ -149,10 +155,7 @@ class AcceptRoleActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 enterState(State.ERROR)
                 viewsUtil.showApiErrors(api_error, res.messages)
             }
-        }, { _ ->
-            enterState(State.ERROR)
-            viewsUtil.showApiError(api_error, "Failed to accept invite")
-        }))
+        })
     }
     
     private fun enterState (state: State) {

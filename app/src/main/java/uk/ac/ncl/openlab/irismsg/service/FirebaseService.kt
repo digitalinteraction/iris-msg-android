@@ -13,7 +13,6 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasServiceInjector
 import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.activity.DonateActivity
-import uk.ac.ncl.openlab.irismsg.activity.OrganisationListActivity
 import javax.inject.Inject
 
 
@@ -22,10 +21,9 @@ import javax.inject.Inject
  */
 class FirebaseService : FirebaseMessagingService(), HasServiceInjector {
     
-    // Dagger injection point
     @Inject lateinit var injector: DispatchingAndroidInjector<Service>
-    override fun serviceInjector() : AndroidInjector<Service> = injector
     
+    override fun serviceInjector() : AndroidInjector<Service> = injector
     
     /** Handle receiving fcm */
     override fun onMessageReceived(message: RemoteMessage) {

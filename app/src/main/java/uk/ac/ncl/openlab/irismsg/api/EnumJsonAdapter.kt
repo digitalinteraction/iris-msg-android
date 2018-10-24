@@ -1,8 +1,8 @@
 package uk.ac.ncl.openlab.irismsg.api
 
 import com.squareup.moshi.*
-import uk.ac.ncl.openlab.irismsg.common.MemberRole
 
+// Converts enums to json and vice versa, lower casing them for the api
 class EnumJsonAdapter<T> (val builder: (String) -> T) : JsonAdapter<T>() {
     
     @FromJson

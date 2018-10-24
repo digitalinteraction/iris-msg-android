@@ -98,6 +98,9 @@
                 <data android:scheme="https"
                     android:host="api.dev.irismsg.io"
                     android:path="/open/donate" />
+                <data android:scheme="https"
+                    android:host="api.irismsg.io"
+                    android:path="/open/donate" />
             </intent-filter>
             <intent-filter>
                 <action android:name="fcm.action.DONATE"/>
@@ -115,6 +118,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https"
                     android:host="api.dev.irismsg.io"
+                    android:pathPattern="/open/invite/.*" />
+                <data android:scheme="https"
+                    android:host="api.irismsg.io"
                     android:pathPattern="/open/invite/.*" />
             </intent-filter>
             <intent-filter android:autoVerify="true" tools:ignore="UnusedAttribute">

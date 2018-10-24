@@ -21,16 +21,14 @@ import javax.inject.Inject
  */
 class EditOrganisationActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
-    // Dagger injection point
-    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    override fun supportFragmentInjector() = dispatchingAndroidInjector
-    
-    
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var irisService: IrisMsgService
     @Inject lateinit var viewsUtil: ViewsUtil
     @Inject lateinit var orgRepo: OrganisationRepository
     
     private var currentState: State = State.INPUT
+    
+    override fun supportFragmentInjector() = fragmentInjector
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,14 +100,14 @@ class EditOrganisationActivity : AppCompatActivity(), HasSupportFragmentInjector
         
         // Perform the create
         val body = CreateOrganisationRequest(name, info)
-        irisService.createOrganisation(body).enqueue(ApiCallback({ res ->
+        irisService.createOrganisation(body).enqueue(ApiCallback { res ->
             
             // If it failed, show the errors
             if (!res.success || res.data == null) {
                 enterState(State.INPUT)
                 viewsUtil.showApiErrors(api_error, res.messages)
             } else {
-
+    
                 // If successful, update the cache
                 orgRepo.organisationCreated(res.data)
                 
@@ -117,12 +115,7 @@ class EditOrganisationActivity : AppCompatActivity(), HasSupportFragmentInjector
                 setResult(RESULT_CREATED)
                 finish()
             }
-        }, { _ ->
-            
-            // If anything unknown went wrong, show a generic error
-            enterState(State.INPUT)
-            viewsUtil.showApiError(api_error, getString(R.string.api_unknown_error))
-        }))
+        })
     }
     
     private fun enterState (newState: State) {

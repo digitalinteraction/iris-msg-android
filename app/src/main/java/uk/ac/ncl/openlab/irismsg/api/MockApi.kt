@@ -6,20 +6,17 @@ import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.model.*
 
 /**
- * A fake implementation of the IrisMsg api using locally generated entities
+ * A fake implementation of the Iris Msg api using locally generated entities
  */
 class MockIrisMsgService : IrisMsgService {
     
     private val generator = EntityGenerator()
     private val fixedMessages = listOf(
         generator.makePendingMessage("Hello there"),
-        generator.makePendingMessage("General Kenobi"))
+        generator.makePendingMessage("General Kenobi")
+    )
     
     private fun <T> success (data: T? = null) : ApiCall<T> {
-        // ...
-        
-//        return Calls.defer(ApiResponse.success(data))
-//        return Calls.response(ApiResponse.success(data))
         return MockTemporalCall(ApiResponse.success(data))
     }
     

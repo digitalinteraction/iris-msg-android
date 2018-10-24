@@ -7,6 +7,9 @@ import android.os.Build
 import android.support.v4.content.ContextCompat
 import javax.inject.Inject
 
+/**
+ * A utility to request / check permissions for the app, designed to be @Inject'd in
+ */
 class PermissionsManager @Inject constructor() {
     
     val defaultPermissions = arrayOf(

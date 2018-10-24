@@ -28,14 +28,14 @@ import javax.inject.Inject
  */
 class OrganisationListFragment : Fragment(), Injectable {
     
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var jwtService: JwtService
+    @Inject lateinit var viewsUtil: ViewsUtil
+    
     private var currentState = State.INITIAL
     private var listener: Listener? = null
     private lateinit var adapter: RecyclerAdapter
     private lateinit var viewModel: OrganisationListViewModel
-    
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-    @Inject lateinit var jwtService: JwtService
-    @Inject lateinit var viewsUtil: ViewsUtil
     
     private val memberRole: MemberRole
         get () = arguments?.getSerializable(ARG_MEMBER_ROLE) as MemberRole

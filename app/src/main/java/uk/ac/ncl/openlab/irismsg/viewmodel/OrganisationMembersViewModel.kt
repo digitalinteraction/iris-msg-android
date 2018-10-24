@@ -6,6 +6,9 @@ import uk.ac.ncl.openlab.irismsg.model.OrganisationMemberEntity
 import uk.ac.ncl.openlab.irismsg.repo.OrganisationRepository
 import javax.inject.Inject
 
+/**
+ * A ViewModel for a list of Members of an Organisation
+ */
 class OrganisationMembersViewModel
 @Inject constructor(private val orgRepo: OrganisationRepository) : ViewModel() {
     
@@ -13,6 +16,7 @@ class OrganisationMembersViewModel
     
     lateinit var members: MutableLiveData<List<OrganisationMemberEntity>>
     
+    /** Initialize ourself (we don't control the constructor) */
     fun init (id: String): OrganisationMembersViewModel {
         if (!::members.isInitialized) {
             organisationId = id
@@ -21,6 +25,7 @@ class OrganisationMembersViewModel
         return this
     }
     
+    /** Force a reload of the members */
     fun reload () {
         orgRepo.reloadMembers(members, organisationId)
     }

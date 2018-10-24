@@ -29,18 +29,18 @@ import javax.inject.Inject
  */
 class MemberListFragment : Fragment(), Injectable {
     
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    
     private var listener: Listener? = null
     private lateinit var recyclerAdapter: RecyclerAdapter
     private lateinit var viewModel : OrganisationMembersViewModel
     
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     
     private val organisationId: String
         get () = arguments?.getString(ARG_ORGANISATION_ID)!!
     
     private val memberRole: MemberRole
         get () = arguments?.getSerializable(ARG_MEMBER_ROLE) as MemberRole
-    
     
     
     override fun onAttach(context : Context?) {
@@ -67,11 +67,13 @@ class MemberListFragment : Fragment(), Injectable {
         member_list.layoutManager = LinearLayoutManager(context)
         member_list.adapter = recyclerAdapter
         
+        // Set the info text based on the role
         info_text.text = getString(
             if (memberRole === MemberRole.DONOR) R.string.body_donors_description
             else R.string.body_subscribers_description
         )
         
+        // Listen for refreshes
         swipe_refresh.setOnRefreshListener {
             swipe_refresh.isRefreshing = true
             viewModel.reload()

@@ -31,13 +31,12 @@ import javax.inject.Inject
 
 /**
  * An Activity to login the user using a phone number and verification code
+ *
+ * Parent: OnboardActivity
  */
 class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
-    // Dagger injection point
-    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    override fun supportFragmentInjector() = dispatchingAndroidInjector
-    
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var app: Application
     @Inject lateinit var irisService: IrisMsgService
     @Inject lateinit var viewsUtil: ViewsUtil
@@ -45,13 +44,14 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     private var currentState: State = State.REQUEST
     
+    override fun supportFragmentInjector() = fragmentInjector
+    
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         
         // Setup the view
         setContentView(R.layout.activity_login)
         setSupportActionBar(toolbar)
-        
         
         // Listen for keyboard done events
         phone_number.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
@@ -158,19 +158,15 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         viewsUtil.showApiError(api_error, null)
         
         // Perform the request and update the state accordingly
-        irisService.requestLogin(RequestLoginRequest(phoneNumber, countryCode)).enqueue(ApiCallback({ res ->
+        irisService.requestLogin(RequestLoginRequest(phoneNumber, countryCode)).enqueue(ApiCallback { res ->
             if (!res.success) {
                 enterState(State.REQUEST)
                 viewsUtil.showApiError(api_error, res.messages.joinToString())
             } else {
                 enterState(State.CHECK)
             }
-        }, { _ ->
-            enterState(State.REQUEST)
-            viewsUtil.showApiError(api_error, getString(R.string.api_unknown_error))
-        }))
+        })
     }
-    
     
     private fun attemptLoginCheck () {
     
@@ -207,17 +203,14 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
         viewsUtil.showApiError(api_error, null)
     
         // Perform the request and update the state accordingly
-        irisService.checkLogin(CheckLoginRequest(code)).enqueue(ApiCallback({ res ->
+        irisService.checkLogin(CheckLoginRequest(code)).enqueue(ApiCallback { res ->
             if (!res.success || res.data == null) {
                 enterState(State.CHECK)
                 viewsUtil.showApiError(api_error, res.messages.joinToString())
             } else {
                 finishLogin(res.data)
             }
-        }, { _ ->
-            enterState(State.CHECK)
-            viewsUtil.showApiError(api_error, getString(R.string.api_unknown_error))
-        }))
+        })
     }
     
     private fun finishLogin (userAuth: UserAuthEntity) {
@@ -237,6 +230,7 @@ class LoginActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
     private fun parsePhoneNumber (phoneNumberStr: String) : Phonenumber.PhoneNumber? {
         try {
+            // Attempt to parse the phone number or return null
             val util = PhoneNumberUtil.getInstance()
             val locale = Locale.getDefault().country
             val number = util.parse(phoneNumberStr, locale) ?: return null

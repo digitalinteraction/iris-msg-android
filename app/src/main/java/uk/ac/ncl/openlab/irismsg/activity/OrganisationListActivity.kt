@@ -30,20 +30,22 @@ import javax.inject.Inject
 
 /**
  * An Activity to present a Organisations that the user is part of either as a coordinator or donor
+ *
+ * Parent: EmptyMainActivity
  */
 class OrganisationListActivity : AppCompatActivity(),
         HasSupportFragmentInjector,
         OrganisationListFragment.Listener {
     
-    private lateinit var pagerAdapter: PagerAdapter
-    private lateinit var viewModel: OrganisationListViewModel
-    
-    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var jwtService: JwtService
     @Inject lateinit var irisService: IrisMsgService
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     
-    override fun supportFragmentInjector() = dispatchingAndroidInjector
+    private lateinit var pagerAdapter: PagerAdapter
+    private lateinit var viewModel: OrganisationListViewModel
+    
+    override fun supportFragmentInjector() = fragmentInjector
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -165,7 +167,7 @@ class OrganisationListActivity : AppCompatActivity(),
         
         
         // Delete the member record
-        irisService.destroyMember(member.id, organisation.id).enqueue(ApiCallback({ res ->
+        irisService.destroyMember(member.id, organisation.id).enqueue(ApiCallback { res ->
             if (res.success) {
                 Snackbar.make(main_content,
                     R.string.success_undonate,
@@ -179,13 +181,7 @@ class OrganisationListActivity : AppCompatActivity(),
                     Snackbar.LENGTH_LONG
                 ).show()
             }
-        }, { _ ->
-            Snackbar.make(
-                main_content,
-                R.string.error_undonate,
-                Snackbar.LENGTH_LONG
-            ).show()
-        }))
+        })
     }
     
     inner class PagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {

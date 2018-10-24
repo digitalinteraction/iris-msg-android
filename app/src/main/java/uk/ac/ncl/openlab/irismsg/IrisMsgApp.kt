@@ -27,7 +27,7 @@ import com.crashlytics.android.Crashlytics
 class IrisMsgApp : Application(), HasActivityInjector, HasBroadcastReceiverInjector, HasServiceInjector {
     
     @Inject lateinit var activityInjector: DispatchingAndroidInjector<Activity>
-    @Inject lateinit var receiverinjector: DispatchingAndroidInjector<BroadcastReceiver>
+    @Inject lateinit var receiverInjector: DispatchingAndroidInjector<BroadcastReceiver>
     @Inject lateinit var serviceInjector: DispatchingAndroidInjector<Service>
     
     @Inject lateinit var irisService: IrisMsgService
@@ -37,28 +37,29 @@ class IrisMsgApp : Application(), HasActivityInjector, HasBroadcastReceiverInjec
     override fun onCreate() {
         super.onCreate()
         
+        // Init Dagger with outself
         AppInjector.init(this)
         
+        // Setup the app
         updateFcm()
         registerNotificationChannels()
         setupCrashlytics()
     }
     
-    
+    /** Send the user's fmc token to the server */
     fun updateFcm () {
         jwtService.current ?: return
         
         FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
             Log.d("fcm", it.token)
-            irisService.updateFcm(UpdateFcmRequest(it.token)).enqueue(ApiCallback({ _ ->
-                Log.d("fcm", "Token updated")
-            }, { e ->
-                Crashlytics.logException(e)
-            }))
+            irisService.updateFcm(UpdateFcmRequest(it.token)).enqueue(ApiCallback { res ->
+                if (res.success) Log.d("fcm", "Token updated")
+                else Crashlytics.log(Log.ERROR, "SmsSentReceiver", res.messages.joinToString())
+            })
         }
     }
     
-    
+    /** Register our notification channel, if supported */
     private fun registerNotificationChannels () {
     
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
@@ -75,6 +76,7 @@ class IrisMsgApp : Application(), HasActivityInjector, HasBroadcastReceiverInjec
                 .createNotificationChannel(channel)
     }
     
+    /** Setup our error handling */
     private fun setupCrashlytics () {
         val fabric = Fabric.Builder(this)
                 .kits(Crashlytics())
@@ -84,6 +86,6 @@ class IrisMsgApp : Application(), HasActivityInjector, HasBroadcastReceiverInjec
     }
     
     override fun activityInjector () = activityInjector
-    override fun broadcastReceiverInjector () = receiverinjector
+    override fun broadcastReceiverInjector () = receiverInjector
     override fun serviceInjector () = serviceInjector
 }

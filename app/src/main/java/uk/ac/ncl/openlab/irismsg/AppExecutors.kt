@@ -12,6 +12,8 @@ import javax.inject.Singleton
  *
  * Grouping tasks like this avoids the effects of task starvation (e.g. disk reads don't wait behind
  * webservice requests).
+ *
+ * Provides easy access to run code on different thread by @Inject-ing this onto your object
  */
 @Singleton
 open class AppExecutors(

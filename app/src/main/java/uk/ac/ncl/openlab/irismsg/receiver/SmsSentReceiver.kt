@@ -41,15 +41,13 @@ class SmsSentReceiver : DaggerBroadcastReceiver() {
         // Perform the api request
         val update = MessageAttemptUpdate(attemptId, newState)
         val body = UpdateMessageAttemptsRequest(listOf(update))
-        irisService.updateMessageAttempts(body).enqueue(ApiCallback({ res ->
+        irisService.updateMessageAttempts(body).enqueue(ApiCallback { res ->
             if (res.success) {
                 events.emit(DonateActivity.EVENT_SMS_SENT)
             } else {
                 Crashlytics.log(Log.ERROR, "SmsSentReceiver", res.messages.joinToString())
             }
-        }, { e ->
-            Crashlytics.logException(e)
-        }))
+        })
         
     }
     

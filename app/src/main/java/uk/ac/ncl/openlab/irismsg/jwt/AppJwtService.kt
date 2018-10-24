@@ -5,7 +5,7 @@ import android.content.Context
 import com.auth0.android.jwt.JWT
 
 /**
- * A JwtService which pulls from an App's SharedPreferences
+ * A JwtService which pulls from an App's SharedPreferences, designed to be @Injected'd in
  */
 class AppJwtService (val app: Application) : JwtService {
     

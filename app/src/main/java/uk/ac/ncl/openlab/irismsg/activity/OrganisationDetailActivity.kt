@@ -5,19 +5,15 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.DialogInterface
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.*
 import android.widget.EditText
-import android.widget.LinearLayout
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -31,7 +27,6 @@ import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.common.EventBus
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.common.ViewsUtil
-import uk.ac.ncl.openlab.irismsg.model.OrganisationMemberEntity
 import uk.ac.ncl.openlab.irismsg.repo.OrganisationRepository
 import uk.ac.ncl.openlab.irismsg.ui.MemberListFragment
 import uk.ac.ncl.openlab.irismsg.ui.SendMessageFragment
@@ -42,23 +37,24 @@ import javax.inject.Inject
 
 /**
  * An Activity to show an Organisation in detail
+ *
+ * Parent: OrganisationListActivity
  */
 class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInjector, MemberListFragment.Listener, SendMessageFragment.Listener {
     
-    // Dagger injection point
-    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    override fun supportFragmentInjector() = dispatchingAndroidInjector
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var irisService: IrisMsgService
+    @Inject lateinit var orgRepo: OrganisationRepository
+    @Inject lateinit var viewsUtil : ViewsUtil
+    @Inject lateinit var events: EventBus
     
     private lateinit var orgViewModel: OrganisationViewModel
     private lateinit var membersViewModel: OrganisationMembersViewModel
     private lateinit var organisationId: String
     private lateinit var pagerAdapter : PagerAdapter
     
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-    @Inject lateinit var irisService: IrisMsgService
-    @Inject lateinit var orgRepo: OrganisationRepository
-    @Inject lateinit var viewsUtil : ViewsUtil
-    @Inject lateinit var events: EventBus
+    override fun supportFragmentInjector() = fragmentInjector
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -173,7 +169,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     private fun performDeleteOrganisation () {
     
         // Destroy the organisation
-        irisService.destroyOrganisation(organisationId).enqueue(ApiCallback({ res ->
+        irisService.destroyOrganisation(organisationId).enqueue(ApiCallback { res ->
             if (res.success) {
                 
                 // Update the cache and finish
@@ -189,19 +185,13 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                     Snackbar.LENGTH_LONG
                 ).show()
             }
-        }, { _ ->
-            Snackbar.make(
-                main_content,
-                R.string.err_orgs_destroy,
-                Snackbar.LENGTH_LONG
-            ).show()
-        }))
+        })
     }
     
     private fun performDeleteMember (memberId: String) {
         
         // Perform the request
-        irisService.destroyMember(memberId, organisationId).enqueue(ApiCallback({ res ->
+        irisService.destroyMember(memberId, organisationId).enqueue(ApiCallback { res ->
             if (res.success) {
                 
                 // Update the organisation ViewModel
@@ -232,13 +222,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                     Snackbar.LENGTH_LONG
                 ).show()
             }
-        }, { _ ->
-            Snackbar.make(
-                main_content,
-                R.string.err_members_destroy,
-                Snackbar.LENGTH_LONG
-            ).show()
-        }))
+        })
     }
     
     override fun onSendMessage (message: String) {
@@ -248,7 +232,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         fab.isEnabled = false
         
         val body = CreateMessageRequest(message, organisationId)
-        irisService.createMessage(body).enqueue(ApiCallback({ res ->
+        irisService.createMessage(body).enqueue(ApiCallback { res ->
             fab.isEnabled = true
             
             if (res.success) {
@@ -264,15 +248,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 },
                 Snackbar.LENGTH_LONG
             ).show()
-        }, { _ ->
-            fab.isEnabled = true
-            
-            Snackbar.make(
-                main_content,
-                R.string.err_messages_create,
-                Snackbar.LENGTH_LONG
-            ).show()
-        }))
+        })
     }
     
     private fun onAddMember (role: MemberRole) {
@@ -337,7 +313,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         
         // Make the request
         val body = CreateMemberRequest(role, phoneNumber, countryCode)
-        irisService.createMember(organisationId, body).enqueue(ApiCallback({ res ->
+        irisService.createMember(organisationId, body).enqueue(ApiCallback { res ->
             if (res.success && res.data != null) {
                 
                 // Let the user know it was successful
@@ -362,13 +338,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                     Snackbar.LENGTH_LONG
                 ).show()
             }
-        }, { _ ->
-            Snackbar.make(
-                main_content,
-                R.string.err_members_create,
-                Snackbar.LENGTH_LONG
-            ).show()
-        }))
+        })
     }
     
     companion object {
@@ -405,10 +375,8 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         }
         
         companion object {
-            /** The fragment argument representing the section number for this fragment. */
             private const val ARG_SECTION_NUMBER = "section_number"
             
-            /** Returns a new instance of this fragment for the given section number. */
             fun newInstance(sectionNumber : Int) : PlaceholderFragment {
                 val fragment = PlaceholderFragment()
                 val args = Bundle()

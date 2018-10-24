@@ -15,7 +15,7 @@ class OrganisationListViewModel
     lateinit var organisations: MutableLiveData<List<OrganisationEntity>>
         private set
     
-    // Initialize ourself (we don't control the constructor)
+    /** Initialize ourself (we don't control the constructor) */
     fun init () : OrganisationListViewModel {
         if (!::organisations.isInitialized) {
             organisations = orgRepo.getOrganisations()
@@ -23,12 +23,12 @@ class OrganisationListViewModel
         return this
     }
     
-    // Force a reload of the organisations
+    /** Force a reload of the organisations */
     fun reload () {
         orgRepo.reloadOrganisations(organisations)
     }
     
-    // Reload the organisations from the cache
+    /** Reload the organisations from the cache */
     fun reloadFromCache () {
         orgRepo.reloadOrganisationsFromCache(organisations)
     }

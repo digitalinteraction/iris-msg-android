@@ -21,7 +21,7 @@
 
 
     <!-- Empty Main Activity -->
-    <string name="body_no_network">We cannot connect to IrisMsg right now, please check your network connection and try again.</string>
+    <string name="body_no_network">We cannot connect to Iris Msg right now, please check your network connection and try again.</string>
     <string name="action_retry_network">Try again</string>
 
 

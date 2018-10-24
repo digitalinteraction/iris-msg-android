@@ -4,12 +4,15 @@ import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.common.MessageAttemptState
 
 
-class MessageAttemptUpdate(
+/**
+ * A set of data classes to easily construct and pass as request bodies to the api
+ */
+
+
+data class MessageAttemptUpdate(
     val attempt: String,
     val newState: MessageAttemptState
 )
-
-
 
 data class RequestLoginRequest(
     val phoneNumber: String,

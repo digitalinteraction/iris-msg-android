@@ -12,7 +12,7 @@ import java.io.IOException
 import java.lang.IllegalStateException
 import javax.inject.Inject
 
-const val NETWORK_DELAY = 1000.toLong()
+const val NETWORK_DELAY = 500.toLong()
 
 class MockTemporalCall <T> @Inject constructor(val value: T) : Call<T>, Injectable {
     

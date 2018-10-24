@@ -18,16 +18,17 @@ import uk.ac.ncl.openlab.irismsg.common.PermissionsManager
 import javax.inject.Inject
 
 /**
- * An Activity to onboard the user into the app
+ * An Activity to onboard the user into the app then proceed to login
+ * Also manages app permissions, requesting them from the user
  */
 class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
     
-    // Dagger injection point
-    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    override fun supportFragmentInjector() = dispatchingAndroidInjector
-    
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var perms: PermissionsManager
-    private var mSectionsPagerAdapter : SectionsPagerAdapter? = null
+    
+    private var pagerAdapter : SectionsPagerAdapter? = null
+    
+    override fun supportFragmentInjector() = fragmentInjector
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +38,8 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
         setSupportActionBar(toolbar)
         
         // Create an adapter to serve the pages
-        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
-        tabs_pager.adapter = mSectionsPagerAdapter
+        pagerAdapter = SectionsPagerAdapter(supportFragmentManager)
+        tabs_pager.adapter = pagerAdapter
         tabs_pager.pageMargin = 42
         
         // Listen for login clicks
@@ -54,18 +55,20 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
     
     override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>, grantResults : IntArray) {
-        
+        requestCode: Int, permissions: Array<out String>, grantResults : IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         
         if (requestCode != PERMS_REQUEST_CODE) return
         
+        // Use our util to check the permissions match
         val hasPermission = perms.checkResult(
             perms.defaultPermissions,
             permissions,
             grantResults
         )
         
+        // Proceed to login if we have permission, show a message if not
         if (hasPermission) {
             startActivityForResult(
                 Intent(this, LoginActivity::class.java),
@@ -133,9 +136,7 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
         override fun getCount() = 5
     }
     
-    /**
-     * A placeholder fragment containing a simple view.
-     */
+    /** A fragment containing a slide & message */
     class SlideFragment : Fragment() {
         
         override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
@@ -150,18 +151,9 @@ class OnboardActivity : AppCompatActivity(), HasSupportFragmentInjector {
         }
         
         companion object {
-            /**
-             * The fragment argument representing the section number for this
-             * fragment.
-             */
             private const val ARG_MESSAGE = "body"
-    
             private const val ARG_IMAGE = "asset"
             
-            /**
-             * Returns a new instance of this fragment for the given section
-             * number.
-             */
             fun newInstance(message: Int, image: Int) : SlideFragment {
                 val fragment = SlideFragment()
                 val args = Bundle()

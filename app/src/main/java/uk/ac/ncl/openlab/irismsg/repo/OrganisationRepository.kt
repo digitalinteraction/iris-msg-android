@@ -2,7 +2,6 @@ package uk.ac.ncl.openlab.irismsg.repo
 
 import android.app.Application
 import android.arch.lifecycle.MutableLiveData
-import android.widget.Toast
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.model.OrganisationEntity
@@ -26,17 +25,10 @@ class OrganisationRepository @Inject constructor(val irisService: IrisMsgService
     private fun loadOrgsInto (target: MutableLiveData<OrgList>) : MutableLiveData<OrgList> {
         
         // Fetch organisations, put it into the live data & cache them
-        irisService.listOrganisations().enqueue(ApiCallback({ res ->
+        irisService.listOrganisations().enqueue(ApiCallback { res ->
             target.value = res.data
             orgsCache = res.data?.toMutableList() ?: mutableListOf()
-        }, { _ ->
-            target.value = null
-            Toast.makeText(
-                application.applicationContext,
-                "Failed to fetch organisations, please try again",
-                Toast.LENGTH_LONG
-            ).show()
-        }))
+        })
         
         return target
     }
@@ -45,35 +37,21 @@ class OrganisationRepository @Inject constructor(val irisService: IrisMsgService
     private fun loadSingleOrgInto (target: MutableLiveData<OrganisationEntity>, id: String) {
         
         // Fetch the organisation, put it into the live data and cache it
-        irisService.showOrganisation(id).enqueue(ApiCallback({ res ->
+        irisService.showOrganisation(id).enqueue(ApiCallback { res ->
             target.value = res.data
             if (res.data != null) {
                 orgsCache.removeAll { it.id == id }
                 orgsCache.add(res.data)
             }
-        }, { _ ->
-            target.value = null
-            Toast.makeText(
-                application.applicationContext,
-                "Failed to fetch organisation, please try again",
-                Toast.LENGTH_LONG
-            ).show()
-        }))
+        })
     }
     
     /** Load an Organisation's members into a LiveData using the api */
     private fun loadMembersInto (target: MutableLiveData<OrgMemberList>, id: String) {
         
-        irisService.listOrganisationMembers(id).enqueue(ApiCallback({ res ->
+        irisService.listOrganisationMembers(id).enqueue(ApiCallback { res ->
             target.value = res.data
-        }, { _ ->
-            target.value = null
-            Toast.makeText(
-                application.applicationContext,
-                "Failed to fetch members, please try again",
-                Toast.LENGTH_LONG
-            ).show()
-        }))
+        })
     }
     
     /** Fetch all organisations the user has access to and place into a LiveData */

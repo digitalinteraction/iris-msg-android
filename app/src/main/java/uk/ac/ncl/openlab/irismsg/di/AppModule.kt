@@ -23,8 +23,8 @@ enum class AppMode {
     LIVE, MOCK
 }
 
-private val currentMode: AppMode = AppMode.MOCK
-//private val currentMode: AppMode = AppMode.LIVE
+//private val currentMode: AppMode = AppMode.MOCK
+private val currentMode: AppMode = AppMode.LIVE
 
 /**
  * A Dagger Module to provide custom types
@@ -39,7 +39,7 @@ class AppModule {
     fun provideMoshi () : Moshi {
         return Moshi.Builder()
                 .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
-                .add(MemberRole::class.java, EnumJsonAdapter {MemberRole.valueOf(it) })
+                .add(MemberRole::class.java, EnumJsonAdapter { MemberRole.valueOf(it) })
                 .add(MessageAttemptState::class.java, EnumJsonAdapter { MessageAttemptState.valueOf(it) })
                 .add(KotlinJsonAdapterFactory())
                 .build()

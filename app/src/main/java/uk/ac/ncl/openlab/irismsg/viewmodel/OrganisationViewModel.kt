@@ -22,8 +22,7 @@ class OrganisationViewModel
     
     lateinit var members: LiveData<MutableList<MemberEntity>>
     
-    /** Initialize ourself with the id of the Organisation we represent
-        NOTE - we don't control the constructor */
+    /** Initialize ourself (we don't control the constructor) */
     fun init (id: String) : OrganisationViewModel {
         if (!::organisation.isInitialized) {
             organisationId = id
@@ -32,6 +31,4 @@ class OrganisationViewModel
         }
         return this
     }
-    
-    
 }

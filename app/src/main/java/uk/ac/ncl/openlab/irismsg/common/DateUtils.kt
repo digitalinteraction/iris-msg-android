@@ -2,6 +2,9 @@ package uk.ac.ncl.openlab.irismsg.common
 
 import java.util.*
 
+/**
+ * Provides a method to format a time as '5y 7d 31m'
+ */
 class DateUtils {
     companion object {
     
@@ -12,6 +15,7 @@ class DateUtils {
         private const val MILLI_IN_WEEK: Long =   MILLI_IN_DAY * 7
         private val MILLI_IN_YEAR: Long =         Math.round(MILLI_IN_WEEK * 365.25)
         
+        // Add a unit to the string if it is non-zero
         private fun addUnit (
             time: Long,
             unit: Long,

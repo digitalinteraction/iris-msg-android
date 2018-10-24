@@ -15,6 +15,9 @@ import uk.ac.ncl.openlab.irismsg.common.EventBus
 import uk.ac.ncl.openlab.irismsg.di.Injectable
 import javax.inject.Inject
 
+/**
+ * A Fragment to compose and send a message to an Organisation
+ */
 class SendMessageFragment : Fragment(), Injectable {
     
     private var listener: Listener? = null

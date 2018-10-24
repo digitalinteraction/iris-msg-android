@@ -5,7 +5,7 @@ import uk.ac.ncl.openlab.irismsg.common.ApiCall
 import uk.ac.ncl.openlab.irismsg.model.*
 
 /**
- * An interface for talking to the IrisMsg service, annotated for Retrofit
+ * An interface for talking to the Iris Msg backend, annotated for Retrofit
  */
 interface IrisMsgService {
     

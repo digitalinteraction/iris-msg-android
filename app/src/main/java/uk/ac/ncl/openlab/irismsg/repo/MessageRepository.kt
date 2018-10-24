@@ -2,7 +2,6 @@ package uk.ac.ncl.openlab.irismsg.repo
 
 import android.app.Application
 import android.arch.lifecycle.MutableLiveData
-import android.widget.Toast
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
 import uk.ac.ncl.openlab.irismsg.api.IrisMsgService
 import uk.ac.ncl.openlab.irismsg.model.PendingMessageEntity
@@ -23,16 +22,9 @@ class MessageRepository @Inject constructor(val irisService: IrisMsgService, val
         target: MutableLiveData<PendingMsgList>) : MutableLiveData<PendingMsgList> {
         
         // Perform the request
-        irisService.listPendingMessages().enqueue(ApiCallback({ res ->
+        irisService.listPendingMessages().enqueue(ApiCallback { res ->
             target.value = res.data
-        }, { _ ->
-            target.value = null
-            Toast.makeText(
-                application.applicationContext,
-                "Cannot fetch donations, please try again",
-                Toast.LENGTH_LONG
-            ).show()
-        }))
+        })
         
         return target
     }
