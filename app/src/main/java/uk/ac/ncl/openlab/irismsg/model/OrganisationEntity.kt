@@ -12,8 +12,8 @@ data class OrganisationEntity(
     @Json(name = "updatedAt") override val updatedAt: Date,
     @Json(name = "name") var name: String,
     @Json(name = "info") var info: String,
-    @Json(name = "locale") var locale: String,
-    @Json(name = "members") val members: MutableList<MemberEntity>
+    @Json(name = "members") val members: MutableList<MemberEntity>,
+    @Json(name = "locale") var locale: String = "en"
 ) : ApiEntity {
     
     val shortInfo: String
