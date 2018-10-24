@@ -64,7 +64,7 @@ viewmodel | ViewModels for accessing api data
 
 #### Mock api
 
-The api can be swapped for a fake implementation for development, see [AppModule](/Users/rob/Developer/lab/iris-msg/app/src/main/java/uk/ac/ncl/openlab/irismsg/di/AppModule.kt)
+The api can be swapped for a fake implementation for development, see [AppModule](/app/src/main/java/uk/ac/ncl/openlab/irismsg/di/AppModule.kt)
 
 #### View Transitions
 
