@@ -9,6 +9,7 @@ import dagger.Provides
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import uk.ac.ncl.openlab.irismsg.BuildConfig
 import uk.ac.ncl.openlab.irismsg.api.*
 import uk.ac.ncl.openlab.irismsg.common.MemberRole
 import uk.ac.ncl.openlab.irismsg.common.MessageAttemptState
@@ -53,7 +54,7 @@ class AppModule {
                 .build()
         
         return Retrofit.Builder()
-                .baseUrl("https://api.dev.irismsg.io")
+                .baseUrl(BuildConfig.SERVER_URL)
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .client(httpClient)
                 .build()

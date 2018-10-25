@@ -37,7 +37,7 @@ class IrisMsgApp : Application(), HasActivityInjector, HasBroadcastReceiverInjec
     override fun onCreate() {
         super.onCreate()
         
-        // Init Dagger with outself
+        // Init Dagger with ourself
         AppInjector.init(this)
         
         // Setup the app

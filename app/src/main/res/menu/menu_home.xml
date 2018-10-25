@@ -17,6 +17,10 @@
         android:title="@string/action_open_lab"
         app:showAsAction="never" />
 
+    <item android:id="@+id/action_app_info"
+        android:title="@string/action_app_info"
+        app:showAsAction="never" />
+
     <item android:id="@+id/action_logout"
         android:title="@string/action_logout"
         app:showAsAction="never" />

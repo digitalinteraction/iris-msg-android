@@ -17,6 +17,7 @@ import android.view.MenuItem
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_organisation_list.*
+import uk.ac.ncl.openlab.irismsg.BuildConfig
 import uk.ac.ncl.openlab.irismsg.ui.OrganisationListFragment
 import uk.ac.ncl.openlab.irismsg.R
 import uk.ac.ncl.openlab.irismsg.api.ApiCallback
@@ -92,6 +93,24 @@ class OrganisationListActivity : AppCompatActivity(),
     }
     
     override fun onOptionsItemSelected(item : MenuItem) : Boolean {
+        
+        if (item.itemId == R.id.action_app_info) {
+            val message = "" +
+                    "Iris Msg: " + BuildConfig.VERSION_NAME + "\n\n" +
+                    "Server: " + BuildConfig.SERVER_URL + "\n" +
+                    "Build: " + BuildConfig.BUILD_TYPE + "\n" +
+                    "Package: " + BuildConfig.APPLICATION_ID
+            
+            val alert = AlertDialog.Builder(this)
+                    .setTitle("App Information")
+                    .setPositiveButton("Close") { _, _ -> }
+                    .setMessage(message)
+                    .create()
+            
+            alert.show()
+            
+            return true
+        }
         
         // Create an intent based on the id
         val intent = when (item.itemId) {

@@ -8,8 +8,9 @@
 
 
     <!-- Menu Actions -->
-    <string name="action_even_more">More Info</string>
+    <string name="action_even_more">About Iris Msg</string>
     <string name="action_open_lab">About Open Lab</string>
+    <string name="action_app_info">App Info</string>
     <string name="action_logout">Log out</string>
     <string name="action_login">Get started!</string>
     <string name="action_delete_organisation">Delete organisation</string>
