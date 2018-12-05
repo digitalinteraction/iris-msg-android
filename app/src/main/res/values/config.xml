@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="api_mode">mock</string>
+    <string name="api_mode" translatable="false">mock</string>
 </resources>
