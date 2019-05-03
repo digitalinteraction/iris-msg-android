@@ -8,8 +8,8 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "uk.ac.ncl.openlab.iris_msg"
-        versionCode 3
-        versionName "1.0-beta.3"
+        versionCode 4
+        versionName "1.0-beta.4"
 
         minSdkVersion 16
         targetSdkVersion 27
