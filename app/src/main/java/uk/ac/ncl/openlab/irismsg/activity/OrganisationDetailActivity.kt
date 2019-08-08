@@ -3,6 +3,7 @@ package uk.ac.ncl.openlab.irismsg.activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.content.ContentResolver
 import android.content.DialogInterface
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -34,6 +35,12 @@ import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationMembersViewModel
 import uk.ac.ncl.openlab.irismsg.viewmodel.OrganisationViewModel
 import java.util.*
 import javax.inject.Inject
+import android.provider.ContactsContract
+import android.content.Intent
+import android.database.Cursor
+import android.net.Uri
+import android.util.Log
+
 
 /**
  * An Activity to show an Organisation in detail
@@ -103,7 +110,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 viewsUtil.unFocus(currentFocus)
                 when (tab.position) {
                     0 -> fab.hide()
-                    1 -> fab.show()
+                    else -> fab.show()
                 }
             }
     
@@ -113,10 +120,9 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         })
     
     
-        // Setup fab
-        fab.setOnClickListener { _ ->
+        // Listen to fab clicks
+        fab.setOnClickListener {
             when (tabs_pager.currentItem) {
-//                0 -> onSendMessage()
                 1 -> onAddMember(MemberRole.DONOR)
                 2 -> onAddMember(MemberRole.SUBSCRIBER)
             }
@@ -227,19 +233,29 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     
     override fun onSendMessage (message: String) {
         if (message == "") return
-        
+
+        // Unfocus whatever is focussed
         viewsUtil.unFocus(currentFocus)
         fab.isEnabled = false
-        
+
+        // Tell the fragment to disable the submit button
+        events.emit(SendMessageFragment.EVENT_TOGGLE_SUBMIT, false)
+
+        // Make the API request to send the message
         val body = CreateMessageRequest(message, organisationId)
         irisService.createMessage(body).enqueue(ApiCallback { res ->
             fab.isEnabled = true
-            
+
+            // Reset the state on success
             if (res.success) {
                 events.emit(SendMessageFragment.EVENT_RESET)
                 viewsUtil.unFocus(currentFocus)
             }
-            
+
+            // Tell the fragment to un disable the submit field
+            events.emit(SendMessageFragment.EVENT_TOGGLE_SUBMIT, true)
+
+            // Use a snackbar to tell the user what happened
             Snackbar.make(
                 main_content,
                 when (res.success) {
@@ -255,13 +271,38 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         orgViewModel.organisation.value ?: return
         
         val title = getString(R.string.title_add_member, role.humanized.toLowerCase())
-        
+
+        val options = arrayOf(
+                getString(R.string.action_add_from_contacts),
+                getString(R.string.action_add_manually)
+        )
+
+        // Create a dialog to pick how they want to add a member
+        val dialog = AlertDialog.Builder(this)
+                .setTitle(title)
+                .setItems(options) { dialog, which ->
+                    when(which) {
+                        0 -> addMemberFromContacts(role)
+                        1 -> addMemberManually(role)
+                    }
+                }
+                .setNegativeButton(R.string.action_cancel, null)
+                .create()
+
+        // Show the dialog
+        dialog.show()
+    }
+
+    private fun addMemberManually(role: MemberRole) {
+
+        val title = getString(R.string.title_add_member, role.humanized.toLowerCase())
+
         val message = when (role) {
             MemberRole.SUBSCRIBER -> getString(R.string.body_add_subscriber)
             else -> getString(R.string.body_add_donor)
         }
-        
-        // Create a dialog to add the member
+
+        // Create a dialog to add the member via a number/label form
         val dialog = AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
@@ -269,21 +310,42 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 .setPositiveButton(R.string.action_confirm, null)
                 .setNegativeButton(R.string.action_cancel, null)
                 .create()
-        
+
         // Show the dialog
         dialog.show()
-    
+
         // Override the click handler to perform validation
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
             attemptAddMember(role, dialog)
         }
     }
+
+    private fun addMemberFromContacts(role: MemberRole) {
+
+        // Pick the type of request depending on the role passed
+        val request = when (role) {
+            MemberRole.DONOR -> REQUEST_DONOR_FROM_CONTACTS
+            MemberRole.SUBSCRIBER -> REQUEST_SUB_FROM_CONTACTS
+            else -> return
+        }
+
+        // Create an intent to pick a phone number
+        val intent = Intent(Intent.ACTION_PICK).apply {
+            type = ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE
+        }
+
+        // Start the intent if we are allowed
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivityForResult(intent, request)
+        }
+
+    }
     
     private fun attemptAddMember (role: MemberRole, dialog: AlertDialog) {
         
         // Grab the text field & entered value
-        val field = dialog.findViewById<EditText>(R.id.phone_number)!!
-        val phoneNumberStr = field.text.toString()
+        val numberField = dialog.findViewById<EditText>(R.id.phone_number)!!
+        val phoneNumberStr = numberField .text.toString()
     
         // Parse the phone number, using the phone's current local as a base
         val util = PhoneNumberUtil.getInstance()
@@ -291,16 +353,20 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         
         // Show an error and stop if the number is invalid
         if (!util.isValidNumber(number)) {
-            field.error = getString(R.string.error_invalid_phone_number)
+            numberField .error = getString(R.string.error_invalid_phone_number)
             return
         }
+
+        // Get the value of the label field
+        val labelField = dialog.findViewById<EditText>(R.id.member_label)!!
+        val memberLabel = labelField.text.toString()
         
         // Perform the request
         performAddMember(
             role,
-            number.nationalNumber.toString(),
+            util.format(number, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL),
             util.getRegionCodeForNumber(number),
-            util.format(number, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL)
+            memberLabel
         )
         
         // Dismiss the dialog
@@ -308,11 +374,11 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
     }
     
     private fun performAddMember (
-        role: MemberRole, phoneNumber: String, countryCode: String, formatted: String
+        role: MemberRole, phoneNumber: String, countryCode: String, label: String = ""
     ) {
         
         // Make the request
-        val body = CreateMemberRequest(role, phoneNumber, countryCode)
+        val body = CreateMemberRequest(role, phoneNumber, countryCode, label)
         irisService.createMember(organisationId, body).enqueue(ApiCallback { res ->
             if (res.success && res.data != null) {
                 
@@ -341,8 +407,78 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         })
     }
     
+    private fun handleContactPicked(contactUri: Uri, role: MemberRole) {
+        // Pick which contact fields we want returned
+        val projection = arrayOf(
+            ContactsContract.CommonDataKinds.Phone.NUMBER,
+            ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER,
+            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
+        )
+
+        // Create a query of the contacts database, using our special contactUri
+        // The uri has special permission to access the contact without Permissions.READ_CONTACTS
+        val cursor = contentResolver.query(contactUri, projection, null, null, null)
+        try {
+            cursor.moveToFirst()
+
+            // Read the normalized phone numer (if there is one)
+            var rawNumber = cursor.getString(
+                cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER)
+            )
+
+            // Read the fallback number if there wasn't a normalized one
+            if (rawNumber == null) {
+                rawNumber = cursor.getString(
+                    cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                )
+            }
+
+            // Parse the phone number
+            val util = PhoneNumberUtil.getInstance()
+            val number = util.parse(rawNumber, Locale.getDefault().country)
+    
+            // Show an error and stop if the number is invalid
+            if (!util.isValidNumber(number)) {
+                return Snackbar.make(
+                    findViewById<View>(R.id.main_content),
+                    R.string.error_invalid_phone_number,
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
+
+            // Read the contact's name
+            val name = cursor.getString(
+                cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+            )
+    
+            // Perform the API request to add the member
+            performAddMember(
+                role,
+                util.format(number, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL),
+                util.getRegionCodeForNumber(number),
+                name
+            )
+        } catch (error: Error) {
+        
+        } finally {
+            cursor?.close()
+        }
+    }
+    
+    override fun onActivityResult(requestCode : Int, resultCode : Int, data : Intent?) {
+        if (resultCode != RESULT_OK || data == null) return
+
+        // Handle the contact and pass the correct role based on the request code
+        when (requestCode) {
+            REQUEST_DONOR_FROM_CONTACTS  -> handleContactPicked(data.data, MemberRole.DONOR)
+            REQUEST_SUB_FROM_CONTACTS -> handleContactPicked(data.data, MemberRole.SUBSCRIBER)
+        }
+    }
+    
     companion object {
         const val ARG_ORGANISATION_ID = "organisation_id"
+        const val REQUEST_DONOR_FROM_CONTACTS = 1
+        const val REQUEST_SUB_FROM_CONTACTS = 2
     }
     
     inner class PagerAdapter(fm : FragmentManager) : FragmentPagerAdapter(fm) {

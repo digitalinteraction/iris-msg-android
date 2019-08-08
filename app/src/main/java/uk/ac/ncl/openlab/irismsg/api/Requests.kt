@@ -35,7 +35,8 @@ data class CreateOrganisationRequest(
 data class CreateMemberRequest(
     val role: MemberRole,
     val phoneNumber: String,
-    val countryCode: String
+    val countryCode: String,
+    val label: String
 )
 
 data class CreateMessageRequest(

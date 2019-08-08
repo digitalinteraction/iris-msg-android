@@ -31,6 +31,7 @@
     <string name="prompt_phone_number">Αριθμός Τηλεφώνου</string>
     <string name="prompt_country_code">Κωδικός Χώρας</string>
     <string name="prompt_verification_code">Κωδικός Επαλήθευσης</string>
+    <string name="prompt_member_label">Φιλικό όνομα</string>
     <string name="action_login_request">Πάμε!</string>
     <string name="action_login_check">Υποβολή</string>
     <string name="error_invalid_phone_number">Αυτός ο αριθμός τηλεφώνου δεν είναι έγκυρος</string>
@@ -69,6 +70,15 @@
     <string name="error_undonate">Αποτυχία διακοπής της δωρεάς σας, δοκιμάστε ξανά</string>
     <string name="success_undonate">Η δωρεά σας έχει διακοπεί</string>
 
+    <string name="title_new_app_update">Υπάρχει διαθέσιμη ενημέρωση</string>
+    <string name="body_new_app_update">Ενημερώστε τώρα για να λάβετε τις πιο πρόσφατες δυνατότητες και διορθώσεις</string>
+    <string name="action_update_app">Εκσυγχρονίζω</string>
+    <string name="action_skip_update">Οχι τώρα</string>
+    <string name="action_check_for_update">Ελεγχος για ενημερώσεις</string>
+    <string name="title_app_info">Πληροφορίες εφαρμογής</string>
+
+    <string name="title_no_update">Τελευταία έκδοση</string>
+    <string name="body_no_update">Βρίσκεστε στην πιο πρόσφατη έκδοση</string>
 
     <!-- Add Organisation -->
     <string name="title_activity_add_organisation">Δημιουργία Οργάνωσης</string>
@@ -100,6 +110,8 @@
     <string name="action_confirm">OK</string>
     <string name="action_cancel">Ακύρωση</string>
     <string name="action_send">Αποστολή</string>
+    <string name="action_add_from_contacts">Από τις επαφές</string>
+    <string name="action_add_manually">Εισάγετε αριθμό</string>
 
     <string name="prompt_message">Μήνυμα</string>
     <string name="body_send_message_bottom">
@@ -110,7 +122,8 @@
     <string name="message_char_count">%1$d/%2$d</string>
     <string name="message_sent">Το μήνυμα στάλθηκε!</string>
 
-    <string name="body_member_phone_number_self">%1$s (εγώ)</string>
+    <string name="body_member_phone_number_self">(εσύ)</string>
+    <string name="body_member_list_format">%1$s – %2$s</string>
 
     <string name="body_donors_description">Αυτοί είναι οι δωρητές σας, επιλέγουν να δωρίσουν τα SMS τους για να προωθήσουν τα μηνύματά σας.</string>
     <string name="body_subscribers_description">Αυτοί είναι οι συνδρομητές σας που λαμβάνουν τα μηνύματα που αποστέλλετε σε αυτόν τον οργανισμό.</string>

@@ -98,7 +98,7 @@ class OrganisationListFragment : Fragment(), Injectable {
             }
             
             // Filter the organisations based on our memberRole
-            adapter.organisations = orgs.filter { it.primaryMembership(userId)?.role == memberRole }
+            adapter.organisations = orgs.filter { it.isMember(userId, memberRole) }
             enterState(
                 if (adapter.organisations.isEmpty()) State.NO_RESULTS
                 else State.SHOWING
@@ -108,7 +108,7 @@ class OrganisationListFragment : Fragment(), Injectable {
     
     override fun onResume() {
         super.onResume()
-        
+
         viewModel.reloadFromCache()
     }
     
@@ -153,13 +153,17 @@ class OrganisationListFragment : Fragment(), Injectable {
         : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
         
         private val onClickListener: View.OnClickListener
+        private val onLongClickListener: View.OnLongClickListener
         
         var organisations: List<OrganisationEntity> = listOf()
             set (newValue) { field = newValue; notifyDataSetChanged() }
         
         init {
             onClickListener = View.OnClickListener { view ->
-                listener?.onOrganisationSelected(view.tag as OrganisationEntity)
+                listener?.onOrganisationSelected(view.tag as OrganisationEntity, memberRole)
+            }
+            onLongClickListener = View.OnLongClickListener { view ->
+                listener?.onOrganisationHeld(view.tag as OrganisationEntity, memberRole) ?: false
             }
         }
     
@@ -180,6 +184,7 @@ class OrganisationListFragment : Fragment(), Injectable {
                 }
                 holder.view.tag = org
                 holder.view.setOnClickListener(onClickListener)
+                holder.view.setOnLongClickListener(onLongClickListener)
             }
         }
         
@@ -191,7 +196,8 @@ class OrganisationListFragment : Fragment(), Injectable {
     }
     
     interface Listener {
-        fun onOrganisationSelected(organisation: OrganisationEntity)
+        fun onOrganisationSelected(organisation: OrganisationEntity, asRole: MemberRole)
+        fun onOrganisationHeld(organisation: OrganisationEntity, asRole: MemberRole): Boolean
     }
     
     private enum class State {
