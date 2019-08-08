@@ -153,12 +153,12 @@ class MemberListFragment : Fragment(), Injectable {
         
         override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
             members[pos].let { member ->
+                holder.phoneNumberView.text = member.phoneNumber
+
                 if (member.userId == UserEntity.current?.id) {
-                    holder.phoneNumberView.text = getString(
-                        R.string.body_member_phone_number_self, member.phoneNumber
-                    )
+                    holder.memberLabelView.text = getString(R.string.body_member_phone_number_self)
                 } else {
-                    holder.phoneNumberView.text = member.phoneNumber
+                    holder.memberLabelView.text = member.label
                 }
                 
                 holder.deleteButton.tag = member
@@ -168,6 +168,7 @@ class MemberListFragment : Fragment(), Injectable {
     
         inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             val phoneNumberView: TextView = view.phone_number
+            val memberLabelView: TextView = view.member_label
             val deleteButton: Button = view.delete_button
         }
     }

@@ -37,7 +37,8 @@
         <activity
             android:name=".activity.EmptyMainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -48,7 +49,8 @@
             android:name=".activity.OrganisationListActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".activity.EmptyMainActivity">
+            android:parentActivityName=".activity.EmptyMainActivity"
+            android:screenOrientation="portrait">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -59,7 +61,8 @@
             android:name=".activity.LoginActivity"
             android:label="@string/title_activity_login"
             android:parentActivityName=".activity.OnboardActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.OnboardActivity" />
@@ -68,18 +71,22 @@
         <activity
             android:name=".activity.OnboardActivity"
             android:label="@string/title_activity_onboard"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".activity.EditOrganisationActivity"
             android:label="@string/title_activity_add_organisation"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".activity.OrganisationDetailActivity"
             android:label="@string/title_activity_organisation_detail"
             android:parentActivityName=".activity.OrganisationListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.OrganisationListActivity" />
@@ -89,7 +96,9 @@
             android:name=".activity.DonateActivity"
             android:label="@string/title_donate_activity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".activity.OrganisationListActivity">
+            android:parentActivityName=".activity.OrganisationListActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -138,7 +147,8 @@
         <activity
             android:name=".activity.AcceptRoleActivity"
             android:label="@string/title_activity_accept_role"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
 
             <intent-filter
                 android:autoVerify="true"

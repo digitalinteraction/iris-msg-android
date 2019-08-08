@@ -9,6 +9,9 @@
         android:icon="@drawable/ic_donate_white_48dp"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_check_for_update"
+        android:title="@string/action_check_for_update" />
     <item android:id="@+id/action_even_more"
         android:title="@string/action_even_more"
         app:showAsAction="never" />

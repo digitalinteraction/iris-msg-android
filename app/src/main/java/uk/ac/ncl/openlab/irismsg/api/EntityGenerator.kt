@@ -111,7 +111,8 @@ class EntityGenerator {
             role = role,
             userId = if (type === UserGen.CURRENT) EntityGenerator.currentUserId else makeId(),
             confirmedOn = if (type !== UserGen.UNVERIFIED) makeDate(DateGen.PAST) else null,
-            deletedOn = null
+            deletedOn = null,
+            label = ""
         )
     }
     
@@ -183,6 +184,13 @@ class EntityGenerator {
             userId = if (type === UserGen.CURRENT) EntityGenerator.currentUserId else makeId(),
             phoneNumber = "07880123456",
             locale = "en"
+        )
+    }
+
+    fun makeAppVersion () : AppVersion {
+        return AppVersion(
+                version = "0.1.0",
+                url = "https://dl.irismsg.io/latest"
         )
     }
 }

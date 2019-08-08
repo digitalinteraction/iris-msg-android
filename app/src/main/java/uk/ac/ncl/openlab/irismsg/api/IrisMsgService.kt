@@ -18,6 +18,9 @@ interface IrisMsgService {
     
     @GET("/users/me")
     fun getSelf () : ApiCall<UserEntity>
+
+    @GET("/app-version")
+    fun getAppVersion () : ApiCall<AppVersion>
     
     @POST("/users/login/request")
     fun requestLogin (@Body body: RequestLoginRequest) : ApiCall<Any>

@@ -11,5 +11,6 @@ data class OrganisationMemberEntity(
     @Json(name = "role") val role: MemberRole,
     @Json(name = "userId") val userId: String,
     @Json(name = "phoneNumber") val phoneNumber: String,
-    @Json(name = "locale") val locale: String
+    @Json(name = "locale") val locale: String,
+    @Json(name = "label") val label: String = ""
 ) : ApiEntity

@@ -70,6 +70,10 @@ class SendMessageFragment : Fragment(), Injectable {
             message.text = null
             setMessage("")
         })
+    
+        events.on(EVENT_TOGGLE_SUBMIT, EventBus.Listener { canSubmit ->
+            send_button.isEnabled = canSubmit == true
+        })
     }
     
     override fun onStop() {
@@ -77,6 +81,7 @@ class SendMessageFragment : Fragment(), Injectable {
         
         // Remove all reset even listeners
         events.clear(EVENT_RESET)
+        events.clear(EVENT_TOGGLE_SUBMIT)
     }
     
     private fun setMessage (string: String) {
@@ -98,6 +103,7 @@ class SendMessageFragment : Fragment(), Injectable {
     
     companion object {
         const val EVENT_RESET = "send_message_reset"
+        const val EVENT_TOGGLE_SUBMIT = "send_message_toggle_submit"
         
         @JvmStatic
         fun newInstance () = SendMessageFragment().apply { /* .. */ }

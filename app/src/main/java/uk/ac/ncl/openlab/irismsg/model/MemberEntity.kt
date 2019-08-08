@@ -12,7 +12,8 @@ data class MemberEntity(
     @Json(name = "role") val role: MemberRole,
     @Json(name = "user") val userId: String,
     @Nullable @Json(name = "confirmedOn") val confirmedOn: Date? = null,
-    @Nullable @Json(name = "deletedOn") val deletedOn: Date? = null
+    @Nullable @Json(name = "deletedOn") val deletedOn: Date? = null,
+    @Json(name = "label") val label: String = ""
 ) : ApiEntity {
     
     fun isActive () : Boolean {
