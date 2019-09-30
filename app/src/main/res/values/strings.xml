@@ -102,8 +102,15 @@
 
     <string name="title_add_member">Add a %1$s</string>
     <string name="body_confirm_delete_member">Are you sure you want to remove this member from your organisation?</string>
-    <string name="body_add_subscriber">Add a phone number to receive the messages you send to this organisation.</string>
-    <string name="body_add_donor">Add a donor to this organisation, they are responsible for forwarding your  messages through this app.</string>
+    <string name="body_add_subscriber">
+        Add a subscriber to your organisation to receive messages through your donor network.
+        You MUST have their permission and consent to share their personal data (phone number) with the donors in your organisation.
+        Donors will see their phone number when donating their SMS.
+    </string>
+    <string name="body_add_donor">
+        Add a donor to your organisation who can donate their unused SMS to forward along your messages.
+        They MUST be someone you trust as they will be handling the personal data (phone numbers) of your subscribers.
+    </string>
     <string name="member_created">%1$s invited!</string>
     <string name="member_deleted">%1$s was removed</string>
 

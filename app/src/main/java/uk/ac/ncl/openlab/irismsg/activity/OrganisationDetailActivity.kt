@@ -123,8 +123,8 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
         // Listen to fab clicks
         fab.setOnClickListener {
             when (tabs_pager.currentItem) {
-                1 -> onAddMember(MemberRole.DONOR)
-                2 -> onAddMember(MemberRole.SUBSCRIBER)
+                1 -> addMemberManually(MemberRole.DONOR)
+                2 -> addMemberManually(MemberRole.SUBSCRIBER)
             }
         }
     }
@@ -266,34 +266,9 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
             ).show()
         })
     }
-    
-    private fun onAddMember (role: MemberRole) {
-        orgViewModel.organisation.value ?: return
-        
-        val title = getString(R.string.title_add_member, role.humanized.toLowerCase())
-
-        val options = arrayOf(
-                getString(R.string.action_add_from_contacts),
-                getString(R.string.action_add_manually)
-        )
-
-        // Create a dialog to pick how they want to add a member
-        val dialog = AlertDialog.Builder(this)
-                .setTitle(title)
-                .setItems(options) { dialog, which ->
-                    when(which) {
-                        0 -> addMemberFromContacts(role)
-                        1 -> addMemberManually(role)
-                    }
-                }
-                .setNegativeButton(R.string.action_cancel, null)
-                .create()
-
-        // Show the dialog
-        dialog.show()
-    }
 
     private fun addMemberManually(role: MemberRole) {
+        orgViewModel.organisation.value ?: return
 
         val title = getString(R.string.title_add_member, role.humanized.toLowerCase())
 
@@ -309,6 +284,7 @@ class OrganisationDetailActivity : AppCompatActivity(), HasSupportFragmentInject
                 .setView(R.layout.dialog_add_member)
                 .setPositiveButton(R.string.action_confirm, null)
                 .setNegativeButton(R.string.action_cancel, null)
+                .setNeutralButton(R.string.action_add_from_contacts) { _, _ -> addMemberFromContacts(role) }
                 .create()
 
         // Show the dialog
