@@ -79,3 +79,43 @@ Api-related logic should not be in the fragments, instead it bubbles up events o
 #### Event bus
 
 An event bus is used to communicate between some classes, i.e. Activities and BroadcastReceivers.
+
+## Releasing
+
+Follow these steps to create and deploy a new release.
+
+### Generating an APK
+
+> Make sure there are no unstaged changes
+
+1. Edit [app/build.gradle](/app/build.gradle) to update the `versionName` 
+   and increment the `versionCode`
+2. Perform a gradle sync
+3. Build a signed APK: `Build > Generate Signed APK / Bundle`
+   1. Select APK
+   2. Select the signing certificate, the credentials are in the Open Lab vault at `devops/iris/app-signing-key`
+4. Wait for the build to complete
+5. Add changes to git `git add app/build.gradle app/release/output.log`
+6. Commit the changes with the version number and a preceeding v, e.g. `git commit -m 'v1.2'`
+7. Tag the commit with the version, e.g. `git tag 1.2`
+
+### Uploading an APK
+
+```bash
+# cd /to/the/repo/root
+# where $VERSION is the desired version
+
+# Upload the archive
+scp app/release/app-release.apk safeuser@irismsg.io:/srv/files/iris-msg-$VERSION.apk
+
+# Update the symlink
+ssh safeuser@irismsg.io
+cd /srv/files/
+rm latest.apk
+ln -s iris-msg-$VERSION.apk latest.apk
+```
+
+### Updating the Api
+
+You'll need to update the server [stack](https://openlab.ncl.ac.uk/gitlab/iris/stack)
+to tell it the new version
