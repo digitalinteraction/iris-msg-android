@@ -3,7 +3,7 @@
     <string name="app_name">Iris Msg</string>
     <string name="quotify">"%1$s"</string>
     <string name="body_no_results">Τίποτα προς εμφάνιση</string>
-    <string name="section_format">Hello World από την ενότητα: %1$d</string>
+    <string name="section_format">Καλημέρα από την ενότητα: %1$d</string>
     <string name="more_text_format">%1$d…</string>
 
 
@@ -13,11 +13,11 @@
     <string name="action_app_info">Πληροφορίες Εφαρμογής</string>
     <string name="action_logout">Αποσύνδεση</string>
     <string name="action_login">Ξεκινήστε!</string>
-    <string name="action_delete_organisation">Διαγραφή Οργανισμού</string>
+    <string name="action_delete_organisation">Διαγραφή Ομάδας</string>
 
 
     <!-- Organisation List Activity -->
-    <string name="tab_coordinator">Οργανισμοί</string>
+    <string name="tab_coordinator">Ομάδες</string>
     <string name="tab_donor">Δωρεές </string>
 
 
@@ -34,9 +34,9 @@
     <string name="prompt_member_label">Φιλικό όνομα</string>
     <string name="action_login_request">Πάμε!</string>
     <string name="action_login_check">Υποβολή</string>
-    <string name="error_invalid_phone_number">Αυτός ο αριθμός τηλεφώνου δεν είναι έγκυρος</string>
-    <string name="error_invalid_country_code">Αυτός ο κωδικός χώρας δεν είναι έγκυρος</string>
-    <string name="error_invalid_verification_code">Αυτός ο κωδικός δεν είναι έγκυρος</string>
+    <string name="error_invalid_phone_number">Ο αριθμός τηλεφώνου δεν είναι έγκυρος</string>
+    <string name="error_invalid_country_code">Ο κωδικός χώρας δεν είναι έγκυρος</string>
+    <string name="error_invalid_verification_code">Ο κωδικός επιβεβαίωσης δεν είναι έγκυρος</string>
     <string name="error_field_required">Αυτό το πεδίο είναι υποχρεωτικό</string>
     <string name="login_info">
         Χρησιμοποιούμε τον αριθμό τηλεφώνου σας για να επαληθεύσουμε ποιοι είστε.
@@ -72,7 +72,7 @@
 
     <string name="title_new_app_update">Υπάρχει διαθέσιμη ενημέρωση</string>
     <string name="body_new_app_update">Ενημερώστε τώρα για να λάβετε τις πιο πρόσφατες δυνατότητες και διορθώσεις</string>
-    <string name="action_update_app">Εκσυγχρονίζω</string>
+    <string name="action_update_app">Ενημερώνω</string>
     <string name="action_skip_update">Οχι τώρα</string>
     <string name="action_check_for_update">Ελεγχος για ενημερώσεις</string>
     <string name="title_app_info">Πληροφορίες εφαρμογής</string>
@@ -81,28 +81,28 @@
     <string name="body_no_update">Βρίσκεστε στην πιο πρόσφατη έκδοση</string>
 
     <!-- Add Organisation -->
-    <string name="title_activity_add_organisation">Δημιουργία Οργάνωσης</string>
-    <string name="add_organisation_info">Ένας οργανισμός είναι μια ομάδα δωρητών και συνδρομητών που χρησιμοποιείτε για την αποστολή μηνυμάτων.</string>
+    <string name="title_activity_add_organisation">Δημιουργία Ομάδας</string>
+    <string name="add_organisation_info">Φτιάξτε μια ομάδα δωρητών και συνδρομητών για την αποστολή μηνυμάτων.</string>
     <string name="prompt_organisation_name">Όνομα</string>
-    <string name="prompt_organisation_info">Πληροφορίες</string>
+    <string name="prompt_organisation_info">Περιγραφή</string>
     <string name="action_add_organisation">Δημιουργία</string>
     <string name="error_invalid_name">Αυτό το όνομα δεν είναι αρκετά μεγάλο</string>
-    <string name="error_invalid_info">Αυτές οι πληροφορίες δεν είναι αρκετές</string>
+    <string name="error_invalid_info">Αυτή η περιγραφή δεν είναι αρκετά μεγάλη</string>
 
 
     <!-- Organisation Detail Activity -->
-    <string name="title_activity_organisation_detail">Στοιχεία Οργανισμού</string>
+    <string name="title_activity_organisation_detail">Στοιχεία Ομάδας</string>
     <string name="tab_messaging">Μηνύματα</string>
     <string name="tab_org_donors">Δωρητές</string>
     <string name="tab_org_subscribers">Συνδρομητές</string>
-    <string name="title_confirm_delete_org">Κατάργηση οργάνισμού</string>
-    <string name="body_confirm_delete_org">Είστε βέβαιοι ότι θέλετε να καταργήσετε αυτόν τον οργανισμό; Αυτή η πράξη δε μπορεί να αναιρεθεί</string>
+    <string name="title_confirm_delete_org">Κατάργηση ομάδας</string>
+    <string name="body_confirm_delete_org">Είστε βέβαιοι ότι θέλετε να καταργήσετε αυτή την ομάδα; Αυτή η πράξη δε μπορεί να αναιρεθεί</string>
     <string name="title_confirm_delete_member">Κατάργηση %1$s</string>
 
     <string name="title_add_member">Προσθήκη %1$s</string>
-    <string name="body_confirm_delete_member">Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτό το μέλος από τον οργανισμό σας;</string>
-    <string name="body_add_subscriber">Προσθέστε έναν αριθμό τηλεφώνου για να λάβετε τα μηνύματα που στέλνετε σε αυτόν τον οργανισμό.</string>
-    <string name="body_add_donor">Προσθέστε έναν δωρητή σε αυτόν τον οργανισμό, είναι υπεύθυνος για τη διαβίβαση των μηνυμάτων σας μέσω αυτής της εφαρμογής.</string>
+    <string name="body_confirm_delete_member">Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτό το μέλος από την ομάδα σας;</string>
+    <string name="body_add_subscriber">Προσθέστε έναν αριθμό τηλεφώνου που θέλετε να λαμβάνει τα μηνύματα της ομάδας.</string>
+    <string name="body_add_donor">Προσθέστε έναν δωρητή σε αυτή την ομάδα, αναλαμβάνει την διαβίβαση των μηνυμάτων σας μέσω αυτής της εφαρμογής.</string>
     <string name="member_created">Προστέθηκε ο %1$s </string>
     <string name="member_deleted">Διαγράφηκε ο %1$s </string>
 
@@ -115,7 +115,7 @@
 
     <string name="prompt_message">Μήνυμα</string>
     <string name="body_send_message_bottom">
-        Στείλτε ένα μήνυμα στον οργανισμό σας μέσω των δωρητών του.
+        Στείλτε ένα μήνυμα στους συνδρομητές της ομάδας σας μέσω των δωρητών.
         \n\nΟι δωρητές θα λάβουν μια ειδοποίηση, όπου θα έχουν τη δυνατότητα να προωθήσουν το μήνυμα στους συνδρομητές.
         \n\nΕάν ένας δωρητής δεν μπορεί να δωρίσει, θα ζητηθεί από έναν άλλον δωρητή.
     </string>
@@ -126,9 +126,9 @@
     <string name="body_member_list_format">%1$s – %2$s</string>
 
     <string name="body_donors_description">Αυτοί είναι οι δωρητές σας, επιλέγουν να δωρίσουν τα SMS τους για να προωθήσουν τα μηνύματά σας.</string>
-    <string name="body_subscribers_description">Αυτοί είναι οι συνδρομητές σας που λαμβάνουν τα μηνύματα που αποστέλλετε σε αυτόν τον οργανισμό.</string>
+    <string name="body_subscribers_description">Αυτοί είναι οι συνδρομητές που λαμβάνουν τα μηνύματα αυτής της ομάδας.</string>
 
-    <string name="err_orgs_destroy">Αποτυχία κατάργησης της οργανισμού, δοκιμάστε ξανά</string>
+    <string name="err_orgs_destroy">Αποτυχία κατάργησης της ομάδας, δοκιμάστε ξανά</string>
     <string name="err_members_destroy">Αποτυχία κατάργησης μέλους, δοκιμάστε ξανά</string>
     <string name="err_members_create">Αποτυχία προσθήκης μέλους, δοκιμάστε ξανά</string>
     <string name="err_messages_create">Αποτυχία δημιουργίας μηνύματος, δοκιμάστε ξανά</string>
@@ -148,8 +148,8 @@
     <!-- Accept Role -->
     <string name="title_activity_accept_role">Αποδοχή Πρόσκλησης</string>
     <string name="body_donor_role_info">
-        Έχετε προσκληθεί να δωρίσετε στο %1$s στο irismsg.io. Αυτό σημαίνει ότι μπορείτε να δωρίσετε τα εφεδρικά σας SMS για να προωθήσετε μηνύματα για αυτήν την οργάνωση.
-        \n\nΌταν η οργάνωση στείλει ένα μήνυμα, θα λάβετε μια ειδοποίηση για να συμβάλλετε στην παράδοσή της. Θα περιέχει μια προτεινόμενη δωρεά με βάση τον αριθμό των δωρητών που έχει ο οργανισμός.
+        Έχετε προσκληθεί να δωρίσετε στο %1$s στο irismsg.io. Αυτό σημαίνει ότι μπορείτε να δωρίσετε τα εφεδρικά σας SMS για να προωθήσετε μηνύματα για αυτήν την ομάδα.
+        \n\nΌταν η ομάδα στείλει ένα μήνυμα, θα λάβετε μια ειδοποίηση για να συμβάλλετε στην προώθηση του. Θα περιέχει μια προτεινόμενη δωρεά SMS με βάση τον αριθμό των δωρητών που έχει η ομάδα.
     </string>
     <string name="action_accept_donor_invite">Γίνετε δωρητής</string>
 
@@ -157,14 +157,14 @@
     <!-- Preferences -->
     <string name="pref_api_mode">Λειτουργία εφαρμογής</string>
     <string name="pref_api_mode_info">Πώς λειτουργεί η εφαρμογή</string>
-    <string name="pref_api_host">Τοποθεσία Api</string>
-    <string name="pref_api_host_info">Η διεύθυνση url όπου είναι το api</string>
+    <string name="pref_api_host">Τοποθεσία API</string>
+    <string name="pref_api_host_info">Η διεύθυνση url όπου είναι το API</string>
 
 
     <!-- Notifications -->
     <string name="title_new_donations_notif">Νέες δωρεές!</string>
-    <string name="body_new_donations_notif">Οι οργανώσεις σας χρειάζονται τη βοήθειά σας</string>
-    <string name="title_new_donations_channel">Νέες Dωρεές</string>
-    <string name="info_new_donations_channel">Νέες Dωρεές</string>
+    <string name="body_new_donations_notif">Οι ομάδες σας χρειάζονται τη βοήθειά σας</string>
+    <string name="title_new_donations_channel">Νέες Δωρεές</string>
+    <string name="info_new_donations_channel">Νέες Δωρεές</string>
 
 </resources>
